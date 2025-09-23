@@ -7,7 +7,7 @@
 # autores: alisson e olympio
 # -------------------------------------------------------------------------
 
-## ----- leitura dos dados  ------------------------------------------------------
+# leitura dos dados  ------------------------------------------------------
 
 # leitura da base de dados
 dados <- readr::read_csv2(
@@ -19,18 +19,6 @@ dados <- readr::read_csv2(
   dplyr::mutate(atraso =
                   ifelse(tempo_atraso >= lubridate::hms("01:00:00"), 1, 0)
                 )
-
-
-
-##---- histograma --------------------------------------------------------------
-
-dados |>
-  ggplot2::ggplot(ggplot2::aes(x = qt_aptos)) +
-  ggplot2::geom_histogram( fill = "steelblue", color = "white") +
-  ggplot2::theme_minimal()
-
-
-
 
 # estatistica descritiva --------------------------------------------------
 
