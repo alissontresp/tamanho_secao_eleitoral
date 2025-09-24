@@ -92,6 +92,8 @@ resumo_estat |>
 
 ```
 
+Na @fig-histograma_tempos podem ser vistos a distribuição dos tempos de atraso, medidos em segundos daquelas seções que utilizaram biometria em 2018.
+
 ```{r}
 
 #| fig-cap: "Distribuição dos aptos por seção com biometria em 2018"
