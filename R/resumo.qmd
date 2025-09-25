@@ -1,9 +1,11 @@
 ---
 title: "Resumo"
 lang: "pt-br"
+indenting: first
 format: 
   html:
     css: style.css
+    indent: true
   
 editor: visual
 
@@ -11,6 +13,8 @@ execute:
   echo: false
   warning: false
 ---
+
+# Estatísticas Descritivas
 
 ## Estatísticas das seções em 2018 - 1º turno
 
@@ -31,7 +35,7 @@ dados <- readr::read_csv2(
 
 ```
 
-A @fig-histograma apresenta a distribuição dos eleitores dentro das seções que foram 100% biométricas em 2018, enquanto a @tbl-resumo_estat exibe estatísticas referentes a essas seções.
+A @fig-histograma apresenta a distribuição dos eleitores dentro das seções que foram 100% biométricas em 2018, enquanto a @tbl-resumo_estat exibe estatísticas referentes a essas seções e a dispersão pode ser visualizada na @fig-bp_secoes.
 
 ```{r}
 #| fig-cap: "Distribuição dos aptos por seção com biometria em 2018"
@@ -42,7 +46,7 @@ dados |>
   ggplot2::ggplot(ggplot2::aes(x = qt_aptos)) +
   ggplot2::geom_histogram( fill = "steelblue", color = "white") +
   ggplot2::labs(x = "Eleitores aptos", y = "Frequência") +
-  ggplot2::theme_minimal()
+  ggplot2::theme_classic()
 
 ```
 
@@ -92,19 +96,144 @@ resumo_estat |>
 
 ```
 
+```{r}
+#| label: fig-bp_secoes
+#| fig-cap: "Box-plot do número de eleitores aptos nas seções com biometria em 2018"
+#| fig-align: center
+
+
+
+dados |>
+  ggplot2::ggplot(ggplot2::aes(y = qt_aptos, x = 0)) +
+  ggplot2::geom_boxplot( fill = "steelblue", width = 0.5) +
+  ggplot2::theme_classic() +
+  ggplot2::labs(y = "Aptos por seção") + 
+  ggplot2::theme(
+    axis.title = ggplot2::element_blank(),
+    axis.text.x = ggplot2::element_blank(),
+    axis.ticks.x = ggplot2::element_blank()
+    ) + 
+  ggplot2::xlim(-1,1)
+```
+
 Na @fig-histograma_tempos podem ser vistos a distribuição dos tempos de atraso, medidos em segundos daquelas seções que utilizaram biometria em 2018.
 
 ```{r}
-
-#| fig-cap: "Distribuição dos aptos por seção com biometria em 2018"
-#| fig-align: center
 #| label: fig-histograma_tempos
+#| fig-cap: "Distribuição do atraso do encerramento da eleição (em min) nas seções biomeétricas em 2018"
+#| fig-align: center
+
 
 dados |>
   dplyr::mutate(tempo_atraso = as.numeric(lubridate::hms(tempo_atraso))/60) |> 
   ggplot2::ggplot(ggplot2::aes(x = tempo_atraso)) +
   ggplot2::geom_histogram( fill = "steelblue", color = "white", bins = 15) +
   ggplot2::labs(x = "Atraso encerramento votação (min)", y = "Frequência") +
-  ggplot2::scale_x_continuous(breaks = seq(10, 90, by=10)) +
-  ggplot2::theme_minimal()
+  ggplot2::scale_x_continuous(breaks = seq(10, 90, by=5)) +
+  ggplot2::theme_classic()
+```
+
+## Estatística dos tempos de votação
+
+Os logs de das urnas eletrônicas daquelas seções em que o voto foi totalmente habilitado biomtericamente em 2018, é possível calcular o tempo total médio de atendimento do eleitor (TMAE) que é o tempo, medido em segundos, desde a habilitação até o encerramento da votação do eleitor. Esse tempo reflete a duração média do processo de votação do eleitor em cada seção para completar os 6 votos necessários nesse pleito. As principais estatísticas decsritivas podem ser vistas na @tbl-resumo_estat_tempo
+
+```{r}
+#| label: tbl-resumo_estat_tempo
+#| tbl-cap: "Estatísticas descritivas do tempo total médio de atendimento do eleitor (TMAE em segundos) das seções com biometria na eleição de 2018"
+
+#
+resumo_estat <- dados |>
+  dplyr::summarise(
+    n_tempo = dplyr::n(),
+    media_tempo =  mean(atendimento_total_tmae_seg, na.rm = TRUE),
+    mediana_tempo = median(atendimento_total_tmae_seg, na.rm = TRUE),
+    desvpad_tempo = sd(atendimento_total_tmae_seg, na.rm = TRUE),
+    max_tempo = max(atendimento_total_tmae_seg,na.rm = TRUE),
+    min_tempo = min(atendimento_total_tmae_seg,na.rm = TRUE),
+  )
+
+resumo_estat |> 
+  gt::gt() |>
+  gt::cols_align(align = "center") |>
+  
+  gt::cols_label(
+    n_tempo = "Nº seções",
+    media_tempo = "Tempo médio/seção",
+    mediana_tempo = "Tempo mediano/seção",
+    desvpad_tempo = "Desvio padrão",
+    min_tempo = "Menor tempo médio",
+    max_tempo = "Maior tempo médio",
+  ) |> 
+  gt::fmt_number(
+    columns = 2:6,
+    decimals = 1,
+    dec_mark = ","
+  ) |>
+  gt::fmt_number(
+    columns = 1,
+    decimals = 0,
+    dec_mark = ",",
+    sep_mark = "."
+  ) |> 
+  gt::tab_style(
+    style = gt::cell_text(weight = "bold"),
+    locations = gt::cells_column_labels()
+  )
+```
+
+# Modelo de calibração
+
+```{r}
+#| label: fig-graf_disp
+#| fig-cap: "Gráfico de dispersão entre os tempos total de votação médio e eleitores aptos na seção"
+#| fig-align: center
+
+dados |>
+  dplyr::group_by(tipo) |>
+  ggplot2::ggplot(ggplot2::aes(x = qt_aptos,
+                               y = atendimento_total_tmae_seg)) +
+  ggplot2::geom_point(color = "steelblue" , alpha = 0.3) +
+  ggplot2::geom_smooth(method = "lm", se = TRUE, color = "black") +
+  ggplot2::labs(x = "Eleitores aptos por seção", y = "Tempo total médio de votação\n(s)" )+
+  ggplot2::theme_classic()
+```
+
+$$
+y_{i} = \alpha + \beta x_i + \epsilon_{i}, \quad i= 1, \dots, n 
+$$ {#eq-etapa_1}
+
+$$
+\hat{x} = \frac{y_{desejado} - \hat{\alpha}}{\hat{\beta}}
+$$ {#eq-etapa_2}
+
+Onde a @eq-etapa_1, $y_{i}$ é a variável resposta, no presente caso, o tempo total médio de votação, $x_{i}$ a variável independente, a quantidade de aptos, ambas na i-ésima seção, e $\alpha$ e $\beta$, parâmetros do modelo de regressão a serem estimados.
+
+O segundo estágio (@eq-etapa_2), tem por objetivo estimar variável independente da @eq-etapa_1, $\hat{x}$, dado um valor de $y_{desejado}$ e os parâmetros e $\alpha$ e $\beta$ estimados na regressão da primeira etapa. Transpondo para a siuação atual, estima-se na primeira etapa uma regressão linear simples do tempo médio de votação em função da quantidade de aptos da seção e na segunda etapa, o valor da quantidade de aptos estimado dado o tempo médio de votação específico e os parâmetros do modelo estimado, que é a resposta do problema.
+
+```{r}
+# modelo de calibracao  ---------------------------------------------------
+
+# ajuste o modelo de regressao linear
+modelo_lm <- lm(atendimento_total_tmae_seg ~ qt_aptos, data = dados)
+
+# estimativas dos parametros do modelo
+resultados <- summary(modelo_lm)
+
+# extrai o valor do alpha
+alpha <- coef(modelo_lm)[[1]]
+
+# extrai o valor do beta
+beta <- coef(modelo_lm)[[2]]
+
+# calcula o parametro de calibracao (81s)
+x0 <- (81 - alpha) / beta
+
+# calcula a variancia estimada do parametro de calibracao
+xbar <- mean(dados$qt_aptos)
+n <- nrow(dados)
+nsxx <- (n - 1) * var(dados$qt_aptos)
+sigma2 <- resultados$sigma ^ 2
+varx0 <- (sigma2 / beta ^ 2) * (1 + 1 / n + ((xbar - x0) ^ 2) / nsxx)
+
+
 ```
