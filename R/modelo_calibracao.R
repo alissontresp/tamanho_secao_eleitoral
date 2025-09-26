@@ -135,7 +135,7 @@ ic_ponto_corte <- pROC::ci.coords(curva_roc, "best")
 
 # estima a arvore de decisao baseado no tempo de atraso considerando
 modelo_arvore <- rpart::rpart(
-  atraso ~ qt_aptos,
+  tempo_atraso ~ qt_aptos,
   data = dados,
   control = rpart::rpart.control(maxdepth = 1)
 )
@@ -153,5 +153,5 @@ roc <- pROC::roc(dados$atraso, predict(modelo_arvore))
 # constroi o grafico da curva ROC
 plot(roc)
 
-
-
+# calcula a area abaixo da curva ROC
+auc <- pROC::auc(roc)

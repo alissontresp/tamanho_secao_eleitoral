@@ -101,8 +101,6 @@ resumo_estat |>
 #| fig-cap: "Box-plot do número de eleitores aptos nas seções com biometria em 2018"
 #| fig-align: center
 
-
-
 dados |>
   ggplot2::ggplot(ggplot2::aes(y = qt_aptos, x = 0)) +
   ggplot2::geom_boxplot( fill = "steelblue", width = 0.5) +
@@ -135,27 +133,26 @@ dados |>
 
 ## Estatística dos tempos de votação
 
-Os logs de das urnas eletrônicas daquelas seções em que o voto foi totalmente habilitado biomtericamente em 2018, é possível calcular o tempo total médio de atendimento do eleitor (TMAE) que é o tempo, medido em segundos, desde a habilitação até o encerramento da votação do eleitor. Esse tempo reflete a duração média do processo de votação do eleitor em cada seção para completar os 6 votos necessários nesse pleito. As principais estatísticas decsritivas podem ser vistas na @tbl-resumo_estat_tempo
+Disponibilizados os logs das urnas eletrônicas, especificamente das seções em que o voto foi totalmente habilitado biomtericamente em 2018, é possível calcular o tempo total médio de atendimento do eleitor (TMAE) que é o tempo, medido em segundos, desde a habilitação até o encerramento da votação do eleitor. Esse tempo reflete a duração média do processo de votação do eleitor em cada seção para completar os 6 votos necessários nesse pleito. As principais estatísticas decsritivas podem ser vistas na @tbl-resumo_estat_tempo.
 
 ```{r}
 #| label: tbl-resumo_estat_tempo
 #| tbl-cap: "Estatísticas descritivas do tempo total médio de atendimento do eleitor (TMAE em segundos) das seções com biometria na eleição de 2018"
 
 #
-resumo_estat <- dados |>
+resumo_estat_tempos <- dados |>
   dplyr::summarise(
     n_tempo = dplyr::n(),
-    media_tempo =  mean(atendimento_total_tmae_seg, na.rm = TRUE),
+    media_tempo = mean(atendimento_total_tmae_seg, na.rm = TRUE),
     mediana_tempo = median(atendimento_total_tmae_seg, na.rm = TRUE),
     desvpad_tempo = sd(atendimento_total_tmae_seg, na.rm = TRUE),
     max_tempo = max(atendimento_total_tmae_seg,na.rm = TRUE),
     min_tempo = min(atendimento_total_tmae_seg,na.rm = TRUE),
   )
 
-resumo_estat |> 
+resumo_estat_tempos |> 
   gt::gt() |>
   gt::cols_align(align = "center") |>
-  
   gt::cols_label(
     n_tempo = "Nº seções",
     media_tempo = "Tempo médio/seção",
@@ -179,6 +176,27 @@ resumo_estat |>
     style = gt::cell_text(weight = "bold"),
     locations = gt::cells_column_labels()
   )
+```
+
+A @fig-bp_tempos representa o box-plot dos tempos totais de votação (TMAE), medidos em segundos. Nota-se a existência de tempos de votação muitos valores discrepantes com relação à massa de dados na cauda superior e poucos na cauda inferior.
+
+```{r}
+#| label: fig-bp_tempos
+#| fig-cap: "Box-plot do tempo médio total de votação (TMAE) nas seções com biometria em 2018"
+#| fig-align: center
+
+
+dados |>
+  ggplot2::ggplot(ggplot2::aes(y = atendimento_total_tmae_seg, x = 0)) +
+  ggplot2::geom_boxplot( fill = "steelblue", width = 0.5) +
+  ggplot2::theme_classic() +
+  ggplot2::labs(y = "Tempo médio total de votação (TMAE)\n(s)") + 
+  ggplot2::theme(
+    axis.title = ggplot2::element_blank(),
+    axis.text.x = ggplot2::element_blank(),
+    axis.ticks.x = ggplot2::element_blank()
+    ) + 
+  ggplot2::xlim(-1,1)
 ```
 
 # Modelo de calibração
@@ -208,7 +226,11 @@ $$ {#eq-etapa_2}
 
 Onde a @eq-etapa_1, $y_{i}$ é a variável resposta, no presente caso, o tempo total médio de votação, $x_{i}$ a variável independente, a quantidade de aptos, ambas na i-ésima seção, e $\alpha$ e $\beta$, parâmetros do modelo de regressão a serem estimados.
 
-O segundo estágio (@eq-etapa_2), tem por objetivo estimar variável independente da @eq-etapa_1, $\hat{x}$, dado um valor de $y_{desejado}$ e os parâmetros e $\alpha$ e $\beta$ estimados na regressão da primeira etapa. Transpondo para a siuação atual, estima-se na primeira etapa uma regressão linear simples do tempo médio de votação em função da quantidade de aptos da seção e na segunda etapa, o valor da quantidade de aptos estimado dado o tempo médio de votação específico e os parâmetros do modelo estimado, que é a resposta do problema.
+O segundo estágio (@eq-etapa_2), tem por objetivo estimar variável independente da @eq-etapa_1, $\hat{x}$, dado um valor de $y_{desejado}$ e os parâmetros e $\alpha$ e $\beta$ estimados na regressão da primeira etapa. Transpondo para a siuação atual, estima-se na primeira etapa uma regressão linear simples do tempo médio de votação em função da quantidade de aptos da seção e na segunda etapa, o valor da quantidade de aptos estimado dado o tempo médio de votação específico e os parâmetros do modelo estimado, que é a resposta do problema
+
+### Resultado utilizando o valor mediano do TMAE (81 s)
+
+Considerando o valor mediano do tempo total médio de votação dos eleitores em seções com votação biométrica no pleito de 2018, `r scales::number(resumo_estat_tempos$mediana_tempo, decimal.mark = ",", accuracy = 0.1)` segundos.
 
 ```{r}
 # modelo de calibracao  ---------------------------------------------------
@@ -226,7 +248,7 @@ alpha <- coef(modelo_lm)[[1]]
 beta <- coef(modelo_lm)[[2]]
 
 # calcula o parametro de calibracao (81s)
-x0 <- (81 - alpha) / beta
+x0 <- (resumo_estat_tempos$mediana_tempo - alpha) / beta
 
 # calcula a variancia estimada do parametro de calibracao
 xbar <- mean(dados$qt_aptos)
