@@ -12,6 +12,7 @@ editor: visual
 execute:
   echo: false
   warning: false
+  cache: true
 ---
 
 # Estatísticas Descritivas
@@ -45,6 +46,9 @@ A @fig-histograma apresenta a distribuição dos eleitores dentro das seções q
 dados |>
   ggplot2::ggplot(ggplot2::aes(x = qt_aptos)) +
   ggplot2::geom_histogram( fill = "steelblue", color = "white") +
+  ggplot2::scale_y_continuous(
+    labels = scales::label_number(big.mark = ".", decimal.mark = ",")
+    ) +
   ggplot2::labs(x = "Eleitores aptos", y = "Frequência") +
   ggplot2::theme_classic()
 
@@ -107,7 +111,7 @@ dados |>
   ggplot2::theme_classic() +
   ggplot2::labs(y = "Aptos por seção") + 
   ggplot2::theme(
-    axis.title = ggplot2::element_blank(),
+    axis.title.x = ggplot2::element_blank(),
     axis.text.x = ggplot2::element_blank(),
     axis.ticks.x = ggplot2::element_blank()
     ) + 
@@ -118,7 +122,7 @@ Na @fig-histograma_tempos podem ser vistos a distribuição dos tempos de atraso
 
 ```{r}
 #| label: fig-histograma_tempos
-#| fig-cap: "Distribuição do atraso do encerramento da eleição (em min) nas seções biomeétricas em 2018"
+#| fig-cap: "Distribuição do atraso do encerramento da eleição (em min) nas seções biométricas em 2018"
 #| fig-align: center
 
 
@@ -127,7 +131,10 @@ dados |>
   ggplot2::ggplot(ggplot2::aes(x = tempo_atraso)) +
   ggplot2::geom_histogram( fill = "steelblue", color = "white", bins = 15) +
   ggplot2::labs(x = "Atraso encerramento votação (min)", y = "Frequência") +
-  ggplot2::scale_x_continuous(breaks = seq(10, 90, by=5)) +
+  ggplot2::scale_x_continuous(breaks = seq(10, 90, by=10)) +
+  ggplot2::scale_y_continuous(
+    labels = scales::label_number(big.mark = ".", decimal.mark = ",")
+  ) +
   ggplot2::theme_classic()
 ```
 
@@ -192,7 +199,7 @@ dados |>
   ggplot2::theme_classic() +
   ggplot2::labs(y = "Tempo médio total de votação (TMAE)\n(s)") + 
   ggplot2::theme(
-    axis.title = ggplot2::element_blank(),
+    axis.title.x = ggplot2::element_blank(),
     axis.text.x = ggplot2::element_blank(),
     axis.ticks.x = ggplot2::element_blank()
     ) + 
@@ -257,5 +264,50 @@ nsxx <- (n - 1) * var(dados$qt_aptos)
 sigma2 <- resultados$sigma ^ 2
 varx0 <- (sigma2 / beta ^ 2) * (1 + 1 / n + ((xbar - x0) ^ 2) / nsxx)
 
+# cria funcao para estimar o intervalo de confianca via bootstrap
+boot_func <- function(data, indices) {
+  modelo_lm <- lm(atendimento_total_tmae_seg ~ qt_aptos, data = data[indices, ])
+  x0 <- (resumo_estat_tempos$mediana_tempo - coef(modelo_lm)[[1]]) / coef(modelo_lm)[[2]]
+  return(x0)
+}
+
+# cria amostras bootstrap
+boot_results <- boot::boot(data = dados, statistic = boot_func, R = 1000)
+
+# estima os intervalos de confianca bootstrap
+icboot <- boot::boot.ci(boot_results)
 
 ```
+
+Os cálculos apresentados nas @eq-etapa_1 e @eq-etapa_2 realizados para o conjunto de dados utilizados neste estudo resultaram na estimativa do número de eleitores por seção, segundo o modelo de calibração de $\hat{x} =$ `r scales::number(x0, decimal.mark = ",")` .
+
+O cálculo do intervalo de confiança de 95% para a estimativa foi realizada por meio de simulação bootstrap do modelo de calibração com 1000 replicações. A @fig-ic_calib apresenta o intervalo de confiança estimado.
+
+```{r}
+#| label: fig-ic_calib
+#| fig-cap: "Intervalo de confiança de 95% bootstrap para a número de eleitores por seção estimado pelo modelo de calibração"
+#| fig-align: center
+
+#Cria um tibble para o resultado do bootstrap
+ic_boot_tbl <- tibble::tibble(x_bar = icboot$t0, li =icboot$percent[4], ls = icboot$percent[5] )
+
+#gráfico
+ic_boot_tbl |>
+  ggplot2::ggplot() +
+  ggplot2::geom_pointrange(ggplot2::aes( x =1, y = x_bar, ymin = li, ymax = ls),
+                           linewidth = 2, size=2, 
+                           color="steelblue", fill="gold",shape = 22) +
+  ggplot2::scale_y_continuous(n.breaks = 8,
+                              labels = scales::label_number(big.mark = ".", decimal.mark = ",")
+                              ) + 
+  ggplot2::labs(y = "Eleitores") +
+  ggplot2::theme_classic() +
+  ggplot2::theme(
+    axis.title.x  = ggplot2::element_blank(),
+    axis.text.x = ggplot2::element_blank(),
+    axis.ticks.x = ggplot2::element_blank()
+  )
+
+```
+
+A simulação do intervalo de confiança bootstrap com 95% de confiança resulta que as seções devam ter entre `r scales::number(ic_boot_tbl$li)` e `r scales::number(ic_boot_tbl$ls)` eleitores para que o tempo total médio de votação seja de `r scales::number(resumo_estat_tempos$mediana_tempo, decimal.mark = ",", accuracy = 0.1)` segundos.

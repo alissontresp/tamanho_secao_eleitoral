@@ -1,3 +1,6 @@
 {
-    "editor.language.brackets": []
+    "editor.language.brackets": [],
+    "quarto.assist.updateMode": "live",
+    "positron.assistant.followups.enable": false,
+    "positron.assistant.useAnthropicSdk": false
 }

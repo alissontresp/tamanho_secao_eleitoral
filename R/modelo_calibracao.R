@@ -81,7 +81,17 @@ boot_func <- function(data, indices) {
 boot_results <- boot::boot(data = dados, statistic = boot_func, R = 1000)
 
 # estima os intervalos de confianca bootstrap
-icbooot <- boot::boot.ci(boot_results)
+icboot <- boot::boot.ci(boot_results)
+
+#gráfico do intervalo de confiança
+ic_boot_tbl <- tibble::tibble(x_bar = icboot$t0, li =icbooot$percent[4], ls = icbooot$percent[4] )
+ic_boot_tbl |>
+ggplot2::ggplot() +
+  ggplot2::geom_pointrange(ggplot2::aes(x = "1", y = x_bar, ymin = li, ymax = ls)) +
+  ggplot2::theme_classic()
+
+
+#Estudar como ficariam as seções;
 
 # curva ROC ---------------------------------------------------------------
 
