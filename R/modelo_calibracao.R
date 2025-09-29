@@ -109,12 +109,14 @@ ponto_corte_best <- pROC::coords(curva_roc, "best",
                                          "specificity",
                                          "sensitivity"))
 
+#Intervalo de confiança do ponto de corte "best"
+ic_ponto_corte <- pROC::ci.coords(curva_roc, "best")
 
 #Gráfico
 pROC::ggroc(curva_roc) +
   ggplot2::labs(
     title = "Curva ROC",
-    x = "Especificidade",
+    x = "1 - Especificidade",
     y = "Sensibilidade"
   ) +
   ggplot2::geom_abline(slope = 1, intercept = 1, linetype = "dashed") +
@@ -138,8 +140,7 @@ pROC::ggroc(curva_roc) +
   ) +
   ggplot2::theme_minimal()
 
-#Intervalo de confiança do ponto de corte "best"
-ic_ponto_corte <- pROC::ci.coords(curva_roc, "best")
+
 
 # arvore de decisao -------------------------------------------------------
 
