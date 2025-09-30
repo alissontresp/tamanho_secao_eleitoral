@@ -108,6 +108,8 @@ ponto_corte_best <- pROC::coords(curva_roc, "best",
                                  ret = c("threshold",
                                          "specificity",
                                          "sensitivity"))
+#Área sobre a curva
+auc <- pROC::auc(roc)
 
 #Intervalo de confiança do ponto de corte "best"
 ic_ponto_corte <- pROC::ci.coords(curva_roc, "best")

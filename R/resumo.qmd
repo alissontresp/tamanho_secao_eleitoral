@@ -118,7 +118,11 @@ dados |>
   ggplot2::xlim(-1,1)
 ```
 
-Na @fig-histograma_tempos podem ser vistos a distribuição dos tempos de atraso, medidos em segundos daquelas seções que utilizaram biometria em 2018.
+## Estatística dos tempos de atraso de encerramento de votação {#tempo_atraso}
+
+Com os logs das urnas eletrônicas é possível apurar o tempo de atraso para o encerramento das urnas após às 17 horas, que é a data estipulada para o fim do processo de votação. Assim, considerando o tempo em atraso de encerramento daquelas urnas eletrônicas do pleito de 2018 em que a votação foi totalmente biométrica, obtivemos as estatísticas apresentadas na @tbl-resumo_estat_atraso.
+
+Na @fig-histograma_tempos podem ser vistos a distribuição dos tempos de atraso, medidos em minutos daquelas seções que utilizaram biometria em 2018.
 
 ```{r}
 #| label: fig-histograma_tempos
@@ -138,9 +142,60 @@ dados |>
   ggplot2::theme_classic()
 ```
 
+```{r}
+#| label: tbl-resumo_estat_atraso
+#| tbl-cap: "Estatísticas descritivas do tempo de atraso (min) no encerramento das seções com biometria na eleição de 2018"
+
+#
+resumo_estat_atraso <- dados |>
+  dplyr::mutate(
+    tempo_atraso_dec =as.numeric(lubridate::hms(tempo_atraso))/60) |> 
+  dplyr::summarise(
+    n_tempo = dplyr::n(),
+    media_atraso = mean(tempo_atraso_dec, na.rm = TRUE),
+    mediana_atraso = median(tempo_atraso_dec, na.rm = TRUE),
+    desvpad_atraso = sd(tempo_atraso_dec, na.rm = TRUE),
+    min_atraso = min(tempo_atraso_dec,na.rm = TRUE),
+    q1 = quantile(tempo_atraso_dec, probs = 0.25, na.rm = TRUE),
+    q3 = quantile(tempo_atraso_dec, probs = 0.75, na.rm = TRUE),
+    max_atraso = max(tempo_atraso_dec,na.rm = TRUE)
+  )
+
+resumo_estat_atraso |> 
+  gt::gt() |>
+  gt::cols_align(align = "center") |>
+  gt::cols_label(
+    n_tempo = "Nº seções",
+    media_atraso = "Tempo médio atraso/seção",
+    mediana_atraso = "Tempo mediano atraso/seção",
+    desvpad_atraso = "Desvio padrão",
+    min_atraso = "Menor tempo atraso médio",
+    q1 = "1º quartil tempo atraso",
+    q3 = "3º quartil tempo atraso",
+    max_atraso = "Maior tempo atraso médio",
+  ) |> 
+  gt::fmt_number(
+    columns = 2:7,
+    decimals = 2,
+    dec_mark = ","
+  ) |>
+  gt::fmt_number(
+    columns = 1,
+    decimals = 0,
+    dec_mark = ",",
+    sep_mark = "."
+  ) |> 
+  gt::tab_style(
+    style = list(
+      gt::cell_text(weight = "bold"),
+      "vertical-align:middle"),
+    locations = gt::cells_column_labels()
+  )
+```
+
 ## Estatística dos tempos de votação
 
-Disponibilizados os logs das urnas eletrônicas, especificamente das seções em que o voto foi totalmente habilitado biomtericamente em 2018, é possível calcular o tempo total médio de atendimento do eleitor (TMAE) que é o tempo, medido em segundos, desde a habilitação até o encerramento da votação do eleitor. Esse tempo reflete a duração média do processo de votação do eleitor em cada seção para completar os 6 votos necessários nesse pleito. As principais estatísticas decsritivas podem ser vistas na @tbl-resumo_estat_tempo.
+Ainda com dados extraídos dos logs das urnas eletrônicas, especificamente das seções em que o voto foi totalmente habilitado biomtericamente em 2018, é possível calcular o tempo total médio de atendimento do eleitor (TMAE) que é o tempo, medido em segundos, desde a habilitação até o encerramento da votação do eleitor. Esse tempo reflete a duração média do processo de votação do eleitor em cada seção para completar os 6 votos necessários nesse pleito. As principais estatísticas decsritivas podem ser vistas na @tbl-resumo_estat_tempo.
 
 ```{r}
 #| label: tbl-resumo_estat_tempo
@@ -180,7 +235,9 @@ resumo_estat_tempos |>
     sep_mark = "."
   ) |> 
   gt::tab_style(
-    style = gt::cell_text(weight = "bold"),
+    style = list(
+      gt::cell_text(weight = "bold"),
+      "vertical-align:middle"),
     locations = gt::cells_column_labels()
   )
 ```
@@ -438,23 +495,62 @@ A **curva ROC** (“Receiver Operating Characteristic”), em português, Curva 
 
 -   **Especificidade (FPF)**: a proporção que o teste classifica como não-atraso aquelas seções que não apresentaram, de fato, atraso, conforme a definição dessa variável no escopo desse estudo.
 
-Serão estudadas duas situações para a definição de atraso nesse estudo:
-
--   Quando o tempo de atraso for maior que 45 minutos;
-
--   quando o tempo de atraso for maior que 1 hora.
+Definiu-se a variável atraso quando o atraso no encerramento da votação for superior a 1 hora, visto que a média de atraso é baixa, cerca de 2 minutos, e tempos superiores a 1 hora podem significar eventos que não são devido ao acaso.
 
 A efetividade do método encontrar o ponto de corte que maximize a sensibilidade e especificidade é mensurada pela **área sob a curva (AUC em inglês)**. A **AUC** mede a capacidade global de discriminação do ponto de corte, no caso, a quantidade de eleitores na seção. AUC perto de 1 indica excelente discriminação; perto de 0,5 indica desempenho próximo ao acaso.
 
+## Tempo de atraso no encerramento maior ou igual a 1 hora
+
+Para a estimativa do número de eleitores por seção utilizou-se a variável **atraso**, que é definida como 1, se o atraso do encerramento da urna foi igual superior a 1 hora ou 0, caso contrário. Com essa variável classificando o atraso em cada uma das seções eleitorais nessas duas categorias e conhecendo-se o número de aptos em cada uma delas, buscou-se maximizar a sensibilidade e a especificidade , ou seja, dado um número de eleitores aleatório, qual a fração seções do total de seções com atraso que apresentam, de fato, atraso no encerramento da votação. Por consequência, qual a fração de seções classificadas como não atrasadas daquelas que encerraram, de fato, sem atrasos, segundo a definição da variável atraso (encerramentos com atraso maior ou igual a 1hora).
+
 ```{r}
 curva_roc <- dados |>
-   dplyr::mutate(atraso =
-                  ifelse(tempo_atraso >= lubridate::hms("00:45:00"), 1, 0)
-                ) |> 
+  dplyr::mutate(
+    atraso = dplyr::if_else(tempo_atraso >= lubridate::hms("01:00:00"), 1, 0),
+    atraso = as.factor(atraso)
+  ) |> 
   pROC::roc(atraso, qt_aptos)
 
 ponto_corte_best <- pROC::coords(curva_roc, "best",
                                  ret = c("threshold",
                                          "specificity",
                                          "sensitivity"))
+
+auc <- pROC::auc(curva_roc)
+```
+
+```{r}
+#| label: fig-roc_1hora
+#| fig-cap: "Curva Roc considerando atraso mo emcerramento de votação o tempo maior que 1 hora"
+#| fig-align: center
+#Curva Roc considerando atraso o tempo maior que 5 minutos
+pROC::ggroc(curva_roc,
+            linewidth = 1,
+            colour = "steelblue") +
+  ggplot2::labs(
+    title = "",
+    x = "1 - Especificidade",
+    y = "Sensibilidade"
+  ) +
+  ggplot2::geom_abline(slope = 1, intercept = 1, linetype = "dashed") +
+  ggplot2::geom_point(data = ponto_corte_best,
+                      ggplot2::aes(
+                        x = specificity,
+                        y = sensitivity
+                      ),
+                      color = "red",
+                      size = 5
+  ) +
+  ggplot2::geom_label( data = ponto_corte_best,
+                      ggplot2::aes(
+                        x = specificity,
+                        y = sensitivity,
+                        label = paste0("Ponto de corte:\n", ceiling(threshold))
+                      ),
+                      nudge_x = 0.11,
+                      nudge_y = -0.11,
+                      color = "royalblue"
+  ) +
+  ggplot2::theme_classic()
+
 ```
