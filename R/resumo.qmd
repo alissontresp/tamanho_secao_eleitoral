@@ -502,7 +502,7 @@ A efetividade do método encontrar o ponto de corte que maximize a sensibilidade
 
 ## Tempo de atraso no encerramento maior ou igual a 1 hora
 
-Para a estimativa do número de eleitores por seção utilizou-se a variável **atraso**, que é definida como 1, se o atraso do encerramento da urna foi igual superior a 1 hora ou 0, caso contrário. Com essa variável classificando o atraso em cada uma das seções eleitorais nessas duas categorias e conhecendo-se o número de aptos em cada uma delas, buscou-se maximizar a sensibilidade e a especificidade , ou seja, dado um número de eleitores aleatório, qual a fração seções do total de seções com atraso que apresentam, de fato, atraso no encerramento da votação. Por consequência, qual a fração de seções classificadas como não atrasadas daquelas que encerraram, de fato, sem atrasos, segundo a definição da variável atraso (encerramentos com atraso maior ou igual a 1hora).
+Para a estimativa do número de eleitores por seção utilizou-se a variável **atraso**, que é definida como 1, se o atraso do encerramento da urna foi igual superior a 1 hora ou 0, caso contrário. Com essa variável classificando o atraso em cada uma das seções eleitorais nessas duas categorias e conhecendo-se o número de aptos em cada uma delas, buscou-se maximizar a sensibilidade e a especificidade , ou seja, dado um número de eleitores aleatório, qual a fração seções do total de seções com atraso que apresentam, de fato, atraso no encerramento da votação. Por consequência, qual a fração de seções classificadas como não atrasadas daquelas que encerraram, de fato, sem atrasos, segundo a definição da variável atraso (encerramentos com atraso maior ou igual a 1 hora).
 
 ```{r}
 curva_roc <- dados |>
