@@ -13,6 +13,7 @@ execute:
   echo: false
   warning: false
   cache: true
+---::
 ---
 
 # Estatísticas Descritivas
