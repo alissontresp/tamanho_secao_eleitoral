@@ -12,8 +12,7 @@ editor: visual
 execute:
   echo: false
   warning: false
-  cache: false
----::
+  cache: true
 ---
 
 # Estatísticas Descritivas
@@ -520,6 +519,8 @@ ponto_corte_best <- pROC::coords(curva_roc, "best",
 auc <- pROC::auc(curva_roc)
 ```
 
+A análise da Curva ROC indica que o número de corte que maximiza a capacidade de identificar atraso quando se trata de atraso, como definido no escopo desse estudo, e a capacidade de minimizar os falsos positivos foi **341 eleitores por seção**. A curva ROC e o ponto que a maximiza é apresentado na @fig-roc_1hora.
+
 ```{r}
 #| label: fig-roc_1hora
 #| fig-cap: "Curva Roc considerando atraso mo emcerramento de votação o tempo maior que 1 hora"
@@ -530,7 +531,7 @@ pROC::ggroc(curva_roc,
             colour = "steelblue") +
   ggplot2::labs(
     title = "",
-    x = "1 - Especificidade",
+    x = "Especificidade",
     y = "Sensibilidade"
   ) +
   ggplot2::geom_abline(slope = 1, intercept = 1, linetype = "dashed") +
@@ -556,6 +557,14 @@ pROC::ggroc(curva_roc,
 
 ```
 
+A sensibilidade foi de cerca de 80,8% e a especificidade, 72,1%. A área sob a curva calculada foi $AUC = 76,8\%$, o que afasta a ideia de uma relação aleatória, representada pela linha tracejada na @fig-roc_1hora.
+
+```{r}
+
+#IC para o ponto de corte
+
+ic_ponto_corte <- pROC::ci.coords(curva_roc, "best")
+```
 # Árvore de decisão  
 
 Nesta seção, introduzimos brevemente o conceito e as principais
