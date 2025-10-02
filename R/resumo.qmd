@@ -1,0 +1,557 @@
+---
+title: "Resumo"
+lang: "pt-br"
+indenting: first
+format: 
+  html:
+    css: style.css
+    indent: true
+  
+editor: visual
+
+execute:
+  echo: false
+  warning: false
+  cache: true
+---::
+---
+
+# Estatísticas Descritivas
+
+## Estatísticas das seções em 2018 - 1º turno
+
+```{r}
+
+# leitura da base de dados
+dados <- readr::read_csv2(
+  file = here::here("data", "base_2018_01.csv"),
+  locale = readr::locale(encoding = "latin1")
+) |>
+  janitor::clean_names() |>
+  dplyr::filter(tipo == "bio", subs_urna == 0) |>
+  dplyr::mutate(atraso =
+                  ifelse(tempo_atraso >= lubridate::hms("01:00:00"), 1, 0)
+                )
+
+
+
+```
+
+A @fig-histograma apresenta a distribuição dos eleitores dentro das seções que foram 100% biométricas em 2018, enquanto a @tbl-resumo_estat exibe estatísticas referentes a essas seções e a dispersão pode ser visualizada na @fig-bp_secoes.
+
+```{r}
+#| fig-cap: "Distribuição dos aptos por seção com biometria em 2018"
+#| fig-align: center
+#| label: fig-histograma
+
+dados |>
+  ggplot2::ggplot(ggplot2::aes(x = qt_aptos)) +
+  ggplot2::geom_histogram( fill = "steelblue", color = "white") +
+  ggplot2::scale_y_continuous(
+    labels = scales::label_number(big.mark = ".", decimal.mark = ",")
+    ) +
+  ggplot2::labs(x = "Eleitores aptos", y = "Frequência") +
+  ggplot2::theme_classic()
+
+```
+
+```{r}
+#| label: tbl-resumo_estat
+#| tbl-cap: "Estatísticas descritivas das seções com biometria na eleição de 2018"
+
+#
+resumo_estat <- dados |>
+  dplyr::summarise(
+    n_secoes = dplyr::n(),
+    media_secao =  mean(qt_aptos, na.rm = TRUE),
+    mediana_secao = median(qt_aptos, na.rm = TRUE),
+    desvpad_secao = sd(qt_aptos, na.rm = TRUE),
+    max_secao = max(qt_aptos, na.rm = TRUE),
+    min_secao = min(qt_aptos, na.rm = TRUE),
+  )
+
+resumo_estat |> 
+  gt::gt() |>
+  gt::cols_align(align = "center") |>
+  
+  gt::cols_label(
+    n_secoes = "Nº seções",
+    media_secao = "Média/seção",
+    mediana_secao = "Mediana/seção",
+    desvpad_secao = "Desvio padrão",
+    min_secao = "Eleitorado menor seção",
+    max_secao = "Eleitorado maior seção",
+  ) |> 
+  gt::fmt_number(
+    columns = 2:3,
+    decimals = 2,
+    dec_mark = ","
+  ) |>
+  gt::fmt_number(
+    columns = 1,
+    decimals = 0,
+    dec_mark = ",",
+    sep_mark = "."
+  ) |> 
+  gt::tab_style(
+    style = gt::cell_text(weight = "bold"),
+    locations = gt::cells_column_labels()
+  )
+
+
+```
+
+```{r}
+#| label: fig-bp_secoes
+#| fig-cap: "Box-plot do número de eleitores aptos nas seções com biometria em 2018"
+#| fig-align: center
+
+dados |>
+  ggplot2::ggplot(ggplot2::aes(y = qt_aptos, x = 0)) +
+  ggplot2::geom_boxplot( fill = "steelblue", width = 0.5) +
+  ggplot2::theme_classic() +
+  ggplot2::labs(y = "Aptos por seção") + 
+  ggplot2::theme(
+    axis.title.x = ggplot2::element_blank(),
+    axis.text.x = ggplot2::element_blank(),
+    axis.ticks.x = ggplot2::element_blank()
+    ) + 
+  ggplot2::xlim(-1,1)
+```
+
+## Estatística dos tempos de atraso de encerramento de votação {#tempo_atraso}
+
+Com os logs das urnas eletrônicas é possível apurar o tempo de atraso para o encerramento das urnas após às 17 horas, que é a data estipulada para o fim do processo de votação. Assim, considerando o tempo em atraso de encerramento daquelas urnas eletrônicas do pleito de 2018 em que a votação foi totalmente biométrica, obtivemos as estatísticas apresentadas na @tbl-resumo_estat_atraso.
+
+Na @fig-histograma_tempos podem ser vistos a distribuição dos tempos de atraso, medidos em minutos daquelas seções que utilizaram biometria em 2018.
+
+```{r}
+#| label: fig-histograma_tempos
+#| fig-cap: "Distribuição do atraso do encerramento da eleição (em min) nas seções biométricas em 2018"
+#| fig-align: center
+
+
+dados |>
+  dplyr::mutate(tempo_atraso = as.numeric(lubridate::hms(tempo_atraso))/60) |> 
+  ggplot2::ggplot(ggplot2::aes(x = tempo_atraso)) +
+  ggplot2::geom_histogram( fill = "steelblue", color = "white", bins = 15) +
+  ggplot2::labs(x = "Atraso encerramento votação (min)", y = "Frequência") +
+  ggplot2::scale_x_continuous(breaks = seq(10, 90, by=10)) +
+  ggplot2::scale_y_continuous(
+    labels = scales::label_number(big.mark = ".", decimal.mark = ",")
+  ) +
+  ggplot2::theme_classic()
+```
+
+```{r}
+#| label: tbl-resumo_estat_atraso
+#| tbl-cap: "Estatísticas descritivas do tempo de atraso (min) no encerramento das seções com biometria na eleição de 2018"
+
+#
+resumo_estat_atraso <- dados |>
+  dplyr::mutate(
+    tempo_atraso_dec =as.numeric(lubridate::hms(tempo_atraso))/60) |> 
+  dplyr::summarise(
+    n_tempo = dplyr::n(),
+    media_atraso = mean(tempo_atraso_dec, na.rm = TRUE),
+    mediana_atraso = median(tempo_atraso_dec, na.rm = TRUE),
+    desvpad_atraso = sd(tempo_atraso_dec, na.rm = TRUE),
+    min_atraso = min(tempo_atraso_dec,na.rm = TRUE),
+    q1 = quantile(tempo_atraso_dec, probs = 0.25, na.rm = TRUE),
+    q3 = quantile(tempo_atraso_dec, probs = 0.75, na.rm = TRUE),
+    max_atraso = max(tempo_atraso_dec,na.rm = TRUE)
+  )
+
+resumo_estat_atraso |> 
+  gt::gt() |>
+  gt::cols_align(align = "center") |>
+  gt::cols_label(
+    n_tempo = "Nº seções",
+    media_atraso = "Tempo médio atraso/seção",
+    mediana_atraso = "Tempo mediano atraso/seção",
+    desvpad_atraso = "Desvio padrão",
+    min_atraso = "Menor tempo atraso médio",
+    q1 = "1º quartil tempo atraso",
+    q3 = "3º quartil tempo atraso",
+    max_atraso = "Maior tempo atraso médio",
+  ) |> 
+  gt::fmt_number(
+    columns = 2:7,
+    decimals = 2,
+    dec_mark = ","
+  ) |>
+  gt::fmt_number(
+    columns = 1,
+    decimals = 0,
+    dec_mark = ",",
+    sep_mark = "."
+  ) |> 
+  gt::tab_style(
+    style = list(
+      gt::cell_text(weight = "bold"),
+      "vertical-align:middle"),
+    locations = gt::cells_column_labels()
+  )
+```
+
+## Estatística dos tempos de votação
+
+Ainda com dados extraídos dos logs das urnas eletrônicas, especificamente das seções em que o voto foi totalmente habilitado biomtericamente em 2018, é possível calcular o tempo total médio de atendimento do eleitor (TMAE) que é o tempo, medido em segundos, desde a habilitação até o encerramento da votação do eleitor. Esse tempo reflete a duração média do processo de votação do eleitor em cada seção para completar os 6 votos necessários nesse pleito. As principais estatísticas decsritivas podem ser vistas na @tbl-resumo_estat_tempo.
+
+```{r}
+#| label: tbl-resumo_estat_tempo
+#| tbl-cap: "Estatísticas descritivas do tempo total médio de atendimento do eleitor (TMAE em segundos) das seções com biometria na eleição de 2018"
+
+#
+resumo_estat_tempos <- dados |>
+  dplyr::summarise(
+    n_tempo = dplyr::n(),
+    media_tempo = mean(atendimento_total_tmae_seg, na.rm = TRUE),
+    mediana_tempo = median(atendimento_total_tmae_seg, na.rm = TRUE),
+    desvpad_tempo = sd(atendimento_total_tmae_seg, na.rm = TRUE),
+    max_tempo = max(atendimento_total_tmae_seg,na.rm = TRUE),
+    min_tempo = min(atendimento_total_tmae_seg,na.rm = TRUE),
+  )
+
+resumo_estat_tempos |> 
+  gt::gt() |>
+  gt::cols_align(align = "center") |>
+  gt::cols_label(
+    n_tempo = "Nº seções",
+    media_tempo = "Tempo médio/seção",
+    mediana_tempo = "Tempo mediano/seção",
+    desvpad_tempo = "Desvio padrão",
+    min_tempo = "Menor tempo médio",
+    max_tempo = "Maior tempo médio",
+  ) |> 
+  gt::fmt_number(
+    columns = 2:6,
+    decimals = 1,
+    dec_mark = ","
+  ) |>
+  gt::fmt_number(
+    columns = 1,
+    decimals = 0,
+    dec_mark = ",",
+    sep_mark = "."
+  ) |> 
+  gt::tab_style(
+    style = list(
+      gt::cell_text(weight = "bold"),
+      "vertical-align:middle"),
+    locations = gt::cells_column_labels()
+  )
+```
+
+A @fig-bp_tempos representa o box-plot dos tempos totais de votação (TMAE), medidos em segundos. Nota-se a existência de tempos de votação muitos valores discrepantes com relação à massa de dados na cauda superior e poucos na cauda inferior.
+
+```{r}
+#| label: fig-bp_tempos
+#| fig-cap: "Box-plot do tempo médio total de votação (TMAE) nas seções com biometria em 2018"
+#| fig-align: center
+
+
+dados |>
+  ggplot2::ggplot(ggplot2::aes(y = atendimento_total_tmae_seg, x = 0)) +
+  ggplot2::geom_boxplot( fill = "steelblue", width = 0.5) +
+  ggplot2::theme_classic() +
+  ggplot2::labs(y = "Tempo médio total de votação (TMAE)\n(s)") + 
+  ggplot2::theme(
+    axis.title.x = ggplot2::element_blank(),
+    axis.text.x = ggplot2::element_blank(),
+    axis.ticks.x = ggplot2::element_blank()
+    ) + 
+  ggplot2::xlim(-1,1)
+```
+
+# Modelo de calibração
+
+```{r}
+#| label: fig-graf_disp
+#| fig-cap: "Gráfico de dispersão entre os tempos total de votação médio e eleitores aptos na seção"
+#| fig-align: center
+
+dados |>
+  dplyr::group_by(tipo) |>
+  ggplot2::ggplot(ggplot2::aes(x = qt_aptos,
+                               y = atendimento_total_tmae_seg)) +
+  ggplot2::geom_point(color = "steelblue" , alpha = 0.3) +
+  ggplot2::geom_smooth(method = "lm", se = TRUE, color = "black") +
+  ggplot2::labs(x = "Eleitores aptos por seção", y = "Tempo total médio de votação\n(s)" )+
+  ggplot2::theme_classic()
+```
+
+$$
+y_{i} = \alpha + \beta x_i + \epsilon_{i}, \quad i= 1, \dots, n 
+$$ {#eq-etapa_1}
+
+$$
+\hat{x} = \frac{y_{desejado} - \hat{\alpha}}{\hat{\beta}}
+$$ {#eq-etapa_2}
+
+Onde a @eq-etapa_1, $y_{i}$ é a variável resposta, no presente caso, o tempo total médio de votação, $x_{i}$ a variável independente, a quantidade de aptos, ambas na i-ésima seção, e $\alpha$ e $\beta$, parâmetros do modelo de regressão a serem estimados.
+
+O segundo estágio (@eq-etapa_2), tem por objetivo estimar variável independente da @eq-etapa_1, $\hat{x}$, dado um valor de $y_{desejado}$ e os parâmetros e $\alpha$ e $\beta$ estimados na regressão da primeira etapa. Transpondo para a siuação atual, estima-se na primeira etapa uma regressão linear simples do tempo médio de votação em função da quantidade de aptos da seção e na segunda etapa, o valor da quantidade de aptos estimado dado o tempo médio de votação específico e os parâmetros do modelo estimado, que é a resposta do problema
+
+## Resultado utilizando o valor mediano do TMAE (81 s)
+
+Considerando o valor mediano do tempo total médio de votação dos eleitores em seções com votação biométrica no pleito de 2018, `r scales::number(resumo_estat_tempos$mediana_tempo, decimal.mark = ",", accuracy = 0.1)` segundos.
+
+```{r}
+# modelo de calibracao  ---------------------------------------------------
+
+# ajuste o modelo de regressao linear
+modelo_lm <- lm(atendimento_total_tmae_seg ~ qt_aptos, data = dados)
+
+# estimativas dos parametros do modelo
+resultados <- summary(modelo_lm)
+
+# extrai o valor do alpha
+alpha <- coef(modelo_lm)[[1]]
+
+# extrai o valor do beta
+beta <- coef(modelo_lm)[[2]]
+
+# calcula o parametro de calibracao (81s)
+x0 <- (resumo_estat_tempos$mediana_tempo - alpha) / beta
+
+# calcula a variancia estimada do parametro de calibracao
+xbar <- mean(dados$qt_aptos)
+n <- nrow(dados)
+nsxx <- (n - 1) * var(dados$qt_aptos)
+sigma2 <- resultados$sigma ^ 2
+varx0 <- (sigma2 / beta ^ 2) * (1 + 1 / n + ((xbar - x0) ^ 2) / nsxx)
+
+# cria funcao para estimar o intervalo de confianca via bootstrap
+boot_func <- function(data, indices) {
+  modelo_lm <- lm(atendimento_total_tmae_seg ~ qt_aptos, data = data[indices, ])
+  x0 <- (resumo_estat_tempos$mediana_tempo - coef(modelo_lm)[[1]]) / coef(modelo_lm)[[2]]
+  return(x0)
+}
+
+# cria amostras bootstrap
+boot_results <- boot::boot(data = dados, statistic = boot_func, R = 1000)
+
+# estima os intervalos de confianca bootstrap
+icboot <- boot::boot.ci(boot_results)
+
+```
+
+Os cálculos apresentados nas @eq-etapa_1 e @eq-etapa_2 realizados para o conjunto de dados utilizados neste estudo resultaram na estimativa do número de eleitores por seção, segundo o modelo de calibração de $\hat{x} =$ `r scales::number(x0, decimal.mark = ",")` .
+
+O cálculo do intervalo de confiança de 95% para a estimativa foi realizada por meio de simulação bootstrap do modelo de calibração com 1000 replicações. A @fig-ic_calib apresenta o intervalo de confiança estimado.
+
+```{r}
+#| label: fig-ic_calib
+#| fig-cap: "Intervalo de confiança de 95% bootstrap para a número de eleitores por seção estimado pelo modelo de calibração"
+#| fig-align: center
+
+#Cria um tibble para o resultado do bootstrap
+ic_boot_tbl <- tibble::tibble(x_bar = icboot$t0, li =icboot$percent[4], ls = icboot$percent[5] )
+
+#gráfico
+ic_boot_tbl |>
+  ggplot2::ggplot() +
+  ggplot2::geom_pointrange(ggplot2::aes( x =1, y = x_bar, ymin = li, ymax = ls),
+                           linewidth = 2, size=2, 
+                           color="steelblue", fill="gold",shape = 22) +
+  ggplot2::scale_y_continuous(n.breaks = 8,
+                              labels = scales::label_number(big.mark = ".", decimal.mark = ",")
+                              ) + 
+  ggplot2::labs(y = "Eleitores") +
+  ggplot2::theme_classic() +
+  ggplot2::theme(
+    axis.title.x  = ggplot2::element_blank(),
+    axis.text.x = ggplot2::element_blank(),
+    axis.ticks.x = ggplot2::element_blank()
+  )
+
+```
+
+A simulação do intervalo de confiança bootstrap com 95% de confiança resulta que as seções devam ter entre `r scales::number(ic_boot_tbl$li)` e `r scales::number(ic_boot_tbl$ls)` eleitores para que o tempo total médio de votação seja de `r scales::number(resumo_estat_tempos$mediana_tempo, decimal.mark = ",", accuracy = 0.1)` segundos.
+
+### Seções necessárias se o número de eleitores for adotado
+
+Para avaliar a quantidade de seções eleitorais necessárias se adotado o novo número de eleitores por seção, consideram-se:
+
+-   eleitorado atual nos locais de votação atualizados em 16/09/2025;
+
+-   o saldo de seções será determinado pelo número atual de seções eleitorais nos locais de votação subtraído da quantidade necessária de seções, resultado da divisão do eleitorado do local de votação pelo número 325 (eleitorado arredondamento para o próximo inteiro subsequente);
+
+-   os resultados do saldo serão agregados por Zona Eleitoral.
+
+```{r}
+#| label: tbl-secoes_calibacao_10mais
+#| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 325 (modelo de calibração)"
+
+secoes <- readr::read_rds(
+  file = here::here("data", "secoes16092025.rds")) |>
+    janitor::clean_names()
+
+
+
+# MODELO CALIBRAÇÃO -------------------------------------------------------
+#VALOR POR SEÇÃOL: 325
+
+#Estudo por local
+locais <- secoes |>
+  dplyr::mutate(id = paste(nom_localidade, num_zona, num_local, sep = "_")) |>
+  dplyr::group_by(num_zona, num_local, id) |>
+  dplyr::summarise(
+    nom_local= dplyr::first(nom_local),
+    secoes = dplyr::n(),
+    aptos = sum(qtd_aptos, na.rm = TRUE),
+    aptos_secao = mean(qtd_aptos, na.rm = TRUE),
+    qtd_secoes_abaixo_325 = sum(qtd_aptos <= 325, na.rm = TRUE),
+    .groups = "drop") |>
+  dplyr::mutate(
+    sec_necessarias = ceiling(aptos/325),
+    saldo = sec_necessarias - secoes)
+
+#Saldo Necessário por ZE
+resumo_ze <- locais |>
+  dplyr::group_by(num_zona) |>
+  dplyr::summarise(
+    locais = dplyr::n(),
+    secoes = sum(secoes, na.rm = TRUE),
+    aptos = sum(aptos, na.rm = TRUE),
+    sec_necessarias = sum(sec_necessarias, na.rm = TRUE),
+    saldo = sum(saldo, na.rm = TRUE),
+    .groups = "drop") |>
+  dplyr::arrange(dplyr::desc(saldo)) |>
+  dplyr::mutate(
+    perc_saldo = saldo/secoes
+  )
+
+resumo_ze |> 
+  dplyr::slice(1:10) |> 
+  gt::gt() |>
+  gt::cols_align(align = "center") |>
+  gt::tab_style(
+    style = "vertical-align:middle",
+    locations = gt::cells_column_labels()
+  ) |> 
+  gt::cols_label(
+    num_zona = "Nº ZE",
+    locais = "Qtd. locais",
+    secoes = "Qtd. seções",
+    aptos = "Aptos",
+    sec_necessarias = "Qtd. seções necessárias",
+    saldo = "Saldo",
+    perc_saldo = "% sobre seções atuais"
+  ) |> 
+  gt::fmt_number(columns = 4,
+                 locale = "pt",
+                 decimals = 0) |> 
+  gt::fmt_percent(columns = 7,
+                  decimals = 1,
+                  locale = "pt" )
+  
+
+
+```
+
+O resultado final indica a necessidade de criação de 8.584 seções no Estado para redistribuir os eleitores dentro de seus locais de votação com o número de 325 eleitrores/seção, como estimado pelo modelo de calibração. Isso corresponde a criação de cerca de 8,31% mais de seções no Estado (atualmente há 103.265 seções). A @tbl-secoes_calibacao_10mais indica as 10 primeiras Zonas eleitorais com maiores saldos de seções a criar.
+
+A @tbl-secoes_calibacao_10menos aponta as 10 primeiras zonas eleitorais que teriam diminuição de seções se o critério fosse adotado.
+
+```{r}
+#| label: tbl-secoes_calibacao_10menos
+#| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 325 (modelo de calibração)"
+
+resumo_ze |>
+  dplyr::arrange(saldo) |> 
+  dplyr::slice(1:10) |> 
+  gt::gt() |>
+  gt::cols_align(align = "center") |>
+  gt::tab_style(
+    style = "vertical-align:middle",
+    locations = gt::cells_column_labels()
+  ) |> 
+  gt::cols_label(
+    num_zona = "Nº ZE",
+    locais = "Qtd. locais",
+    secoes = "Qtd. seções",
+    aptos = "Aptos",
+    sec_necessarias = "Qtd. seções necessárias",
+    saldo = "Saldo",
+    perc_saldo = "% sobre seções atuais"
+  ) |> 
+  gt::fmt_number(columns = 4,
+                 locale = "pt",
+                 decimals = 0) |> 
+  gt::fmt_percent(columns = 7,
+                  decimals = 1,
+                  locale = "pt" )
+
+```
+
+# Método da Curva característica do receptor (curva ROC)
+
+## Definição sob o ponto de vista do estudo
+
+A **curva ROC** (“Receiver Operating Characteristic”), em português, Curva característica do receptor, mostra como variam as **taxas de verdadeiros positivos** (TPF = sensibilidade) e as **taxas de falsos positivos** (FPF = 1 − especificidade) de todos os possíveis pontos de corte (quantidade de aptos por seção) que tenta prever um desfecho binário( no caso do estudo, atraso ou não-atraso). Cada ponto da curva corresponde a um ponto de corte de tal modo que, ao mover o corte, ganha-se em sensibilidade e perde-se em especificidade, ou vice-versa. Plotar TPF (eixo y) contra FPF (eixo x) para todos os cortes gera a ROC.
+
+-   **Sensibilidade (TPF)**: a proporção que o teste classifica como atraso aquelas seções que apresentaram, de fato, atraso, conforme a definição dessa variável no escopo desse estudo. É a “capacidade de pegar os verdadeiros casos”;
+
+-   **Especificidade (FPF)**: a proporção que o teste classifica como não-atraso aquelas seções que não apresentaram, de fato, atraso, conforme a definição dessa variável no escopo desse estudo.
+
+Definiu-se a variável atraso quando o atraso no encerramento da votação for superior a 1 hora, visto que a média de atraso é baixa, cerca de 2 minutos, e tempos superiores a 1 hora podem significar eventos que não são devido ao acaso.
+
+A efetividade do método encontrar o ponto de corte que maximize a sensibilidade e especificidade é mensurada pela **área sob a curva (AUC em inglês)**. A **AUC** mede a capacidade global de discriminação do ponto de corte, no caso, a quantidade de eleitores na seção. AUC perto de 1 indica excelente discriminação; perto de 0,5 indica desempenho próximo ao acaso.
+
+## Tempo de atraso no encerramento maior ou igual a 1 hora
+
+Para a estimativa do número de eleitores por seção utilizou-se a variável **atraso**, que é definida como 1, se o atraso do encerramento da urna foi igual superior a 1 hora ou 0, caso contrário. Com essa variável classificando o atraso em cada uma das seções eleitorais nessas duas categorias e conhecendo-se o número de aptos em cada uma delas, buscou-se maximizar a sensibilidade e a especificidade , ou seja, dado um número de eleitores aleatório, qual a fração seções do total de seções com atraso que apresentam, de fato, atraso no encerramento da votação. Por consequência, qual a fração de seções classificadas como não atrasadas daquelas que encerraram, de fato, sem atrasos, segundo a definição da variável atraso (encerramentos com atraso maior ou igual a 1 hora).
+
+```{r}
+curva_roc <- dados |>
+  dplyr::mutate(
+    atraso = dplyr::if_else(tempo_atraso >= lubridate::hms("01:00:00"), 1, 0),
+    atraso = as.factor(atraso)
+  ) |> 
+  pROC::roc(atraso, qt_aptos)
+
+ponto_corte_best <- pROC::coords(curva_roc, "best",
+                                 ret = c("threshold",
+                                         "specificity",
+                                         "sensitivity"))
+
+auc <- pROC::auc(curva_roc)
+```
+
+```{r}
+#| label: fig-roc_1hora
+#| fig-cap: "Curva Roc considerando atraso mo emcerramento de votação o tempo maior que 1 hora"
+#| fig-align: center
+#Curva Roc considerando atraso o tempo maior que 5 minutos
+pROC::ggroc(curva_roc,
+            linewidth = 1,
+            colour = "steelblue") +
+  ggplot2::labs(
+    title = "",
+    x = "1 - Especificidade",
+    y = "Sensibilidade"
+  ) +
+  ggplot2::geom_abline(slope = 1, intercept = 1, linetype = "dashed") +
+  ggplot2::geom_point(data = ponto_corte_best,
+                      ggplot2::aes(
+                        x = specificity,
+                        y = sensitivity
+                      ),
+                      color = "red",
+                      size = 5
+  ) +
+  ggplot2::geom_label( data = ponto_corte_best,
+                      ggplot2::aes(
+                        x = specificity,
+                        y = sensitivity,
+                        label = paste0("Ponto de corte:\n", ceiling(threshold))
+                      ),
+                      nudge_x = 0.11,
+                      nudge_y = -0.11,
+                      color = "royalblue"
+  ) +
+  ggplot2::theme_classic()
+
+```
