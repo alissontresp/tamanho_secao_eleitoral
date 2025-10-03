@@ -292,7 +292,7 @@ Onde a @eq-etapa_1, $y_{i}$ é a variável resposta, no presente caso, o tempo t
 
 O segundo estágio (@eq-etapa_2), tem por objetivo estimar variável independente da @eq-etapa_1, $\hat{x}$, dado um valor de $y_{desejado}$ e os parâmetros e $\alpha$ e $\beta$ estimados na regressão da primeira etapa. Transpondo para a siuação atual, estima-se na primeira etapa uma regressão linear simples do tempo médio de votação em função da quantidade de aptos da seção e na segunda etapa, o valor da quantidade de aptos estimado dado o tempo médio de votação específico e os parâmetros do modelo estimado, que é a resposta do problema
 
-## Resultado utilizando o valor mediano do TMAE (81 s)
+## Resultado utilizando o valor mediano do TMAE (81 s) {#sec-resultado-calibracao}
 
 Considerando o valor mediano do tempo total médio de votação dos eleitores em seções com votação biométrica no pleito de 2018, `r scales::number(resumo_estat_tempos$mediana_tempo, decimal.mark = ",", accuracy = 0.1)` segundos.
 
@@ -381,7 +381,7 @@ Para avaliar a quantidade de seções eleitorais necessárias se adotado o novo 
 
 ```{r}
 #| label: tbl-secoes_calibacao_10mais
-#| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 325 (modelo de calibração)"
+#| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 325 por seção (modelo de calibração)"
 
 secoes <- readr::read_rds(
   file = here::here("data", "secoes16092025.rds")) |>
@@ -456,7 +456,7 @@ A @tbl-secoes_calibacao_10menos aponta as 10 primeiras zonas eleitorais que teri
 
 ```{r}
 #| label: tbl-secoes_calibacao_10menos
-#| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 325 (modelo de calibração)"
+#| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 325 por seção (modelo de calibração)"
 
 resumo_ze |>
   dplyr::arrange(saldo) |> 
@@ -559,11 +559,125 @@ pROC::ggroc(curva_roc,
 
 A sensibilidade foi de cerca de 80,8% e a especificidade, 72,1%. A área sob a curva calculada foi $AUC = 76,8\%$, o que afasta a ideia de uma relação aleatória, representada pela linha tracejada na @fig-roc_1hora.
 
+**O intervalo de confiança bootstrap de 95% de confiança, com 2.000 replicações para a o ponto de corte da curva ROC fica entre 304,5 a 383,5 eleitores por seção.** O intervalo de confiança utilizado foi o não-paramétrico e por isso não é simétrico.
+
 ```{r}
 
 #IC para o ponto de corte
 
-ic_ponto_corte <- pROC::ci.coords(curva_roc, "best")
+ic_ponto_corte_roc <- pROC::ci.coords(curva_roc,"best")
+
+
+
+```
+
+### Seções necessárias caso o número de eleitores considerando o modelo da curva ROC for adotado.
+
+Para avaliar a quantidade de seções eleitorais necessárias se adotado o novo número de eleitores por seção for adotado como o calculado pela curva ROC, consideram-se:
+
+-   eleitorado atual nos locais de votação atualizados em 16/09/2025;
+
+-   o saldo de seções será determinado pelo número atual de seções eleitorais nos locais de votação subtraído da quantidade necessária de seções, resultado da divisão do eleitorado do local de votação pelo número 341 (eleitorado arredondamento para o próximo inteiro subsequente);
+
+-   os resultados do saldo serão agregados por Zona Eleitoral.
+
+```{r}
+#| label: tbl-secoes_roc_10mais
+#| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 341 por seção (ponto de corte da Curva ROC)"
+
+#Estudo por local
+# MODELO CURVA ROC -------------------------------------------------------
+#VALOR POR SEÇÃOL: 341
+
+#Estudo por local
+locais_roc <- secoes |>
+  dplyr::mutate(id = paste(nom_localidade, num_zona, num_local, sep = "_")) |>
+  dplyr::group_by(num_zona, num_local, id) |>
+  dplyr::summarise(
+    nom_local= dplyr::first(nom_local),
+    secoes = dplyr::n(),
+    aptos = sum(qtd_aptos, na.rm = TRUE),
+    aptos_secao = mean(qtd_aptos, na.rm = TRUE),
+    qtd_secoes_abaixo_325 = sum(qtd_aptos <= 325, na.rm = TRUE),
+    .groups = "drop") |>
+  dplyr::mutate(
+    sec_necessarias = ceiling(aptos/341),
+    saldo = sec_necessarias - secoes)
+
+#Saldo Necessário por ZE
+resumo_ze_roc <- locais_roc |>
+  dplyr::group_by(num_zona) |>
+  dplyr::summarise(
+    locais = dplyr::n(),
+    secoes = sum(secoes, na.rm = TRUE),
+    aptos = sum(aptos, na.rm = TRUE),
+    sec_necessarias = sum(sec_necessarias, na.rm = TRUE),
+    saldo = sum(saldo, na.rm = TRUE),
+    .groups = "drop") |>
+  dplyr::arrange(dplyr::desc(saldo)) |>
+  dplyr::mutate(
+    perc_saldo = saldo/secoes
+  )
+
+resumo_ze_roc |> 
+  dplyr::slice(1:10) |> 
+  gt::gt() |>
+  gt::cols_align(align = "center") |>
+  gt::tab_style(
+    style = "vertical-align:middle",
+    locations = gt::cells_column_labels()
+  ) |> 
+  gt::cols_label(
+    num_zona = "Nº ZE",
+    locais = "Qtd. locais",
+    secoes = "Qtd. seções",
+    aptos = "Aptos",
+    sec_necessarias = "Qtd. seções necessárias",
+    saldo = "Saldo",
+    perc_saldo = "% sobre seções atuais"
+  ) |> 
+  gt::fmt_number(columns = 4,
+                 locale = "pt",
+                 decimals = 0) |> 
+  gt::fmt_percent(columns = 7,
+                  decimals = 1,
+                  locale = "pt" )
+  
+
+```
+
+O modelo considerando o tamanho de seção com 341 eleitores por seção resulta na necessidade de criação de 3.646 seções no Estado para redistribuir os eleitores dentro de seus locais de votação. Isso corresponde a criação de cerca de 3,53% mais de seções no Estado (atualmente há 103.265 seções). A @tbl-secoes_roc_10mais indica as 10 primeiras Zonas eleitorais com maiores saldos de seções a criar.
+
+A @tbl-secoes_calibacao_10menos aponta as 10 primeiras zonas eleitorais que teriam diminuição de seções se o critério fosse adotado.
+
+```{r}
+#| label: tbl-secoes_roc_10menos
+#| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 341 por seção (curva ROC)"
+
+resumo_ze_roc |>
+  dplyr::arrange(saldo) |> 
+  dplyr::slice(1:10) |> 
+  gt::gt() |>
+  gt::cols_align(align = "center") |>
+  gt::tab_style(
+    style = "vertical-align:middle",
+    locations = gt::cells_column_labels()
+  ) |> 
+  gt::cols_label(
+    num_zona = "Nº ZE",
+    locais = "Qtd. locais",
+    secoes = "Qtd. seções",
+    aptos = "Aptos",
+    sec_necessarias = "Qtd. seções necessárias",
+    saldo = "Saldo",
+    perc_saldo = "% sobre seções atuais"
+  ) |> 
+  gt::fmt_number(columns = 4,
+                 locale = "pt",
+                 decimals = 0) |> 
+  gt::fmt_percent(columns = 7,
+                  decimals = 1,
+                  locale = "pt" )
 ```
 
 # Árvore de decisão
@@ -591,40 +705,4 @@ modelo_arvore <- rpart::rpart(
 
 # constroi o grafico da arvore de forma mais amigavel
 rpart.plot::rpart.plot(modelo_arvore)
-```
-
-```{r}
-#| label: fig-croc_arvore
-#| fig-cap: "Curva ROC da árvore"
-#| fig-align: center
-# calcula a area abaixo da curva ROC
-roc_arvore <- pROC::roc(dados$atraso, predict(modelo_arvore))
-
-auc_arvore <- pROC::auc(roc_arvore)
-
-pROC::ggroc(roc_arvore,
-            linewidth = 1,
-            colour = "steelblue") +
-  ggplot2::labs(
-    title = "",
-    x = "Especificidade",
-    y = "Sensibilidade"
-  ) +
-  ggplot2::geom_abline(slope = 1, intercept = 1, linetype = "dashed") +
-  ggplot2::geom_label(
-    ggplot2::aes(
-      x = 0.50,
-      y = 0.50,
-      label = paste0("AUC:\n", 
-                     scales::percent(
-                       x = auc_arvore[[1]],
-                       accuracy = 0.1,
-                       decimal.mark = ","
-                     )),
-      fontface = "bold"),
-    nudge_x = 0.0,
-    nudge_y = -0.0,
-    color = "royalblue"
-  ) +
-  ggplot2::theme_classic()
 ```
