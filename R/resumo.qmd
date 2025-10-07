@@ -12,7 +12,7 @@ editor: visual
 execute:
   echo: false
   warning: false
-  cache: true
+  cache: false
 ---
 
 # Estatísticas Descritivas
