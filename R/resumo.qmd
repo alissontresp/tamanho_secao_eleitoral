@@ -15,6 +15,21 @@ execute:
   cache: false
 ---
 
+# Introdução
+
+No dia 4 de outubro de 2026, cerca de 155 milhões de eleitoras e eleitores aptos a votar no Brasil e no exterior, de acordo com dados de setembro de 2025, deverão comparecer às urnas para escolher os representantes a presidente e vice-presidente da República, a governadores e vice-governadores dos estados e do Distrito Federal, além de deputados federais e estaduais ou distritais e dois senadores por unidade da Federação. (TSE, 2025)
+
+Em São Paulo, maior colégio eleitoral do país, 33.422.502 eleitores estarão aptos para votar em candidatos que concorrerão aos 6 cargos supracitados. Esses eleitores estão distribuídos nos 11.047 locais de votação e 103.303 seções eleitorais em todo o estado, perfazendo as 393 zonas eleitorais.
+
+Diante da dimensão de uma eleição, as preparações para cada pleito continuam mesmo em anos não-eleitorais, com o objetivo de avaliar eleições anteriores e com base nessas análises propor melhorias para a logística das próximas eleições. A relevância desse trabalho consiste, principalmente, em garantir ao eleitor o cumprimento do seu papel como cidadão e o exercício da democracia, e por outro lado que a escolha dos representantes por parte dos eleitores ocorra de forma pacífica e sem intercorrências.
+
+Um dos desafios na elaboração da logística das eleições e que gera impactos negativos aos eleitores é a formação de longas filas de espera nas seções eleitorais. A formação de filas nos locais de votação é um fenômeno que está associado a uma série de fatores, compreendendo desde a dinâmica das chegadas dos eleitores aos respectivos locais de votação, o tempo de votação dos eleitores, bem como o tamanho das seções eleitorais e o perfil do seu eleitorado. 
+
+Após o fechamento do cadastro eleitoral são realizados cálculos do eleitorado por urna ou seção, isto é, a Justiça Eleitoral define a quantidade de urnas a serem utilizadas nas eleições gerais. Embora o Código Eleitoral (Lei nº 4.737/1965) em seu art. 117 preveja um limite de 400 eleitores nas seções eleitorais, determinar o tamanho da seção baseado em estudos que levem em conta informações do contexto local de cada estado e a dinâmica da votação, são imprescindíveis para uma logística mais assertiva. 
+
+A investigação dos dados de tempo de votação dos pleitos anteriores pode evidenciar padrões relacionados a dinâmica de votação nas seções eleitorais. Isso pode sugerir insights para elaboração da logística das próximas eleições, de forma a otimizar o tempo de votação e consequentemente reduzir o tempo de espera nas filas. Nessa perspectiva, o presente estudo tem como objetivo realizar uma análise dos dados do tempo de votação do pleito de 2018 e 2022 com vistas a estimação do número de eleitores a serem alocados nas seções eleitorais do estado de São Paulo.
+
+
 # Estatísticas Descritivas
 
 ## Estatísticas das seções em 2018 - 1º turno
@@ -684,9 +699,11 @@ resumo_ze_roc |>
 
 Nesta seção, introduzimos brevemente o conceito e as principais características da árvore de decisão. Esse método, proposto por Breiman em xxxx, consiste de uma método não paramétrico, com o objetivo de realizar predições para uma variável de interesse (resposta), a partir de um conjunto de variáveis subjacentes (explicativas), a partir do particionamento do espaço de valores das variáveis explicativas através de um critério pré estabelecido.
 
-No contexto de classificação, especificamente, a ideia do método é determinar partições recursivas das variáveis explicativas que maximizam a “pureza”, isto é, a obtenção regiões em que a classificação da variável resposta seja apenas em uma única classe. Cada particionamento recebe o nome de nó e cada resultado final recebe o nome de folha (ver Figura ...)
+No contexto de classificação, especificamente, a ideia do método é determinar partições recursivas das variáveis explicativas que maximizam a “pureza”, isto é, a obtenção de  regiões em que a classificação da variável resposta seja apenas em uma única classe. Cada particionamento recebe o nome de nó e cada resultado final recebe o nome de folha (ver Figura ...)
 
-A árvore de decisão possui grande aplicabilidade prática em diversas áreas do conhecimento, tanto por sua facilidade de implementação e baixo custo computacional, quanto pela simplicidade de interpretação dos resultados através de gráficos intuitivos. Embora a maioria das aplicações práticas da árvore de decisão seja na construção de funções de predição, é possível usar esses métodos também para análise exploratória de dados. Uma vez que a construção da árvore é baseada na identificação de variáveis com potencial para explicar a variável de interesse, isso indica que ela fornece evidências de quais dessas variáveis são importantes, realizando uma seleção automática, além de indicar qual a ordem de importância, já que variáveis no topo da árvore possuem maior relevância.
+A árvore de decisão possui grande aplicabilidade prática em diversas áreas do conhecimento, tanto por sua facilidade de implementação e baixo custo computacional, quanto pela simplicidade de interpretação dos resultados através de gráficos intuitivos. Embora a maioria das aplicações práticas da árvore de decisão seja na estimação de funções de predição, é possível usar esses métodos também para realizar análise exploratória de dados, permitindo extrair insights sobre a relação e importância das variáveis. 
+
+Uma vez que a construção da árvore é baseada na identificação de variáveis com potencial para explicar a variável de interesse, isso indica que ela fornece evidências de quais dessas variáveis são importantes, realizando uma seleção automática, além de indicar qual a ordem de importância, já que variáveis no topo da árvore possuem maior relevância.
 
 ```{r}
 # estima a arvore de decisao baseado no tempo de atraso considerando

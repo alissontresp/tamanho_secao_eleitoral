@@ -16,18 +16,20 @@ dados <- readr::read_csv2(
 ) |>
   janitor::clean_names() |>
   dplyr::filter(tipo == "bio", subs_urna == 0) |>
-  dplyr::mutate(atraso =
-                  ifelse(tempo_atraso >= lubridate::hms("01:00:00"), 1, 0)
-                )
+  dplyr::mutate(
+    atraso = ifelse(tempo_atraso >= lubridate::hms("01:00:00"), 1, 0)
+  )
 
 # estatistica descritiva --------------------------------------------------
 
 # grafico de dispersao por grupo
 grafico_dispersao <- dados |>
   dplyr::group_by(tipo) |>
-  ggplot2::ggplot(ggplot2::aes(x = qt_aptos,
-                               y = atendimento_total_tmae_seg,
-                               colour = tipo)) +
+  ggplot2::ggplot(
+    ggplot2::aes(
+      x = qt_aptos,
+      y = atendimento_total_tmae_seg,
+      colour = tipo)) +
   ggplot2::geom_point() +
   ggplot2::geom_smooth(method = "lm", se = TRUE) +
   ggplot2::theme_classic()
@@ -38,7 +40,10 @@ plotly::ggplotly(grafico_dispersao)
 # modelo de calibracao  ---------------------------------------------------
 
 # ajuste o modelo de regressao linear
-modelo_lm <- lm(atendimento_total_tmae_seg ~ qt_aptos, data = dados)
+modelo_lm <- lm(
+  atendimento_total_tmae_seg ~ qt_aptos,
+  data = dados
+)
 
 # estimativas dos parametros do modelo
 resultados <- summary(modelo_lm)
@@ -72,49 +77,62 @@ varx0 <- (sigma2 / beta ^ 2) * (1 + 1 / n + ((xbar - x0) ^ 2) / nsxx)
 
 # cria funcao para estimar o intervalo de confianca via bootstrap
 boot_func <- function(data, indices) {
-  modelo_lm <- lm(atendimento_total_tmae_seg ~ qt_aptos, data = data[indices, ])
+  modelo_lm <- lm(
+    atendimento_total_tmae_seg ~ qt_aptos,
+    data = data[indices, ]
+  )
   x0 <- (81 - coef(modelo_lm)[[1]]) / coef(modelo_lm)[[2]]
   return(x0)
 }
 
 # cria amostras bootstrap
-boot_results <- boot::boot(data = dados, statistic = boot_func, R = 1000)
+boot_results <- boot::boot(
+  data = dados,
+  statistic = boot_func,
+  R = 1000
+)
 
 # estima os intervalos de confianca bootstrap
 icboot <- boot::boot.ci(boot_results)
 
-#gráfico do intervalo de confiança
-ic_boot_tbl <- tibble::tibble(x_bar = icboot$t0, li =icbooot$percent[4], ls = icbooot$percent[4] )
+# grafico do intervalo de confiança
+ic_boot_tbl <- tibble::tibble(
+  x_bar = icboot$t0,
+  li =icbooot$percent[4],
+  ls = icbooot$percent[4]
+)
+
 ic_boot_tbl |>
-ggplot2::ggplot() +
-  ggplot2::geom_pointrange(ggplot2::aes(x = "1", y = x_bar, ymin = li, ymax = ls)) +
+  ggplot2::ggplot() +
+  ggplot2::geom_pointrange(
+    ggplot2::aes(
+      x = "1",
+      y = x_bar,
+      ymin = li,
+      ymax = ls)
+  ) +
   ggplot2::theme_classic()
-
-
-#Estudar como ficariam as seções;
 
 # curva ROC ---------------------------------------------------------------
 
-#criação da curva com o pacote pROC
+# criacao da curva com o pacote pROC
 
 curva_roc <- dados |>
   pROC::roc(atraso, qt_aptos)
 
+# ponto de corte que maximiza a sensibilidade e especificidade
+ponto_corte_best <- pROC::coords(
+  curva_roc, "best",
+  ret = c("threshold", "specificity", "sensitivity")
+)
 
+# area sob a curva
+auc <- pROC::auc(curva_roc)
 
-
-#Ponto de corte que maximiza a sensibilidade e especificidade
-ponto_corte_best <- pROC::coords(curva_roc, "best",
-                                 ret = c("threshold",
-                                         "specificity",
-                                         "sensitivity"))
-#Área sobre a curva
-auc <- pROC::auc(roc)
-
-#Intervalo de confiança do ponto de corte "best"
+# intervalo de confiança do ponto de corte "best"
 ic_ponto_corte <- pROC::ci.coords(curva_roc, "best")
 
-#Gráfico
+# grafico da curva roc
 pROC::ggroc(curva_roc) +
   ggplot2::labs(
     title = "Curva ROC",
@@ -122,27 +140,24 @@ pROC::ggroc(curva_roc) +
     y = "Sensibilidade"
   ) +
   ggplot2::geom_abline(slope = 1, intercept = 1, linetype = "dashed") +
-  ggplot2::geom_point(data = ponto_corte_best,
-                      ggplot2::aes(
-                        x = specificity,
-                        y = sensitivity
-                      ),
-                      color = "red",
-                      size = 3
+  ggplot2::geom_point(
+    data = ponto_corte_best,
+    ggplot2::aes(x = specificity, y = sensitivity),
+    color = "red",
+    size = 3
   ) +
-  ggplot2::geom_label( data = ponto_corte_best,
-                      ggplot2::aes(
-                        x = specificity,
-                        y = sensitivity,
-                        label = paste0("Corte: ", ceiling(threshold))
-                      ),
-                      nudge_x = 0.1,
-                      nudge_y = -0.1,
-                      color = "red"
+  ggplot2::geom_label(
+    data = ponto_corte_best,
+    ggplot2::aes(
+      x = specificity,
+      y = sensitivity,
+      label = paste0("Corte: ", ceiling(threshold))
+    ),
+    nudge_x = 0.1,
+    nudge_y = -0.1,
+    color = "red"
   ) +
   ggplot2::theme_minimal()
-
-
 
 # arvore de decisao -------------------------------------------------------
 
@@ -152,7 +167,6 @@ modelo_arvore <- rpart::rpart(
   data = dados,
   control = rpart::rpart.control(maxdepth = 1)
 )
-
 
 # constroi o grafico da arvore de forma mais amigavel
 rpart.plot::rpart.plot(modelo_arvore)
