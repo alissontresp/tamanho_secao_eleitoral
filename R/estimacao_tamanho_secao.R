@@ -22,6 +22,28 @@ dados <- readr::read_csv2(
 
 # estatistica descritiva --------------------------------------------------
 
+# calcula medidas descritivas do tempo de atendimento por atraso
+dados |>
+  dplyr::group_by(atraso) |>
+  dplyr::summarise(
+    media = mean(atendimento_total_tmae_seg),
+    q1 = quantile(atendimento_total_tmae_seg, 0.25),
+    mediana = median(atendimento_total_tmae_seg),
+    q3 = quantile(atendimento_total_tmae_seg, 0.75),
+    desv_pad = sd(atendimento_total_tmae_seg)
+  )
+
+# calcula medidas descritivas do tamanho da secao por atraso
+dados |>
+  dplyr::group_by(atraso) |>
+  dplyr::summarise(
+    media = mean(qt_aptos),
+    q1 = quantile(qt_aptos, 0.25),
+    mediana = median(qt_aptos),
+    q3 = quantile(qt_aptos, 0.75),
+    desv_pad = sd(qt_aptos)
+  )
+
 # grafico de dispersao por grupo
 grafico_dispersao <- dados |>
   dplyr::group_by(tipo) |>
@@ -116,7 +138,6 @@ ic_boot_tbl |>
 # curva ROC ---------------------------------------------------------------
 
 # criacao da curva com o pacote pROC
-
 curva_roc <- dados |>
   pROC::roc(atraso, qt_aptos)
 
