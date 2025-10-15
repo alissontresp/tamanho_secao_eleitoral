@@ -23,14 +23,15 @@ Em São Paulo, maior colégio eleitoral do país, 33.422.502 eleitores estarão 
 
 Diante da dimensão de uma eleição, as preparações para cada pleito continuam mesmo em anos não-eleitorais, com o objetivo de avaliar eleições anteriores e com base nessas análises propor melhorias para a logística das próximas eleições. A relevância desse trabalho consiste, principalmente, em garantir ao eleitor o cumprimento do seu papel como cidadão e o exercício da democracia, e por outro lado que a escolha dos representantes por parte dos eleitores ocorra de forma pacífica e sem intercorrências.
 
-Um dos desafios na elaboração da logística das eleições e que gera impactos negativos aos eleitores é a formação de longas filas de espera nas seções eleitorais. A formação de filas nos locais de votação é um fenômeno que está associado a uma série de fatores, compreendendo desde a dinâmica das chegadas dos eleitores aos respectivos locais de votação, o tempo de votação dos eleitores, bem como o tamanho das seções eleitorais e o perfil do seu eleitorado. 
+Um dos desafios na elaboração da logística das eleições e que gera impactos negativos aos eleitores é a formação de longas filas de espera nas seções eleitorais. A formação de filas nos locais de votação é um fenômeno que está associado a uma série de fatores, compreendendo desde a dinâmica das chegadas dos eleitores aos respectivos locais de votação, o tempo de votação dos eleitores, bem como o tamanho das seções eleitorais e o perfil do seu eleitorado.
 
-Após o fechamento do cadastro eleitoral são realizados cálculos do eleitorado por urna ou seção, isto é, a Justiça Eleitoral define a quantidade de urnas a serem utilizadas nas eleições gerais. Embora o Código Eleitoral (Lei nº 4.737/1965) em seu art. 117 preveja um limite de 400 eleitores nas seções eleitorais, determinar o tamanho da seção baseado em estudos que levem em conta informações do contexto local de cada estado e a dinâmica da votação, são imprescindíveis para uma logística mais assertiva. 
+Após o fechamento do cadastro eleitoral são realizados cálculos do eleitorado por urna ou seção, isto é, a Justiça Eleitoral define a quantidade de urnas a serem utilizadas nas eleições gerais. Embora o Código Eleitoral (Lei nº 4.737/1965) em seu art. 117 preveja um limite de 400 eleitores nas seções eleitorais, determinar o tamanho da seção baseado em estudos que levem em conta informações do contexto local de cada estado e a dinâmica da votação, são imprescindíveis para uma logística mais assertiva.
 
 A investigação dos dados de tempo de votação dos pleitos anteriores pode evidenciar padrões relacionados a dinâmica de votação nas seções eleitorais. Isso pode sugerir insights para elaboração da logística das próximas eleições, de forma a otimizar o tempo de votação e consequentemente reduzir o tempo de espera nas filas. Nessa perspectiva, o presente estudo tem como objetivo realizar uma análise dos dados do tempo de votação do pleito de 2018 e 2022 com vistas a estimação do número de eleitores a serem alocados nas seções eleitorais do estado de São Paulo.
 
+# Análise exploratória de dados 
 
-# Estatísticas Descritivas
+Nesta seção são apresentados resultados da análise exploratoria de dados, para avaliar características gerais da eleição de 2018 em relação ao tamanho das seções eleitorais, do tempo de votação dos eleitores, além de possíveis associações entre essas variáveis.
 
 ## Estatísticas das seções em 2018 - 1º turno
 
@@ -51,7 +52,9 @@ dados <- readr::read_csv2(
 
 ```
 
-A @fig-histograma apresenta a distribuição dos eleitores dentro das seções que foram 100% biométricas em 2018, enquanto a @tbl-resumo_estat exibe estatísticas referentes a essas seções e a dispersão pode ser visualizada na @fig-bp_secoes.
+A @fig-histograma apresenta o histograma do número de eleitores aptos para o pleito de 2018 dentro das seções que foram 100% biométricas. Nota-se, para esse pleito, que há uma concentração de seções com número de eleitores aptos superior a 300. Ainda, há um número expressivo de seções com mais de 400 eleitores. Esse fato pode estar associado as agregações que são realizadas durante a eleição. 
+
+De maneira complementar, são apresentadas algumas medidas descritivas para o eleitorado apto na @tbl-resumo_estat. O número médio de eleitores aptos foi cerca de 304 eleitores com um desvio padrão de cerca de 66 eleitores. O valor mediano foi de 311, de modo que 50% das seções eleitorais no pleito de 2018 tinham valores de eleitorado apto igual ou superior a esse valor. Na @fig-bp_secoes (eu escolheria entre o boxplot ou histograma).
 
 ```{r}
 #| fig-cap: "Distribuição dos aptos por seção com biometria em 2018"
@@ -353,7 +356,7 @@ icboot <- boot::boot.ci(boot_results)
 
 Os cálculos apresentados nas @eq-etapa_1 e @eq-etapa_2 realizados para o conjunto de dados utilizados neste estudo resultaram na estimativa do número de eleitores por seção, segundo o modelo de calibração de $\hat{x} =$ `r scales::number(x0, decimal.mark = ",")` .
 
-O cálculo do intervalo de confiança de 95% para a estimativa foi realizada por meio de simulação bootstrap do modelo de calibração com 1000 replicações. A @fig-ic_calib apresenta o intervalo de confiança estimado.
+O cálculo do intervalo de confiança de 95% para a estimativa foi realizada por meio de um método de reamostragem bootstrap, considerando o modelo de calibração especificado com 1.000 replicações. A @fig-ic_calib apresenta o intervalo de confiança estimado.
 
 ```{r}
 #| label: fig-ic_calib
@@ -382,7 +385,7 @@ ic_boot_tbl |>
 
 ```
 
-A simulação do intervalo de confiança bootstrap com 95% de confiança resulta que as seções devam ter entre `r scales::number(ic_boot_tbl$li)` e `r scales::number(ic_boot_tbl$ls)` eleitores para que o tempo total médio de votação seja de `r scales::number(resumo_estat_tempos$mediana_tempo, decimal.mark = ",", accuracy = 0.1)` segundos.
+A estimativa intervalar, com base no método bootstrap com nível de confiança de 95%, resulta que as seções devam ter entre `r scales::number(ic_boot_tbl$li)` e `r scales::number(ic_boot_tbl$ls)` eleitores para que o tempo total médio de votação seja de `r scales::number(resumo_estat_tempos$mediana_tempo, decimal.mark = ",", accuracy = 0.1)` segundos.   
 
 ### Seções necessárias se o número de eleitores for adotado
 
@@ -516,7 +519,7 @@ A efetividade do método encontrar o ponto de corte que maximize a sensibilidade
 
 ## Tempo de atraso no encerramento maior ou igual a 1 hora
 
-Para a estimativa do número de eleitores por seção utilizou-se a variável **atraso**, que é definida como 1, se o atraso do encerramento da urna foi igual superior a 1 hora ou 0, caso contrário. Com essa variável classificando o atraso em cada uma das seções eleitorais nessas duas categorias e conhecendo-se o número de aptos em cada uma delas, buscou-se maximizar a sensibilidade e a especificidade , ou seja, dado um número de eleitores aleatório, qual a fração seções do total de seções com atraso que apresentam, de fato, atraso no encerramento da votação. Por consequência, qual a fração de seções classificadas como não atrasadas daquelas que encerraram, de fato, sem atrasos, segundo a definição da variável atraso (encerramentos com atraso maior ou igual a 1 hora).
+Para a estimativa do número de eleitores por seção utilizou-se a variável **atraso**, que foi  definida como 1, se o atraso do encerramento da urna foi igual ou superior a 1 hora ou 0, caso contrário. Com essa variável classificando o atraso em cada uma das seções eleitorais nessas duas categorias e conhecendo-se o número de aptos em cada uma delas, buscou-se maximizar a sensibilidade e a especificidade , ou seja, dado um número de eleitores aleatório, qual a fração seções do total de seções com atraso que apresentam, de fato, atraso no encerramento da votação. Por consequência, qual a fração de seções classificadas como não atrasadas daquelas que encerraram, de fato, sem atrasos, segundo a definição da variável atraso (encerramentos com atraso maior ou igual a 1 hora).
 
 ```{r}
 curva_roc <- dados |>
@@ -699,11 +702,13 @@ resumo_ze_roc |>
 
 Nesta seção, introduzimos brevemente o conceito e as principais características da árvore de decisão. Esse método, proposto por Breiman em xxxx, consiste de uma método não paramétrico, com o objetivo de realizar predições para uma variável de interesse (resposta), a partir de um conjunto de variáveis subjacentes (explicativas), a partir do particionamento do espaço de valores das variáveis explicativas através de um critério pré estabelecido.
 
-No contexto de classificação, especificamente, a ideia do método é determinar partições recursivas das variáveis explicativas que maximizam a “pureza”, isto é, a obtenção de  regiões em que a classificação da variável resposta seja apenas em uma única classe. Cada particionamento recebe o nome de nó e cada resultado final recebe o nome de folha (ver Figura ...)
+No contexto de classificação, especificamente, a ideia do método é determinar partições recursivas das variáveis explicativas que maximizam a “pureza”, isto é, a obtenção de regiões em que a classificação da variável resposta seja apenas em uma única classe. Cada particionamento recebe o nome de nó e cada resultado final recebe o nome de folha (ver Figura ...)
 
-A árvore de decisão possui grande aplicabilidade prática em diversas áreas do conhecimento, tanto por sua facilidade de implementação e baixo custo computacional, quanto pela simplicidade de interpretação dos resultados através de gráficos intuitivos. Embora a maioria das aplicações práticas da árvore de decisão seja na estimação de funções de predição, é possível usar esses métodos também para realizar análise exploratória de dados, permitindo extrair insights sobre a relação e importância das variáveis. 
+A árvore de decisão possui grande aplicabilidade prática em diversas áreas do conhecimento, tanto por sua facilidade de implementação e baixo custo computacional, quanto pela simplicidade de interpretação dos resultados através de gráficos intuitivos. Embora a maioria das aplicações práticas da árvore de decisão seja na estimação de funções de predição, é possível usar esses métodos também para realizar análise exploratória de dados, permitindo extrair insights sobre a relação e importância das variáveis.
 
 Uma vez que a construção da árvore é baseada na identificação de variáveis com potencial para explicar a variável de interesse, isso indica que ela fornece evidências de quais dessas variáveis são importantes, realizando uma seleção automática, além de indicar qual a ordem de importância, já que variáveis no topo da árvore possuem maior relevância.
+
+Para definir, com base na árvore de decisão definir um ponto de corte para o tamanho da seção eleitoral, foi considerada como variável resposta o tempo de atraso das seções eleitorais. Além disso, foi fixado como profundidada máxima da árvore como 1, de modo a obter apenas uma partição da variável tamanho da seção. Na Figura @fig-arvore é apresentado o desenho da árvore obtida, em que foi definida como partição ótima um tamanho de seção de 341 eleitores, isto é, uma partição que minimiza a soma dos quadrados dos erros. 
 
 ```{r}
 # estima a arvore de decisao baseado no tempo de atraso considerando
@@ -723,3 +728,13 @@ modelo_arvore <- rpart::rpart(
 # constroi o grafico da arvore de forma mais amigavel
 rpart.plot::rpart.plot(modelo_arvore)
 ```
+
+
+# Apêndice A {.appendix}
+
+Neste apêndice são apresentados os resultados da aplicação das metodologias apresentadas anteriormente, considerando os dados dos tempos de votação para o pleito de 2022. O objetivo dessas análises é fornecer mais informações sobre o dimensionamento do tamanho das seções, considerando uma eleição mais recente. Embora o pleito de 2022 tenha contemplado 5 cargos, os dados sugerem que não há diferentes expressivas do tempo de votação. Contudo, para o número de aptos por seção e para o número de seções que tiveram atraso de pelo menos uma hora é possível observar valores maiores para o ano de 2022 comparativamente a eleição de 2018.
+
+
+
+
+
