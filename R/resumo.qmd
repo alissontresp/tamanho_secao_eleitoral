@@ -12,7 +12,7 @@ editor: visual
 execute:
   echo: false
   warning: false
-  cache: false
+  cache: true
 ---
 
 # Introdução
@@ -698,6 +698,102 @@ resumo_ze_roc |>
                   locale = "pt" )
 ```
 
+```{r}
+#| label: tbl-secoes_roc_10mais_380
+#| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 341 por seção (ponto de corte da Curva ROC)"
+
+#Estudo por local
+# MODELO CURVA ROC -------------------------------------------------------
+#VALOR POR SEÇÃOL: 341
+
+#Estudo por local
+locais_roc_380 <- secoes |>
+  dplyr::mutate(id = paste(nom_localidade, num_zona, num_local, sep = "_")) |>
+  dplyr::group_by(num_zona, num_local, id) |>
+  dplyr::summarise(
+    nom_local= dplyr::first(nom_local),
+    secoes = dplyr::n(),
+    aptos = sum(qtd_aptos, na.rm = TRUE),
+    aptos_secao = mean(qtd_aptos, na.rm = TRUE),
+    qtd_secoes_abaixo_380 = sum(qtd_aptos <= 380, na.rm = TRUE),
+    .groups = "drop") |>
+  dplyr::mutate(
+    sec_necessarias = ceiling(aptos/380),
+    saldo = sec_necessarias - secoes)
+
+#Saldo Necessário por ZE
+resumo_ze_roc_380 <- locais_roc_380 |>
+  dplyr::group_by(num_zona) |>
+  dplyr::summarise(
+    locais = dplyr::n(),
+    secoes = sum(secoes, na.rm = TRUE),
+    aptos = sum(aptos, na.rm = TRUE),
+    sec_necessarias = sum(sec_necessarias, na.rm = TRUE),
+    saldo = sum(saldo, na.rm = TRUE),
+    .groups = "drop") |>
+  dplyr::arrange(dplyr::desc(saldo)) |>
+  dplyr::mutate(
+    perc_saldo = saldo/secoes
+  )
+
+resumo_ze_roc_380 |> 
+  dplyr::slice(1:10) |> 
+  gt::gt() |>
+  gt::cols_align(align = "center") |>
+  gt::tab_style(
+    style = "vertical-align:middle",
+    locations = gt::cells_column_labels()
+  ) |> 
+  gt::cols_label(
+    num_zona = "Nº ZE",
+    locais = "Qtd. locais",
+    secoes = "Qtd. seções",
+    aptos = "Aptos",
+    sec_necessarias = "Qtd. seções necessárias",
+    saldo = "Saldo",
+    perc_saldo = "% sobre seções atuais"
+  ) |> 
+  gt::fmt_number(columns = 4,
+                 locale = "pt",
+                 decimals = 0) |> 
+  gt::fmt_percent(columns = 7,
+                  decimals = 1,
+                  locale = "pt" )
+  
+
+```
+
+```{r}
+#| label: tbl-secoes_roc_10menos_380
+#| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 341 por seção (curva ROC)"
+
+resumo_ze_roc_380 |>
+  dplyr::arrange(saldo) |> 
+  dplyr::slice(1:10) |> 
+  gt::gt() |>
+  gt::cols_align(align = "center") |>
+  gt::tab_style(
+    style = "vertical-align:middle",
+    locations = gt::cells_column_labels()
+  ) |> 
+  gt::cols_label(
+    num_zona = "Nº ZE",
+    locais = "Qtd. locais",
+    secoes = "Qtd. seções",
+    aptos = "Aptos",
+    sec_necessarias = "Qtd. seções necessárias",
+    saldo = "Saldo",
+    perc_saldo = "% sobre seções atuais"
+  ) |> 
+  gt::fmt_number(columns = 4,
+                 locale = "pt",
+                 decimals = 0) |> 
+  gt::fmt_percent(columns = 7,
+                  decimals = 1,
+                  locale = "pt" )
+```
+
+
 # Árvore de decisão
 
 Nesta seção, introduzimos brevemente o conceito e as principais características da árvore de decisão. Esse método, proposto por Breiman em xxxx, consiste de uma método não paramétrico, com o objetivo de realizar predições para uma variável de interesse (resposta), a partir de um conjunto de variáveis subjacentes (explicativas), a partir do particionamento do espaço de valores das variáveis explicativas através de um critério pré estabelecido.
@@ -730,11 +826,289 @@ rpart.plot::rpart.plot(modelo_arvore)
 ```
 
 
-# Apêndice A {.appendix}
+# Apêndice A - Resultados 2022 {.appendix}
 
-Neste apêndice são apresentados os resultados da aplicação das metodologias apresentadas anteriormente, considerando os dados dos tempos de votação para o pleito de 2022. O objetivo dessas análises é fornecer mais informações sobre o dimensionamento do tamanho das seções, considerando uma eleição mais recente. Embora o pleito de 2022 tenha contemplado 5 cargos, os dados sugerem que não há diferentes expressivas do tempo de votação. Contudo, para o número de aptos por seção e para o número de seções que tiveram atraso de pelo menos uma hora é possível observar valores maiores para o ano de 2022 comparativamente a eleição de 2018.
+Neste apêndice são apresentados os resultados da aplicação das metodologias apresentadas anteriormente, considerando os dados dos tempos de votação para o pleito de 2022. O objetivo dessas análises é fornecer informações adicionais sobre o dimensionamento do tamanho das seções, considerando uma eleição mais recente. Embora o pleito de 2022 tenha contemplado 5 cargos, os dados sugerem que não há diferentes expressivas do tempo de votação. Contudo, para o número de aptos por seção e para o número de seções que tiveram atraso de pelo menos uma hora é possível observar valores maiores para o ano de 2022 comparativamente a eleição de 2018.
 
+## Curva ROC
 
+```{r}
+# leitura da base de dados
+dados_2022 <- readr::read_csv2(
+  file = here::here("data", "base_2022_01.csv"),
+  locale = readr::locale(encoding = "latin1")
+) |>
+  janitor::clean_names() |>
+  dplyr::filter(tipo == "bio", subs_urna == 0) |>
+  dplyr::mutate(
+    atraso = ifelse(tempo_atraso >= lubridate::hms("01:00:00"), 1, 0)
+  )
+```
+
+```{r}
+curva_roc_2022 <- dados_2022 |>
+  dplyr::mutate(
+    atraso = dplyr::if_else(tempo_atraso >= lubridate::hms("01:00:00"), 1, 0),
+    atraso = as.factor(atraso)
+  ) |> 
+  pROC::roc(atraso, qt_aptos)
+
+ponto_corte_best_2022 <- pROC::coords(
+  curva_roc_2022, 
+  "best",
+  ret = c("threshold", "specificity", "sensitivity")
+)
+
+auc_2022 <- pROC::auc(curva_roc_2022)
+```
+
+```{r}
+#| label: fig-roc_1hora_2022
+#| fig-cap: "Curva Roc considerando atraso no emcerramento de votação o tempo maior que 1 hora, 2022."
+#| fig-align: center
+# Curva Roc considerando atraso o tempo maior que 5 minutos
+pROC::ggroc(curva_roc_2022, linewidth = 1, colour = "steelblue") +
+  ggplot2::labs(title = "", x = "Especificidade", y = "Sensibilidade") +
+  ggplot2::geom_abline(slope = 1, intercept = 1, linetype = "dashed") +
+  ggplot2::geom_point(
+    data = ponto_corte_best_2022,
+    ggplot2::aes(x = specificity, y = sensitivity),
+    color = "red",
+    size = 5
+  ) +
+  ggplot2::geom_label( 
+    data = ponto_corte_best_2022,
+    ggplot2::aes(
+      x = specificity,
+      y = sensitivity,
+      label = paste0("Ponto de corte:\n", ceiling(threshold))
+    ),
+    nudge_x = 0.11,
+    nudge_y = -0.11,
+    color = "royalblue"
+  ) +
+  ggplot2::theme_classic()
+```
+
+```{r}
+#IC para o ponto de corte
+ic_ponto_corte_roc_2022 <- pROC::ci.coords(curva_roc_2022,"best")
+```
+
+**O intervalo de confiança bootstrap de 95% de confiança, com 2.000 replicações para a o ponto de corte da curva ROC fica entre `r paste("[", ic_ponto_corte_roc_2022$threshold[[1]], ", ", ic_ponto_corte_roc_2022$threshold[[2]], "]") ` eleitores por seção.** 
+
+```{r}
+#| label: tbl-secoes_roc_10mais_2022
+#| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 341 por seção (ponto de corte da Curva ROC)"
+
+#Estudo por local
+# MODELO CURVA ROC -------------------------------------------------------
+#VALOR POR SEÇÃOL: 365
+
+#Estudo por local
+locais_roc_2022 <- secoes |>
+  dplyr::mutate(id = paste(nom_localidade, num_zona, num_local, sep = "_")) |>
+  dplyr::group_by(num_zona, num_local, id) |>
+  dplyr::summarise(
+    nom_local= dplyr::first(nom_local),
+    secoes = dplyr::n(),
+    aptos = sum(qtd_aptos, na.rm = TRUE),
+    aptos_secao = mean(qtd_aptos, na.rm = TRUE),
+    qtd_secoes_abaixo_365 = sum(qtd_aptos <= 365, na.rm = TRUE),
+    .groups = "drop") |>
+  dplyr::mutate(
+    sec_necessarias = ceiling(aptos/365),
+    saldo = sec_necessarias - secoes)
+
+#Saldo Necessário por ZE
+resumo_ze_roc_2022 <- locais_roc_2022 |>
+  dplyr::group_by(num_zona) |>
+  dplyr::summarise(
+    locais = dplyr::n(),
+    secoes = sum(secoes, na.rm = TRUE),
+    aptos = sum(aptos, na.rm = TRUE),
+    sec_necessarias = sum(sec_necessarias, na.rm = TRUE),
+    saldo = sum(saldo, na.rm = TRUE),
+    .groups = "drop") |>
+  dplyr::arrange(dplyr::desc(saldo)) |>
+  dplyr::mutate(
+    perc_saldo = saldo/secoes
+  )
+
+resumo_ze_roc_2022 |> 
+  dplyr::slice(1:10) |> 
+  gt::gt() |>
+  gt::cols_align(align = "center") |>
+  gt::tab_style(
+    style = "vertical-align:middle",
+    locations = gt::cells_column_labels()
+  ) |> 
+  gt::cols_label(
+    num_zona = "Nº ZE",
+    locais = "Qtd. locais",
+    secoes = "Qtd. seções",
+    aptos = "Aptos",
+    sec_necessarias = "Qtd. seções necessárias",
+    saldo = "Saldo",
+    perc_saldo = "% sobre seções atuais"
+  ) |> 
+  gt::fmt_number(columns = 4,
+                 locale = "pt",
+                 decimals = 0) |> 
+  gt::fmt_percent(columns = 7,
+                  decimals = 1,
+                  locale = "pt" )
+  
+
+```
+
+```{r}
+#| label: tbl-secoes_roc_10menos_2022
+#| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 341 por seção (curva ROC)"
+
+resumo_ze_roc_2022 |>
+  dplyr::arrange(saldo) |> 
+  dplyr::slice(1:10) |> 
+  gt::gt() |>
+  gt::cols_align(align = "center") |>
+  gt::tab_style(
+    style = "vertical-align:middle",
+    locations = gt::cells_column_labels()
+  ) |> 
+  gt::cols_label(
+    num_zona = "Nº ZE",
+    locais = "Qtd. locais",
+    secoes = "Qtd. seções",
+    aptos = "Aptos",
+    sec_necessarias = "Qtd. seções necessárias",
+    saldo = "Saldo",
+    perc_saldo = "% sobre seções atuais"
+  ) |> 
+  gt::fmt_number(columns = 4,
+                 locale = "pt",
+                 decimals = 0) |> 
+  gt::fmt_percent(columns = 7,
+                  decimals = 1,
+                  locale = "pt" )
+```
+
+## Árvore de decisão 
+
+```{r}
+# estima a arvore de decisao baseado no tempo de atraso considerando
+modelo_arvore_2022 <- rpart::rpart(
+  tempo_atraso ~ qt_aptos,
+  data = dados_2022,
+  control = rpart::rpart.control(maxdepth = 1)
+)
+
+```
+
+```{r}
+#| label: fig-arvore_2022
+#| fig-cap: "Árvore de decisão"
+#| fig-align: center
+
+# constroi o grafico da arvore de forma mais amigavel
+rpart.plot::rpart.plot(modelo_arvore_2022)
+```
+
+```{r}
+#| label: tbl-secoes_arvore_10mais_2022
+#| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 341 por seção (ponto de corte da Curva ROC)"
+
+#Estudo por local
+# MODELO CURVA ROC -------------------------------------------------------
+#VALOR POR SEÇÃOL: 365
+
+#Estudo por local
+locais_arvore_2022 <- secoes |>
+  dplyr::mutate(id = paste(nom_localidade, num_zona, num_local, sep = "_")) |>
+  dplyr::group_by(num_zona, num_local, id) |>
+  dplyr::summarise(
+    nom_local= dplyr::first(nom_local),
+    secoes = dplyr::n(),
+    aptos = sum(qtd_aptos, na.rm = TRUE),
+    aptos_secao = mean(qtd_aptos, na.rm = TRUE),
+    qtd_secoes_abaixo_369 = sum(qtd_aptos <= 369, na.rm = TRUE),
+    .groups = "drop") |>
+  dplyr::mutate(
+    sec_necessarias = ceiling(aptos/369),
+    saldo = sec_necessarias - secoes)
+
+#Saldo Necessário por ZE
+resumo_ze_arvore_2022 <- locais_arvore_2022 |>
+  dplyr::group_by(num_zona) |>
+  dplyr::summarise(
+    locais = dplyr::n(),
+    secoes = sum(secoes, na.rm = TRUE),
+    aptos = sum(aptos, na.rm = TRUE),
+    sec_necessarias = sum(sec_necessarias, na.rm = TRUE),
+    saldo = sum(saldo, na.rm = TRUE),
+    .groups = "drop") |>
+  dplyr::arrange(dplyr::desc(saldo)) |>
+  dplyr::mutate(
+    perc_saldo = saldo/secoes
+  )
+
+resumo_ze_arvore_2022 |> 
+  dplyr::slice(1:10) |> 
+  gt::gt() |>
+  gt::cols_align(align = "center") |>
+  gt::tab_style(
+    style = "vertical-align:middle",
+    locations = gt::cells_column_labels()
+  ) |> 
+  gt::cols_label(
+    num_zona = "Nº ZE",
+    locais = "Qtd. locais",
+    secoes = "Qtd. seções",
+    aptos = "Aptos",
+    sec_necessarias = "Qtd. seções necessárias",
+    saldo = "Saldo",
+    perc_saldo = "% sobre seções atuais"
+  ) |> 
+  gt::fmt_number(columns = 4,
+                 locale = "pt",
+                 decimals = 0) |> 
+  gt::fmt_percent(columns = 7,
+                  decimals = 1,
+                  locale = "pt" )
+  
+
+```
+
+```{r}
+#| label: tbl-secoes_arvore_10menos_2022
+#| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 341 por seção (curva ROC)"
+
+resumo_ze_arvore_2022 |>
+  dplyr::arrange(saldo) |> 
+  dplyr::slice(1:10) |> 
+  gt::gt() |>
+  gt::cols_align(align = "center") |>
+  gt::tab_style(
+    style = "vertical-align:middle",
+    locations = gt::cells_column_labels()
+  ) |> 
+  gt::cols_label(
+    num_zona = "Nº ZE",
+    locais = "Qtd. locais",
+    secoes = "Qtd. seções",
+    aptos = "Aptos",
+    sec_necessarias = "Qtd. seções necessárias",
+    saldo = "Saldo",
+    perc_saldo = "% sobre seções atuais"
+  ) |> 
+  gt::fmt_number(columns = 4,
+                 locale = "pt",
+                 decimals = 0) |> 
+  gt::fmt_percent(columns = 7,
+                  decimals = 1,
+                  locale = "pt" )
+```
+
+# Apêndice B - Comparação 2018 e 2022 {.appendix}
 
 
 

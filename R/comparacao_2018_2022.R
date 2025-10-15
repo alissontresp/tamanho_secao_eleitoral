@@ -28,13 +28,15 @@ dados <- vroom::vroom(
   dplyr::filter(tipo == "bio", subs_urna == 0)
 
 # le o shape de zonas eleitorias
-zonas <- readr::read_rds(file = here::here("data", "shape_zona.rds")) |>
-  janitor::clean_names()
+municipios <- readr::read_rds(file = here::here("data", "shape_municipio.rds")) |>
+  janitor::clean_names() |>
+  sf::st_as_sf()
 
 # calcula medidas descritivas considerando os anos 2018 e 2022
 dados |>
   dplyr::group_by(ano_eleicao, tipo) |>
   dplyr::summarise(
+    n = dplyr::n(),
     media = mean(atendimento_total_tmae_seg, na.rm = TRUE),
     mediana = mean(atendimento_total_tmae_seg, na.rm = TRUE),
     mininmo = min(atendimento_total_tmae_seg, na.rm = TRUE),
@@ -45,6 +47,7 @@ dados |>
 dados |>
   dplyr::group_by(ano_eleicao, tipo) |>
   dplyr::summarise(
+    n = dplyr::n(),
     media = mean(qt_aptos, na.rm = TRUE),
     mediana = mean(qt_aptos, na.rm = TRUE),
     mininmo = min(qt_aptos, na.rm = TRUE),
@@ -91,8 +94,6 @@ tmap::tm_shape(dados_mapa) +
     fill.legend = tmap::tm_legend(title = "Tamanho da seção")
   )
 
-
-
 dados_teste <- dados |>
   dplyr::group_by(nr_zona, ano_eleicao) |>
   dplyr::summarise(
@@ -103,7 +104,9 @@ dados_teste <- dados |>
     media_secao = mean(qt_aptos),
     maximo_secao = max(qt_aptos)
   ) |>
-  tidyr::pivot_wider(names_from = ano_eleicao, values_from = dplyr::starts_with("m")
+  tidyr::pivot_wider(
+    names_from = ano_eleicao,
+    values_from = dplyr::starts_with("m")
   ) |>
   dplyr::right_join(zonas, by = "nr_zona") |>
   sf::st_as_sf()
