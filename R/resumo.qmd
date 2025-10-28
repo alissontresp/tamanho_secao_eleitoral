@@ -549,7 +549,7 @@ Um dos métodos amplamente usados na literatura é o método do índice de Youde
 
 $$
 J(c) = Se(c) + (1 - Sp(c))
-$$}
+$$
 
 sobre todos os pontos de corte $c$; $\hat{c}_j$ denota o ponto de corte correspondente a $J$ . Quando o valor de $J$ é máximo, $\hat{c}_j$ é o valor de corte “ótimo” (Colocar as referências) e corresponde a um ponto na curva ROC com a maior distância vertical da linha diagonal de 45° (o ROC de um teste não informativo).
 
