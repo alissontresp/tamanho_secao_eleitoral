@@ -57,12 +57,12 @@ dados <- dados_geral |>
 
 ```
 
-A @fig-densidade apresenta a estimativa de densidades do número de eleitores aptos para o pleito de 2018 dentro das seções que foram com e sem biometria. Nota-se, para esse pleito, que há uma concentração de seções com número de eleitores aptos superior a 300 nas seções 100% biometricas. Ainda, há um número expressivo de seções com mais de 400 eleitores. Esse fato pode estar associado as agregações que são realizadas durante a eleição. Nas seções com votação sem identificação biométrica, a maior densidade fica em torno de 370.
+A @fig-densidade apresenta a estimativa de densidades do número de eleitores aptos para o pleito de 2018 dentro das seções que fizeram uso ou não da identificação biométrica. Nota-se, para esse pleito, que há uma concentração de seções com número de eleitores aptos superior a 300 nas seções 100% com identificação biométrica e cerca de 350 nas demais. Ainda, há um número expressivo de seções com mais de 400 eleitores. Esse fato pode estar associado as agregações que são realizadas durante a eleição.
 
-De maneira complementar, são apresentadas algumas medidas descritivas para o eleitorado apto na votação 100% biométrica na @tbl-resumo_estat. O número médio de eleitores aptos foi cerca de 304 eleitores com um desvio padrão de cerca de 66 eleitores. O valor mediano foi de 367, de modo que 50% das seções eleitorais no pleito de 2018 tinham valores de eleitorado apto igual ou superior a esse valor. Na @fig-bp_secoes.
+De maneira complementar, são apresentadas algumas medidas descritivas para o eleitorado apto na votação com identificação 100% biométrica na @tbl-resumo_estat. O número médio de eleitores aptos foi cerca de 304 eleitores com um desvio padrão de cerca de 66 eleitores. O valor mediano foi de 367, de modo que 50% das seções eleitorais no pleito de 2018 tinham valores de eleitorado apto igual ou superior a esse valor. O box-plot dos aptos das seções com identificação 100% biométrica é apresentado na @fig-bp_secoes.
 
 ```{r}
-#| fig-cap: "Densidade dos aptos por seção com relação à votação com e sem biometria em 2018"
+#| fig-cap: "Densidade dos aptos por seção com relação à votação com e sem identificação biométrica em 2018"
 #| fig-align: center
 #| label: fig-densidade
 
@@ -106,7 +106,7 @@ dados_geral |>
 
 ```{r}
 #| label: tbl-resumo_estat
-#| tbl-cap: "Estatísticas descritivas das seções com biometria na eleição de 2018"
+#| tbl-cap: "Estatísticas descritivas das seções com identificação biométrica na eleição de 2018"
 
 #
 resumo_estat <- dados |>
@@ -132,7 +132,7 @@ resumo_estat |>
     max_secao = "Eleitorado maior seção",
   ) |> 
   gt::fmt_number(
-    columns = 2:3,
+    columns = 2:4,
     decimals = 2,
     dec_mark = ","
   ) |>
@@ -170,13 +170,13 @@ dados |>
 
 ## Estatística dos tempos de atraso de encerramento de votação {#tempo_atraso}
 
-Com os logs das urnas eletrônicas é possível apurar o tempo de atraso para o encerramento das urnas após às 17 horas, que é a data estipulada para o fim do processo de votação. Assim, considerando o tempo em atraso de encerramento daquelas urnas eletrônicas do pleito de 2018 em que a votação foi totalmente biométrica, obtivemos as estatísticas apresentadas na @tbl-resumo_estat_atraso.
+Com os logs das urnas eletrônicas é possível apurar o tempo de atraso para o encerramento das urnas após às 17 horas, que é a data estipulada para o fim do processo de votação. Assim, considerando o tempo em atraso de encerramento daquelas urnas eletrônicas do pleito de 2018 em que o eleitor foi identificado com biometria, obtive-se as estatísticas apresentadas na @tbl-resumo_estat_atraso.
 
-Na @fig-histograma_tempos podem ser vistos a distribuição dos tempos de atraso, medidos em minutos daquelas seções que utilizaram biometria em 2018.
+Na @fig-histograma_tempos podem ser vistos a distribuição dos tempos de atraso, medidos em minutos daquelas seções que utilizaram identificação com biometria em 2018.
 
 ```{r}
 #| label: fig-histograma_tempos
-#| fig-cap: "Distribuição do atraso do encerramento da eleição (em min) nas seções biométricas em 2018"
+#| fig-cap: "Distribuição do atraso do encerramento da eleição (em min) nas seções com identificação biométrica em 2018"
 #| fig-align: center
 
 
@@ -194,7 +194,7 @@ dados |>
 
 ```{r}
 #| label: tbl-resumo_estat_atraso
-#| tbl-cap: "Estatísticas descritivas do tempo de atraso (min) no encerramento das seções com biometria na eleição de 2018"
+#| tbl-cap: "Estatísticas descritivas do tempo de atraso (min) no encerramento das seções com identificação biométrica na eleição de 2018"
 
 #
 resumo_estat_atraso <- dados |>
@@ -245,11 +245,11 @@ resumo_estat_atraso |>
 
 ## Estatística dos tempos de votação
 
-Ainda com dados extraídos dos logs das urnas eletrônicas, especificamente das seções em que o voto foi totalmente habilitado biomtericamente em 2018, é possível calcular o tempo total médio de atendimento do eleitor (TMAE) que é o tempo, medido em segundos, desde a habilitação até o encerramento da votação do eleitor. Esse tempo reflete a duração média do processo de votação do eleitor em cada seção para completar os 6 votos necessários nesse pleito. As principais estatísticas decsritivas podem ser vistas na @tbl-resumo_estat_tempo.
+Ainda com dados extraídos dos logs das urnas eletrônicas, especificamente das seções em que o voto foi totalmente habilitado biomtericamente em 2018, é possível calcular o tempo total médio de atendimento do eleitor (TMAE) que é o tempo, medido em segundos, desde a habilitação até o encerramento da votação do eleitor. Esse tempo reflete a duração média do processo de votação do eleitor em cada seção para completar os 6 votos necessários nesse pleito. As principais estatísticas descritivas podem ser vistas na @tbl-resumo_estat_tempo.
 
 ```{r}
 #| label: tbl-resumo_estat_tempo
-#| tbl-cap: "Estatísticas descritivas do tempo total médio de atendimento do eleitor (TMAE em segundos) das seções com biometria na eleição de 2018"
+#| tbl-cap: "Estatísticas descritivas do tempo total médio de atendimento do eleitor (TMAE em segundos) das seções com identificação biométrica na eleição de 2018"
 
 #
 resumo_estat_tempos <- dados |>
@@ -296,7 +296,7 @@ A @fig-bp_tempos representa o box-plot dos tempos totais de votação (TMAE), me
 
 ```{r}
 #| label: fig-bp_tempos
-#| fig-cap: "Box-plot do tempo médio total de votação (TMAE) nas seções com biometria em 2018"
+#| fig-cap: "Box-plot do tempo médio total de votação (TMAE) nas seções com identificação biométrica em 2018"
 #| fig-align: center
 
 
@@ -429,6 +429,8 @@ Para avaliar a quantidade de seções eleitorais necessárias se adotado o novo 
 
 -   os resultados do saldo serão agregados por Zona Eleitoral.
 
+**O resultado final indica a necessidade de criação de 8.584 seções no Estado para redistribuir os eleitores dentro de seus locais de votação com o número de 325 eleitrores/seção**, como estimado pelo modelo de calibração. Isso corresponde a criação de cerca de 8,31% mais de seções no Estado (atualmente há 103.265 seções). A @tbl-secoes_calibacao_10mais indica as 10 primeiras Zonas eleitorais com **maiores saldos de seções a criar**.
+
 ```{r}
 #| label: tbl-secoes_calibacao_10mais
 #| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 325 por seção (modelo de calibração)"
@@ -500,9 +502,7 @@ resumo_ze |>
 
 ```
 
-O resultado final indica a necessidade de criação de 8.584 seções no Estado para redistribuir os eleitores dentro de seus locais de votação com o número de 325 eleitrores/seção, como estimado pelo modelo de calibração. Isso corresponde a criação de cerca de 8,31% mais de seções no Estado (atualmente há 103.265 seções). A @tbl-secoes_calibacao_10mais indica as 10 primeiras Zonas eleitorais com maiores saldos de seções a criar.
-
-A @tbl-secoes_calibacao_10menos aponta as 10 primeiras zonas eleitorais que teriam diminuição de seções se o critério fosse adotado.
+A @tbl-secoes_calibacao_10menos aponta as 10 primeiras zonas eleitorais que teriam **diminuição** de seções se o critério fosse adotado.
 
 ```{r}
 #| label: tbl-secoes_calibacao_10menos
@@ -539,7 +539,7 @@ resumo_ze |>
 
 ## Definição sob o ponto de vista do estudo
 
-A **curva ROC** (“Receiver Operating Characteristic”), em português, Curva característica do receptor, mostra como variam as **taxas de verdadeiros positivos** (TPF = sensibilidade) e as **taxas de falsos positivos** (FPF = 1 − especificidade) de todos os possíveis pontos de corte (quantidade de aptos por seção) que tenta prever um desfecho binário( no caso do estudo, atraso ou não-atraso). Cada ponto da curva corresponde a um ponto de corte de tal modo que, ao mover o corte, ganha-se em sensibilidade e perde-se em especificidade, ou vice-versa. Plotar TPF (eixo y) contra FPF (eixo x) para todos os cortes gera a ROC.
+A **curva ROC** (“Receiver Operating Characteristic”), em português, curva característica do receptor, mostra como variam as **taxas de verdadeiros positivos** (TPF = sensibilidade) e as **taxas de falsos positivos** (FPF = 1 − especificidade) de todos os possíveis pontos de corte (quantidade de aptos por seção) que tenta prever um desfecho binário( no caso do estudo, atraso ou não-atraso). Cada ponto da curva corresponde a um ponto de corte de tal modo que, ao mover o corte, ganha-se em sensibilidade e perde-se em especificidade, ou vice-versa. Plotar TPF (eixo y) contra FPF (eixo x) para todos os cortes gera a ROC.
 
 -   **Sensibilidade (TPF)**: a proporção que o teste classifica como atraso aquelas seções que apresentaram, de fato, atraso, conforme a definição dessa variável no escopo desse estudo. É a “capacidade de pegar os verdadeiros casos”;
 
@@ -573,7 +573,7 @@ A análise da Curva ROC indica que o número de corte que maximiza a capacidade 
 
 ```{r}
 #| label: fig-roc_1hora
-#| fig-cap: "Curva Roc considerando atraso mo emcerramento de votação o tempo maior que 1 hora"
+#| fig-cap: "Curva Roc considerando atraso no encerramento de votação superior a 1 hora"
 #| fig-align: center
 #Curva Roc considerando atraso o tempo maior que 5 minutos
 pROC::ggroc(curva_roc,
@@ -648,7 +648,7 @@ locais_roc <- secoes |>
     secoes = dplyr::n(),
     aptos = sum(qtd_aptos, na.rm = TRUE),
     aptos_secao = mean(qtd_aptos, na.rm = TRUE),
-    qtd_secoes_abaixo_325 = sum(qtd_aptos <= 325, na.rm = TRUE),
+    # qtd_secoes_abaixo_325 = sum(qtd_aptos <= 325, na.rm = TRUE),
     .groups = "drop") |>
   dplyr::mutate(
     sec_necessarias = ceiling(aptos/341),
@@ -696,7 +696,7 @@ resumo_ze_roc |>
 
 ```
 
-O modelo considerando o tamanho de seção com 341 eleitores por seção resulta na necessidade de criação de 3.646 seções no Estado para redistribuir os eleitores dentro de seus locais de votação. Isso corresponde a criação de cerca de 3,53% mais de seções no Estado (atualmente há 103.265 seções). A @tbl-secoes_roc_10mais indica as 10 primeiras Zonas eleitorais com maiores saldos de seções a criar.
+**O modelo considerando o tamanho de seção com 341 eleitores por seção resulta na necessidade de criação de 3.646 seções no Estado para redistribuir os eleitores dentro de seus locais de votação**. Isso corresponde a criação de cerca de 3,53% mais de seções no Estado (atualmente há 103.265 seções). A @tbl-secoes_roc_10mais indica as 10 primeiras zonas eleitorais com maiores saldos de seções a criar.
 
 A @tbl-secoes_calibacao_10menos aponta as 10 primeiras zonas eleitorais que teriam diminuição de seções se o critério fosse adotado.
 
@@ -730,13 +730,15 @@ resumo_ze_roc |>
                   locale = "pt" )
 ```
 
+**Se se considerar o tamanho de seção próximo ao intervalo de confiança bootstrap estimado (**$n = 380$**), o saldo geral de seções a serem criadas seria de - 6.651 seções (cerca de -6,6% do total de seções do Estado)**, ou seja, haveria a redução da quantidade de seções comparando-se à situação atual. As @tbl-secoes_roc_10mais_380 e @tbl-secoes_roc_10menos_380 apresentam as 10 primeiras zonas eleitorais que teriam que criar e diminuir seções, respectivamente.
+
 ```{r}
 #| label: tbl-secoes_roc_10mais_380
-#| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 341 por seção (ponto de corte da Curva ROC)"
+#| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 380 por seção"
 
 #Estudo por local
 # MODELO CURVA ROC -------------------------------------------------------
-#VALOR POR SEÇÃOL: 341
+#VALOR POR SEÇÃOL: 380
 
 #Estudo por local
 locais_roc_380 <- secoes |>
@@ -797,7 +799,7 @@ resumo_ze_roc_380 |>
 
 ```{r}
 #| label: tbl-secoes_roc_10menos_380
-#| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 341 por seção (curva ROC)"
+#| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 380 por seção"
 
 resumo_ze_roc_380 |>
   dplyr::arrange(saldo) |> 
@@ -860,7 +862,9 @@ rpart.plot::rpart.plot(modelo_arvore)
 
 Neste apêndice são apresentados os resultados da aplicação das metodologias apresentadas anteriormente, considerando os dados dos tempos de votação para o pleito de 2022. O objetivo dessas análises é fornecer informações adicionais sobre o dimensionamento do tamanho das seções, considerando uma eleição mais recente. Embora o pleito de 2022 tenha contemplado 5 cargos, os dados sugerem que não há diferentes expressivas do tempo de votação. Contudo, para o número de aptos por seção e para o número de seções que tiveram atraso de pelo menos uma hora é possível observar valores maiores para o ano de 2022 comparativamente a eleição de 2018.
 
-## Curva ROC
+## Curva ROC {#sec-curva-roc-ap}
+
+A curva ROC para os dados da eleição de 2022, considerando-se as mesmas configurações do estudo anterior, apresenta ponto de corte de 365 eleitores por seção, com $AUC =84,3\%$ . A curva pode ser vista na @fig-roc_1hora_2022.
 
 ```{r}
 # leitura da base de dados
@@ -927,9 +931,11 @@ ic_ponto_corte_roc_2022 <- pROC::ci.coords(curva_roc_2022,"best")
 
 **O intervalo de confiança bootstrap de 95% de confiança, com 2.000 replicações para a o ponto de corte da curva ROC fica entre `r paste("[", ic_ponto_corte_roc_2022$threshold[[1]], ", ", ic_ponto_corte_roc_2022$threshold[[2]], "]")` eleitores por seção.**
 
+Com os dados da eleição de 2022 e o ponto de corte estimado pela curva ROC em $n = 365$ eleitores por seção**,** a quantidade de seções a **serem extintas seria de -3.014 unidades ( redução de 2,9% com relação à quantidade de seções de 2022 103.265)** . Isso corresponde a criação de cerca de 3,53% mais de seções no Estado (atualmente há 103.265 seções). As @tbl-secoes_roc_10mais_2022 e @tbl-secoes_roc_10menos_2022 representam as 10 primeiras zonas eleitorais que teriam que criar e diminuir seções, respectivamente.
+
 ```{r}
 #| label: tbl-secoes_roc_10mais_2022
-#| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 341 por seção (ponto de corte da Curva ROC)"
+#| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 365 por seção (ponto de corte da Curva ROC)"
 
 #Estudo por local
 # MODELO CURVA ROC -------------------------------------------------------
@@ -994,7 +1000,7 @@ resumo_ze_roc_2022 |>
 
 ```{r}
 #| label: tbl-secoes_roc_10menos_2022
-#| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 341 por seção (curva ROC)"
+#| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 365 por seção (curva ROC)"
 
 resumo_ze_roc_2022 |>
   dplyr::arrange(saldo) |> 
@@ -1043,13 +1049,17 @@ modelo_arvore_2022 <- rpart::rpart(
 rpart.plot::rpart.plot(modelo_arvore_2022)
 ```
 
+Os resultados da árvore de decisão com os dados de 2022 são apresentados na @fig-arvore_2022. O ponto de corte foi seções com $n=369$ eleitores, resultado muito próximo do encontrado no estudo da curva ROC. Os resultados da simulação da quantidade de seções com a redistribuição hipotética dos eleitores são muito parecidos, também. **Seriam extintas 4.023 seções (-3,89%) com relação ao total de seções de 2022**.
+
+As @tbl-secoes_arvore_10mais_2022 e @tbl-secoes_arvore_10menos_2022 representam as 10 primeiras zonas eleitorais que teriam que criar e diminuir seções, respectivamente se utilizado esse modelo.
+
 ```{r}
 #| label: tbl-secoes_arvore_10mais_2022
-#| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 341 por seção (ponto de corte da Curva ROC)"
+#| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 369 por seção (ponto de corte da árvore de decisão)"
 
 #Estudo por local
 # MODELO CURVA ROC -------------------------------------------------------
-#VALOR POR SEÇÃOL: 365
+#VALOR POR SEÇÃOL: 369
 
 #Estudo por local
 locais_arvore_2022 <- secoes |>
@@ -1110,7 +1120,7 @@ resumo_ze_arvore_2022 |>
 
 ```{r}
 #| label: tbl-secoes_arvore_10menos_2022
-#| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 341 por seção (curva ROC)"
+#| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 369 por seção (ponto de corte da árvore de decisão)"
 
 resumo_ze_arvore_2022 |>
   dplyr::arrange(saldo) |> 
