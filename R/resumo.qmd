@@ -12,7 +12,7 @@ editor: visual
 execute:
   echo: false
   warning: false
-  cache: true
+  cache: false
 ---
 
 # Introdução
@@ -537,17 +537,30 @@ resumo_ze |>
 
 # Método da Curva característica do receptor (curva ROC)
 
-## Definição sob o ponto de vista do estudo
+A curva ROC (“Receiver Operating Characteristic”), em português, Curva característica do receptor, é um mapeamento das taxas de verdadeiros positivos (TPF = sensibilidade) e as taxas de falsos positivos (FPF = 1 − especificidade) para todos os valores possíveis do ponto de corte que tenta prever um desfecho binário. Cada ponto da curva corresponde a um ponto de corte de tal modo que, ao mover o corte, ganha-se em sensibilidade e perde-se em especificidade, ou vice-versa. 
 
-A **curva ROC** (“Receiver Operating Characteristic”), em português, Curva característica do receptor, mostra como variam as **taxas de verdadeiros positivos** (TPF = sensibilidade) e as **taxas de falsos positivos** (FPF = 1 − especificidade) de todos os possíveis pontos de corte (quantidade de aptos por seção) que tenta prever um desfecho binário( no caso do estudo, atraso ou não-atraso). Cada ponto da curva corresponde a um ponto de corte de tal modo que, ao mover o corte, ganha-se em sensibilidade e perde-se em especificidade, ou vice-versa. Plotar TPF (eixo y) contra FPF (eixo x) para todos os cortes gera a ROC.
+A análise da curva ROC foi pioneiramente utilizada na segunda guerra mundial quando a capacidade dos operadores de radar (receptores) foi testada para determinar se um sinal na tela do radar representava um objeto ou ruído. Contudo, devido a sua utilidade, passou rapidamente a ser usada em outras áreas, dentre as quais a área de sáude, para avaliação e obtenção de testes diagnósticos. Outra grande área em que a curva ROC é utilizada é na avaliação da perfomance de métodos de aprendizado de máquina para classificação, como por exemplo, modelos de regressão logística, árvore de decisão e máquinas de vetores de suporte. 
 
--   **Sensibilidade (TPF)**: a proporção que o teste classifica como atraso aquelas seções que apresentaram, de fato, atraso, conforme a definição dessa variável no escopo desse estudo. É a “capacidade de pegar os verdadeiros casos”;
 
--   **Especificidade (FPF)**: a proporção que o teste classifica como não-atraso aquelas seções que não apresentaram, de fato, atraso, conforme a definição dessa variável no escopo desse estudo.
+<!-- -   **Sensibilidade (TPF)**: a proporção que o teste classifica como atraso aquelas seções que apresentaram, de fato, atraso, conforme a definição dessa variável no escopo desse estudo. É a “capacidade de pegar os verdadeiros casos”; -->
 
-Definiu-se a variável atraso quando o atraso no encerramento da votação for superior a 1 hora, visto que a média de atraso é baixa, cerca de 2 minutos, e tempos superiores a 1 hora podem significar eventos que não são devido ao acaso.
+<!-- -   **Especificidade (FPF)**: a proporção que o teste classifica como não-atraso aquelas seções que não apresentaram, de fato, atraso, conforme a definição dessa variável no escopo desse estudo. -->
 
-A efetividade do método encontrar o ponto de corte que maximize a sensibilidade e especificidade é mensurada pela **área sob a curva (AUC em inglês)**. A **AUC** mede a capacidade global de discriminação do ponto de corte, no caso, a quantidade de eleitores na seção. AUC perto de 1 indica excelente discriminação; perto de 0,5 indica desempenho próximo ao acaso.
+<!-- Definiu-se a variável atraso quando o atraso no encerramento da votação for superior a 1 hora, visto que a média de atraso é baixa, cerca de 2 minutos, e tempos superiores a 1 hora podem significar eventos que não são devido ao acaso. -->
+
+Para medir a capacidade diagnóstica de um biomarcador, é comum usar medidas resumidas, como a área sob a curva ROC (AUC) e/ou a área parcial sob a curva ROC (pAUC) [ 1 ]. A AUC pode ser considerada um índice da capacidade discriminatória global de um teste. Um biomarcador com AUC = 1 discrimina indivíduos perfeitamente como doentes ou saudáveis. Enquanto isso, um teste com uma AUC de 0,5 é equivalente a lançar uma moeda - um teste não informativo [ 2 ].
+
+
+A escolha de um valor de corte apropriado é de suma importância para usar um teste de forma eficaz. Embora os valores de AUC, sensibilidade e especificidade sejam úteis na avaliação de um marcador eles não especificam pontos de corte "ótimos" diretamente. Na literatura, há diversas abordagens que usam sensibilidade e especificidade para seleção de pontos de corte [ 4 – 9 ]. 
+
+Um dos métodos amplamente usados na literatura é o método do índice de Youden $J$ [ 5 ]. Este método define o ponto de corte ótimo como o ponto que maximiza a função de Youden, isto é, que maximiza 
+
+
+$$
+J(c) = Se(c) + (1 - Sp(c))
+$$}
+ 
+sobre todos os pontos de corte $c$; $\hat{c}_j$ denota o ponto de corte correspondente a $J$ . Quando o valor de $J$ é máximo, $\hat{c}_j$ é o valor de corte “ótimo” (Colocar as referências) e corresponde a um ponto na curva ROC com a maior distância vertical da linha diagonal de 45° (o ROC de um teste não informativo).
 
 ## Tempo de atraso no encerramento maior ou igual a 1 hora
 
