@@ -539,11 +539,8 @@ resumo_ze |>
 
 A curva ROC (“Receiver Operating Characteristic”), em português, Curva característica do receptor, é um mapeamento das taxas de verdadeiros positivos (TPF = sensibilidade) e as taxas de falsos positivos (FPF = 1 − especificidade) para todos os valores possíveis do ponto de corte que tenta prever um desfecho binário. Cada ponto da curva corresponde a um ponto de corte de tal modo que, ao mover o corte, ganha-se em sensibilidade e perde-se em especificidade, ou vice-versa. 
 
-<<<<<<< HEAD
+
 A análise da curva ROC foi pioneiramente utilizada na segunda guerra mundial quando a capacidade dos operadores de radar (receptores) foi testada para determinar se um sinal na tela do radar representava um objeto ou ruído. Contudo, devido a sua utilidade, passou rapidamente a ser usada em outras áreas, dentre as quais a área de sáude, para avaliação e obtenção de testes diagnósticos. Outra grande área em que a curva ROC é utilizada é na avaliação da perfomance de métodos de aprendizado de máquina para classificação, como por exemplo, modelos de regressão logística, árvore de decisão e máquinas de vetores de suporte. 
-=======
-A **curva ROC** (“Receiver Operating Characteristic”), em português, curva característica do receptor, mostra como variam as **taxas de verdadeiros positivos** (TPF = sensibilidade) e as **taxas de falsos positivos** (FPF = 1 − especificidade) de todos os possíveis pontos de corte (quantidade de aptos por seção) que tenta prever um desfecho binário( no caso do estudo, atraso ou não-atraso). Cada ponto da curva corresponde a um ponto de corte de tal modo que, ao mover o corte, ganha-se em sensibilidade e perde-se em especificidade, ou vice-versa. Plotar TPF (eixo y) contra FPF (eixo x) para todos os cortes gera a ROC.
->>>>>>> e46834a5eebfbeca5bd0846e880f91650ad75906
 
 
 <!-- -   **Sensibilidade (TPF)**: a proporção que o teste classifica como atraso aquelas seções que apresentaram, de fato, atraso, conforme a definição dessa variável no escopo desse estudo. É a “capacidade de pegar os verdadeiros casos”; -->
@@ -562,7 +559,7 @@ Um dos métodos amplamente usados na literatura é o método do índice de Youde
 
 $$
 J(c) = Se(c) + (1 - Sp(c))
-$$}
+$$
  
 sobre todos os pontos de corte $c$; $\hat{c}_j$ denota o ponto de corte correspondente a $J$ . Quando o valor de $J$ é máximo, $\hat{c}_j$ é o valor de corte “ótimo” (Colocar as referências) e corresponde a um ponto na curva ROC com a maior distância vertical da linha diagonal de 45° (o ROC de um teste não informativo).
 
