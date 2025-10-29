@@ -85,9 +85,9 @@ dados_geral |>
                       linetype = 2)+
   ggplot2::scale_fill_discrete(type = c("steelblue4", "palevioletred4"),
                                labels = c("Com biometria", "Sem biometria"),
-                               name = "Tipo de votação",
+                               name = "Tipo de votação"
   )+ 
-  ggplot2::  annotate("text", 
+  ggplot2::annotate("text", 
                       x = 325, 
                       y = 0.017, 
                       label = "Médias",

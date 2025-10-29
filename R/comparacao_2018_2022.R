@@ -28,7 +28,7 @@ dados <- vroom::vroom(
   dplyr::filter(tipo == "bio", subs_urna == 0)
 
 # le o shape de zonas eleitorias
-municipios <- readr::read_rds(file = here::here("data", "shape_municipio.rds")) |>
+zonas <- readr::read_rds(file = here::here("data", "shape_zona.rds")) |>
   janitor::clean_names() |>
   sf::st_as_sf()
 
@@ -65,36 +65,8 @@ dados |>
   ggplot2::facet_wrap(~ano_eleicao) +
   ggplot2::theme_classic()
 
-# cria mapa apresentando a distribuicao do tempo de atraso de acordo com as zonas
+# manipula os dados para construcao do mapa
 dados_mapa <- dados |>
-  dplyr::group_by(nr_zona, ano_eleicao) |>
-  dplyr::summarise(
-    minimo_atraso = min(tempo_atraso),
-    media_atraso = mean(tempo_atraso),
-    maximo_atraso = max(tempo_atraso),
-    minimo_secao = min(qt_aptos),
-    media_secao = mean(qt_aptos),
-    maximo_secao = max(qt_aptos)
-  ) |>
-  dplyr::right_join(zonas, by = "nr_zona") |>
-  sf::st_as_sf()
-
-tmap::tm_shape(dados_mapa) +
-  tmap::tm_polygons(
-    fill = "media_atraso",
-    fill.scale = tmap::tm_scale_continuous(values = "viridis"),
-    fill.legend = tmap::tm_legend(title = "Tempo de atraso")
-  ) +
-  tmap::tm_facets(by = "ano_eleicao")
-
-tmap::tm_shape(dados_mapa) +
-  tmap::tm_polygons(
-    fill = "media_secao",
-    fill.scale = tmap::tm_scale_continuous(values = "viridis"),
-    fill.legend = tmap::tm_legend(title = "Tamanho da seção")
-  )
-
-dados_teste <- dados |>
   dplyr::group_by(nr_zona, ano_eleicao) |>
   dplyr::summarise(
     minimo_atraso = min(tempo_atraso),
@@ -108,13 +80,22 @@ dados_teste <- dados |>
     names_from = ano_eleicao,
     values_from = dplyr::starts_with("m")
   ) |>
+  dplyr::mutate(dplyr::across(dplyr::contains("atraso"), ~ .x / lubridate::dminutes(1))) |>
   dplyr::right_join(zonas, by = "nr_zona") |>
   sf::st_as_sf()
 
-
-tmap::tm_shape(dados_teste) +
+# controi o mapa para o tempo maximo de atraso
+tmap::tm_shape(dados_mapa) +
   tmap::tm_polygons(
     fill = c("maximo_atraso_2018", "maximo_atraso_2022"),
     fill.scale = tmap::tm_scale_continuous(values = "viridis"),
-    fill.legend = tmap::tm_legend(title = "Tempo de atraso")
+    fill.legend = tmap::tm_legend(title = "")
+  )
+
+# controi o mapa para o tamanho medio da secao
+tmap::tm_shape(dados_mapa) +
+  tmap::tm_polygons(
+    fill = c("media_secao_2018", "media_secao_2022"),
+    fill.scale = tmap::tm_scale_continuous(values = "viridis"),
+    fill.legend = tmap::tm_legend(title = "")
   )
