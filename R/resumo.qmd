@@ -1,12 +1,25 @@
 ---
-title: "Resumo"
+title: ""
 lang: "pt-br"
 indenting: first
 format: 
   html:
     css: style.css
     indent: true
-  
+  pdf: 
+    number-sections: true
+    toc: false
+    header-includes:
+      - \usepackage{indentfirst} 
+      - \setlength{\parindent}{1.5em}  
+      - \usepackage{tikz}
+      - \usepackage{graphicx}
+      - \usepackage{hyperref}
+      - \usepackage{url}
+      - \usepackage{abntex2cite}
+      
+    bibliography: referencias.bib
+      
 editor: visual
 
 execute:
@@ -15,25 +28,349 @@ execute:
   cache: false
 ---
 
+\thispagestyle{empty}
+\begin{center}
+\includegraphics[width=7cm]{logo_assec.png}
+\end{center}
+\vspace{4cm}
+\begin{center}
+\huge\textbf{Relatório Técnico - Dimensionamento das seções eleitorais para o pleito de 2026}\\
+\end{center}
+\begin{center}
+\vspace{7cm}
+\includegraphics[width=7cm]{logo_tre.png}
+\end{center}
+\begin{center}
+\Large\textbf{2025}
+\end{center}
+\newpage
+\tableofcontents
+\newpage
+
 # Introdução
 
-No dia 4 de outubro de 2026, cerca de 155 milhões de eleitoras e eleitores aptos a votar no Brasil e no exterior, de acordo com dados de setembro de 2025, deverão comparecer às urnas para escolher os representantes a presidente e vice-presidente da República, a governadores e vice-governadores dos estados e do Distrito Federal, além de deputados federais e estaduais ou distritais e dois senadores por unidade da Federação. (TSE, 2025)
+No dia 4 de outubro de 2026, cerca de 155 milhões de eleitoras e eleitores aptos a votar no Brasil e no exterior, de acordo com dados de setembro de 2025, deverão comparecer às urnas para escolher os representantes a presidente e vice-presidente da República, a governadores e vice-governadores dos estados e do Distrito Federal, além de deputados federais e estaduais ou distritais e dois senadores por unidade da Federação [@tse2025].
 
 Em São Paulo, maior colégio eleitoral do país, 33.422.502 eleitores estarão aptos para votar em candidatos que concorrerão aos 6 cargos supracitados. Esses eleitores estão distribuídos nos 11.047 locais de votação e 103.303 seções eleitorais em todo o estado, perfazendo as 393 zonas eleitorais.
 
-Diante da dimensão de uma eleição, as preparações para cada pleito continuam mesmo em anos não-eleitorais, com o objetivo de avaliar eleições anteriores e com base nessas análises propor melhorias para a logística das próximas eleições. A relevância desse trabalho consiste, principalmente, em garantir ao eleitor o cumprimento do seu papel como cidadão e o exercício da democracia, e por outro lado que a escolha dos representantes por parte dos eleitores ocorra de forma pacífica e sem intercorrências.
+Diante da dimensão de uma eleição, as preparações para cada pleito continuam mesmo em anos não-eleitorais, com o objetivo de avaliar eleições anteriores e com base nessas análises propor melhorias para a logística das próximas eleições. A relevância desse trabalho consiste, principalmente, em garantir ao eleitor o cumprimento do seu papel como cidadão e o exercício da democracia, e por outro lado que a escolha dos representantes por parte dos eleitores ocorra de forma pacífica e sem intercorrências [@tresp2025].
 
 Um dos desafios na elaboração da logística das eleições e que gera impactos negativos aos eleitores é a formação de longas filas de espera nas seções eleitorais. A formação de filas nos locais de votação é um fenômeno que está associado a uma série de fatores, compreendendo desde a dinâmica das chegadas dos eleitores aos respectivos locais de votação, o tempo de votação dos eleitores, bem como o tamanho das seções eleitorais e o perfil do seu eleitorado.
 
-Após o fechamento do cadastro eleitoral são realizados cálculos do eleitorado por urna ou seção, isto é, a Justiça Eleitoral define a quantidade de urnas a serem utilizadas nas eleições gerais. Embora o Código Eleitoral (Lei nº 4.737/1965) em seu art. 117 preveja um limite de 400 eleitores nas seções eleitorais, determinar o tamanho da seção baseado em estudos que levem em conta informações do contexto local de cada estado e a dinâmica da votação, são imprescindíveis para uma logística mais assertiva.
+Após o fechamento do cadastro eleitoral são realizados cálculos do eleitorado por urna ou seção, isto é, a Justiça Eleitoral define a quantidade de urnas a serem utilizadas nas eleições gerais [@tresp2025]. Embora o Código Eleitoral (Lei nº 4.737/1965) em seu art. 117 preveja um limite de 400 eleitores nas seções eleitorais, determinar o tamanho da seção baseado em estudos que levem em conta informações do contexto local de cada estado e a dinâmica da votação, são imprescindíveis para uma logística mais assertiva.
 
 A investigação dos dados de tempo de votação dos pleitos anteriores pode evidenciar padrões relacionados a dinâmica de votação nas seções eleitorais. Isso pode sugerir insights para elaboração da logística das próximas eleições, de forma a otimizar o tempo de votação e consequentemente reduzir o tempo de espera nas filas. Nessa perspectiva, o presente estudo tem como objetivo realizar uma análise dos dados do tempo de votação do pleito de 2018 e 2022 com vistas a estimação do número de eleitores a serem alocados nas seções eleitorais do estado de São Paulo.
 
-# Análise exploratória de dados
+# Metodologia
 
-Nesta seção são apresentados resultados da análise exploratoria de dados, para avaliar características gerais da eleição de 2018 em relação ao tamanho das seções eleitorais, do tempo de votação dos eleitores, além de possíveis associações entre essas variáveis.
+Nesta seção são apresentados alguns aspectos metodológicos das abordagens utilizadas para estimação do número de eleitores aptos por seção eleitoral. Nesse sentido, são descritos de forma sucita o modelo de calibração, análise da curva ROC e a árvore de decisão, métodos usados no presente estudo.
 
-## Estatísticas das seções em 2018 - 1º turno
+## Modelo de calibração
+
+O modelo de calibração possui aplicações práticas em diversas área do conhecimento. Na engenharia e na física, por exemplo, os modelos de calibração são usados para aferição de instrumentos de medição de grandezas físicas. Já na medicina, esses métodos são utilizados para calibrar instrumentos que são indicadores de sáude pública. Outras áreas de destaque de aplicação dessa classe de modelos é a biologia e a química no estudo de composição de materiais e concentração de substâncias, respectivamente [@Ramos1987; @cavalcante2013].
+
+Para o modelo de calibração clássico, o processo de modelagem é baseado tipicamente em dois estágios. No primeiro, denominado de processo de calibração, são amostradas $n$ pares de observações $(y_1, x_1), \ldots, (y_n, x_n)$. No segundo estágio, isto é, no experimento de calibração, observa-se $k$ observações da variável de interesse $y$, $(y_{01}, \ldots, y_{0k})$, associadas a uma quantidade desconhecida $x_0$. Dessa forma, o interesse principal de aplicação do modelo de calibração reside em estimar $x_0$.
+
+Assumindo que a relação entre a variável de interesse $y$ e a variável explicativa $x$ é linear, temos o modelo de calibração usual, cujas as equações referentes ao processo de calibração e ao experimento de calibração, respectivamente, são dadas por
+
+$$
+y_{i} = \alpha + \beta x_i + \epsilon_{i}, \quad i = 1, \dots, n, 
+$$ {#eq-etapa_1}
+
+$$
+y_{0i} = \alpha + \beta x_0 + \epsilon_{i}, \quad i = n + 1, \dots, n + k.
+$$ {#eq-etapa_2}
+
+Os parâmetros do modelo de calibração são estimados, sob certas suposições, pelo método dos mínimos quadrados. Em particular, pode-se provar, que o estimador para o valor de $x_0$, no caso em que $k = 1$ é dado por
+
+$$
+x_0 = \frac{y_{0} - \hat{\alpha}}{\hat{\beta}}
+$$ {#eq-etapa_3}
+
+em que $\hat{\alpha}$ e $\hat{\beta}$ são os valores estimados dos parâmetros da regressão entre $y$ e $x$.
+
+## Método da Curva característica do receptor (curva ROC)
+
+A curva ROC (“Receiver Operating Characteristic”), em português, Curva característica do receptor, é um mapeamento das taxas de verdadeiros positivos (TPF = sensibilidade) e as taxas de falsos positivos (FPF = 1 − especificidade) para todos os valores possíveis do ponto de corte que tenta prever um desfecho binário. Cada ponto da curva corresponde a um ponto de corte de tal modo que, ao mover o corte, ganha-se em sensibilidade e perde-se em especificidade, ou vice-versa [@unal2017cutpoint].
+
+De acordo com Gonçalves et al. [-@goncalves2014roc], a análise da curva ROC foi pioneiramente utilizada na segunda guerra mundial quando a capacidade dos operadores de radar (receptores) foi testada para determinar se um sinal na tela do radar representava um objeto ou ruído. Contudo, devido a sua utilidade, passou rapidamente a ser usada em outras áreas, dentre as quais a área de sáude, para avaliação e obtenção de testes diagnósticos em situações em que o uso de testes padrão ouro são custosos ou inexistentes. Outra grande área em que a curva ROC é utilizada é na avaliação da perfomance de métodos de aprendizado de máquina para classificação, como por exemplo, modelos de regressão logística, árvore de decisão e máquinas de vetores de suporte [@bradley1997auc].
+
+Para medir a capacidade diagnóstica de um teste, é comum usar medidas resumidas. Conforme Zhou et al. [-@zhou2011diagnostic], a área sob a curva ROC (AUC) e/ou a área parcial sob a curva ROC (pAUC) são consideradas índices da capacidade discriminatória global de um teste. Um teste com AUC = 1 discrimina indivíduos perfeitamente como doentes ou saudáveis, por exemplo. Enquanto isso, um teste com uma AUC de 0,5 é equivalente a lançar uma moeda - um teste não informativo [@zweig1993rocplots].
+
+A escolha de um valor de corte apropriado é de suma importância para usar um teste de forma eficaz. Embora os valores de AUC, sensibilidade e especificidade sejam úteis na avaliação de um teste eles não especificam pontos de corte "ótimos" diretamente. Na literatura, há diversas abordagens que usam sensibilidade e especificidade para seleção de pontos de corte [@unal2017cutpoint].
+
+Um dos métodos amplamente usados na literatura é é baseado no índice $J$, proposto por Youden [-@youden1950index] e que considera tanto sensibilidade quanto especificidade para definir o valor "ótimo". Este método define o ponto de corte ótimo como o ponto que maximiza a função de Youden, isto é, que maximiza
+
+$$
+J(c) = Se(c) + (1 - Sp(c))
+$$
+
+sobre todos os pontos de corte $c$; $\hat{c}_j$ denota o ponto de corte correspondente a $J$. Quando o valor de $J$ é máximo, $\hat{c}_j$ é o valor de corte “ótimo” e corresponde a um ponto na curva ROC com a maior distância vertical da linha diagonal de 45° (o ROC de um teste não informativo).
+
+## Árvore de decisão
+
+Nesta seção, introduzimos brevemente o conceito e as principais características da árvore de decisão. Trata-se de um método não paramétrico, com o objetivo de realizar predições para uma variável de interesse (resposta), a partir de um conjunto de variáveis subjacentes (explicativas), a partir do particionamento do espaço de valores das variáveis explicativas através de um critério pré estabelecido.
+
+Uma vez que a construção da árvore é baseada na identificação de variáveis com potencial para explicar a variável de interesse, isso indica que ela fornece evidências de quais dessas variáveis são importantes, realizando uma seleção automática, além de indicar qual a ordem de importância, já que variáveis no topo da árvore possuem maior relevância [@izbicki2020ml].
+
+A árvore de decisão possui grande aplicabilidade prática em diversas áreas do conhecimento, tanto por sua facilidade de implementação e baixo custo computacional, quanto pela simplicidade de interpretação dos resultados.
+
+A maioria das aplicações práticas da árvore de decisão consiste na estimação de funções de predição. Contudo, é possível usar esses métodos também para realizar análise exploratória de dados, permitindo extrair insights sobre a relação e importância das variáveis.
+
+Vários estudos têm usado a árvore de decisão como uma estratégia para identificar pontos de cortes ótimos para variáveis de interesse. Por exemplo, Costa et al. [-@costa2022alzheimer] propoem o uso desse método para identificação de Alzheimer com base em biomacadores do liquido cerebroespinal. Já Fiorenzato et al. [-@fiorenzato2024parkinson] usam estratégias para identificação da doença de Parkinson usando pontos de corte em relação ao Mini-Mental State Examination e Montreal Cognitive Assessment, que são instrumentos usados para triagem cognitiva.
+
+De maneira formal, a árvore de regressão cria partições das variáveis explicativas em regiões distintas e disjuntas $R_{1}, \ldots, R_{j}$. Para prever o valor da variável resposta $Y$ para uma observação com variáveis explicativas $x \in R_k$, considera-se a média das variáveis respostas correspondentes a essa mesma região, isto é,
+
+$$
+g(x) = \frac{1}{|\{i: x_i \in R_k\}|}\sum_{i: x_i \in R_k}y_i.
+$$ Para avaliar quão razoável uma árvore $T$ é, avaliamos o seu erro quadrático médio
+
+$$
+\mathcal{P}(T) = \sum_{R}\sum_{i:x_i \in R}\frac{(y_i - \hat{y}_R)^2}{n},
+$$ em que $\hat{Y}_R$ é valor predito para a resposta de uma observaçao pertencente a região $R$. Um critério para obteção de uma árvore de regressão seria encontrar $T$ que minimizasse $\mathcal{P}(T)$, o que é computacionalmente inviável. Nesse sentido, utiliza-se uma heurística que consiste em divisões binárias recursivas, de modo a encontrar árvores de regressão com baixo erro de predição. Para mais detalhes ver [@james2021isl].
+
+# Resultados
+
+Nesta seção são apresentados os principais resultados dos métodos descritos anteriormente para estimação do número de eleitores aptos por seão para o pleito de 2026, com base 2018. Como a interpretação dos resultados e as discussões da aplicação do modelo de calibração, análise da curva ROC e árvore de decisão são análogas, os resultados para o pleito de 2022 são apresentados no apêndice. Inicialmente é apresentada uma análise exploratória de dados. Em seguida, são discutidos os resultados da aplicação dos métodos supracitados.
+
+## Resultados da análise exploratória de dados
+
+Nesta seção são apresentados resultados da análise exploratoria de dados realizada para avaliar características gerais das eleições de 2018 e 2022 em relação ao tamanho das seções eleitorais, ao tempo de votação dos eleitores. Os resultados foram sumarizados através de medidas descritivas de posição e dispersão e também por meio de recursos de visualização de dados.
+
+```{r}
+# cria vetor com os caminhos dos arquivos de dados
+files <- c("base_2018_01.csv", "base_2022_01.csv") |>
+  purrr::map(
+    \(x) paste0("data/", x) |>
+      here::here()
+  ) |>
+  unlist()
+
+# leitura dos dados para os anos de 2018 e 2022
+dados_agregados <- vroom::vroom(
+  file = files,
+  locale = vroom::locale(encoding = "latin1", decimal_mark = ","),
+  delim = ";"
+) |>
+  janitor::clean_names() |>
+  dplyr::mutate(
+    atraso = ifelse(tempo_atraso >= lubridate::hms("01:00:00"), 1, 0),
+    tipo_vot = dplyr::if_else(tipo =="bio", "cbio", "sbio")
+  ) |> 
+  tidyr::drop_na(tipo)
+
+# le o shape de zonas eleitorais
+zonas <- readr::read_rds(file = here::here("data", "shape_zona.rds")) |>
+  janitor::clean_names() |>
+  sf::st_as_sf()
+
+```
+
+```{r}
+dados_biometria <- dados_agregados |> 
+  dplyr::group_by(ano_eleicao) |> 
+  dplyr::summarise(
+    aptos = sum(qt_aptos),
+    biometrizados = sum(qt_eleitores_biometria),
+    percentual_biometrizados = biometrizados / aptos 
+  )
+
+aptos_2018 <- dados_biometria |> 
+  dplyr::filter(ano_eleicao == 2018) |> 
+  dplyr::pull(aptos) |> 
+  scales::number(
+    big.mark = ".", 
+    decimal.mark = ","
+  )
+
+aptos_2022 <- dados_biometria |> 
+  dplyr::filter(ano_eleicao == 2022) |> 
+  dplyr::pull(aptos) |> 
+  scales::number(
+    big.mark = ".", 
+    decimal.mark = ","
+  )
+
+biometria_2018 <- dados_biometria |> 
+  dplyr::filter(ano_eleicao == 2018) |> 
+  dplyr::pull(percentual_biometrizados) |> 
+  scales::percent(accuracy = 0.01, decimal.mark = ",")
+
+biometria_2022<- dados_biometria |> 
+  dplyr::filter(ano_eleicao == 2022) |> 
+  dplyr::pull(percentual_biometrizados) |> 
+  scales::percent(accuracy = 0.01, decimal.mark = ",")
+
+```
+
+Na @tbl-percentual_biometrizados são sumarizados dados gerais das eleições de 2018 e 2022. O número de eleitores aptos nos pleitos foram de `r aptos_2018` e `r aptos_2022`, respectivamente. Já o percentual de eleitores com biometria foram de `r biometria_2018` em 2018 e `r biometria_2022` em 2022. Dessa forma, nota-se um percentual expressivamente maior de eleitores com biometria em 2022.
+
+```{r}
+#| label: tbl-percentual_biometrizados 
+#| tbl-cap: "Percentual de eleitores aptos com biometria nas eleições de 2018 e 2022."
+#| tbl-pos: H 
+dados_biometria |> 
+  dplyr::ungroup() |> 
+  gt::gt() |>
+  gt::cols_align(align = "center") |>
+  gt::tab_style(
+    style = "vertical-align:middle",
+    locations = gt::cells_column_labels()
+  ) |> 
+  gt::cols_label(
+    ano_eleicao = "Ano",
+    aptos = "Eleitores aptos",
+    biometrizados = "Eleitores com biometria",
+    percentual_biometrizados = "% com biometria",
+  ) |>
+  gt::fmt_number(
+    columns = 2:3,
+    locale = "pt", 
+    sep_mark = ".",
+    decimals = 0
+  ) |> 
+  gt::fmt_number(
+    columns = 4,
+    locale = "pt",
+    decimals = 2
+  ) |> 
+  gt::fmt_percent(
+    columns = 4, 
+    decimals = 2, 
+    scale_values = TRUE
+  ) |> 
+  gt::tab_style(
+    style = gt::cell_text(weight = "bold"),
+    locations = gt::cells_column_labels()
+  )
+```
+
+```{r}
+#| echo: false
+#| eval: false
+#| label: tbl-descritiva_tmae
+#| tbl-cap: "Medidas descritivas para o tempo de atendimento total (min) para as eleições de 2018 e 2022."
+#| tbl-pos: H
+
+dados_agregados |>
+ dplyr::filter(tipo == "bio", subs_urna == 0) |> 
+ dplyr::group_by(ano_eleicao, tipo) |>
+ dplyr::summarise(
+   n = dplyr::n(),
+   media = mean(atendimento_total_tmae_seg, na.rm = TRUE),
+   mediana = median(atendimento_total_tmae_seg, na.rm = TRUE),
+   desvio_padrao = sd(atendimento_total_tmae_seg, na.rm = TRUE),
+   minimo = min(atendimento_total_tmae_seg, na.rm = TRUE),
+   maximo = max(atendimento_total_tmae_seg, na.rm = TRUE)
+ ) |> 
+ dplyr::ungroup() |> 
+ dplyr::select(-tipo) |> 
+ gt::gt() |>
+ gt::cols_align(align = "center") |>
+ gt::tab_style(
+   style = "vertical-align:middle",
+   locations = gt::cells_column_labels()
+ ) |> 
+ gt::cols_label(
+   ano_eleicao = "Ano",
+   n = "n",
+   media = "Média",
+   mediana = "Mediana",
+   desvio_padrao = "Desvio padrão",
+   minimo = "Mínimo",
+   maximo = "Máximo"
+ ) |>
+ gt::fmt_number(
+   columns = 2,
+   locale = "pt", 
+   sep_mark = ".",
+   decimals = 0
+ ) |> 
+ gt::fmt_number(
+   columns = 3:7,
+   locale = "pt",
+   decimals = 2
+ ) |> 
+ gt::tab_style(
+   style = gt::cell_text(weight = "bold"),
+   locations = gt::cells_column_labels()
+ )
+ 
+```
+
+```{r}
+#| echo: false
+#| eval: false
+#| label: tbl-descritiva_aptos
+#| tbl-cap: "Medidas descritivas para o número de eleitores aptos para as eleições de 2018 e 2022."
+#| tbl-pos: H
+dados_agregados |>
+ dplyr::filter(tipo == "bio", subs_urna == 0) |> 
+ dplyr::group_by(ano_eleicao, tipo) |>
+ dplyr::summarise(
+   n = dplyr::n(),
+   media = mean(qt_aptos, na.rm = TRUE),
+   mediana = median(qt_aptos, na.rm = TRUE),
+   desvio_padrao = sd(qt_aptos, na.rm = TRUE),
+   minimo = min(qt_aptos, na.rm = TRUE),
+   maximo = max(qt_aptos, na.rm = TRUE)
+ ) |> 
+ dplyr::ungroup() |> 
+ dplyr::select(-tipo) |> 
+ gt::gt() |>
+ gt::cols_align(align = "center") |>
+ gt::tab_style(
+   style = "vertical-align:middle",
+     locations = gt::cells_column_labels()
+ ) |> 
+ gt::cols_label(
+   ano_eleicao = "Ano",
+   n = "n",
+   media = "Média",
+   mediana = "Mediana",
+   desvio_padrao = "Desvio padrão",
+   minimo = "Mínimo",
+   maximo = "Máximo"
+ ) |>
+ gt::fmt_number(
+   columns = 2,
+   locale = "pt", 
+   sep_mark = ".",
+   decimals = 0
+ ) |> 
+ gt::fmt_number(
+   columns = 3:6,
+   locale = "pt",
+   decimals = 2
+ ) |> 
+ gt::tab_style(
+   style = gt::cell_text(weight = "bold"),
+   locations = gt::cells_column_labels()
+ )
+ 
+```
+
+```{r}
+dados_mapa <- dados_agregados |>
+  dplyr::filter(tipo == "bio", subs_urna == 0) |> 
+  dplyr::group_by(nr_zona, ano_eleicao) |>
+  dplyr::summarise(
+    minimo_atraso = min(tempo_atraso),
+    media_atraso = mean(tempo_atraso),
+    maximo_atraso = max(tempo_atraso),
+    minimo_secao = min(qt_aptos),
+    media_secao = mean(qt_aptos),
+    maximo_secao = max(qt_aptos)
+  ) |>
+  tidyr::pivot_wider(
+    names_from = ano_eleicao,
+    values_from = dplyr::starts_with("m")
+  ) |>
+  dplyr::mutate(dplyr::across(dplyr::contains("atraso"), ~ .x / lubridate::dminutes(1))) |>
+  dplyr::right_join(zonas, by = "nr_zona") |>
+  sf::st_as_sf()
+
+```
 
 ```{r}
 
@@ -43,73 +380,81 @@ dados_geral <- readr::read_csv2(
   locale = readr::locale(encoding = "latin1")
 ) |>
   janitor::clean_names() |>
-  dplyr::filter(subs_urna == 0) |>
-  dplyr::mutate(atraso =
-                  ifelse(tempo_atraso >= lubridate::hms("01:00:00"), 1, 0),
-                tipo_vot = dplyr::if_else(tipo =="bio", "cbio", "sbio")
+  dplyr::mutate(
+    atraso = ifelse(tempo_atraso >= lubridate::hms("01:00:00"), 1, 0),
+    tipo_vot = dplyr::if_else(tipo =="bio", "cbio", "sbio")
   ) |> 
   tidyr::drop_na(tipo)
 
 dados <- dados_geral |>
   dplyr::filter(tipo == "bio", subs_urna == 0)
-
-
-
 ```
 
-A @fig-densidade apresenta a estimativa de densidades do número de eleitores aptos para o pleito de 2018 dentro das seções que fizeram uso ou não da identificação biométrica. Nota-se, para esse pleito, que há uma concentração de seções com número de eleitores aptos superior a 300 nas seções 100% com identificação biométrica e cerca de 350 nas demais. Ainda, há um número expressivo de seções com mais de 400 eleitores. Esse fato pode estar associado as agregações que são realizadas durante a eleição.
+A @fig-densidade apresenta as estimativas das densidades do número de eleitores aptos para os pleitos de 2018 e 2022 dentro das seções que fizeram uso ou não da identificação biométrica. Nota-se, para ambos os pleitos , uma concentração de seções com número de eleitores aptos superior a 300 nas seções com 100% de identificação biométrica e cerca de 350 nas demais. Ainda, há um número expressivo de seções com mais de 400 eleitores. Esse fato pode estar associado as agregações que são realizadas durante a eleição.
 
-De maneira complementar, são apresentadas algumas medidas descritivas para o eleitorado apto na votação com identificação 100% biométrica na @tbl-resumo_estat. O número médio de eleitores aptos foi cerca de 304 eleitores com um desvio padrão de cerca de 66 eleitores. O valor mediano foi de 367, de modo que 50% das seções eleitorais no pleito de 2018 tinham valores de eleitorado apto igual ou superior a esse valor. O box-plot dos aptos das seções com identificação 100% biométrica é apresentado na @fig-bp_secoes.
+Na @tbl-resumo_estat são apresentadas, de forma complementar, algumas medidas descritivas para o eleitorado apto na votação com identificação 100% biométrica para ambas as eleições. O tamanho médio das seções em 2022 foi superior aquele observado no pleito de 2018, cujos valores foram de aproximadamente 304 e 334 eleitores, respectivamente. Ainda, o valor mediano para o pleito de 2022 foi de 341, indicando que 50% das seções eleitorais tinham número de eleitores aptos superior a esse valor. O valor mediano para a eleição de 2018 foi de 311.
 
 ```{r}
 #| fig-cap: "Densidade dos aptos por seção com relação à votação com e sem identificação biométrica em 2018"
 #| fig-align: center
 #| label: fig-densidade
-
-medias <- dados_geral |> 
-  dplyr::group_by(tipo_vot) |> 
+#| fig-width: 8
+#| fig-height: 5
+#| fig-pos: H
+medias <- dados_agregados |> 
+  dplyr::group_by(ano_eleicao, tipo_vot) |> 
   dplyr::summarise(media = mean(qt_aptos))
 
-dados_geral |>
+dados_agregados |>
   ggplot2::ggplot(ggplot2::aes(x = qt_aptos, fill = tipo_vot)) +
-  ggplot2::geom_density(alpha = .3, 
-                        linewidth = 0.75,
-                        color = "gray49") +
-  ggplot2::geom_segment(data = medias,
-                      mapping = ggplot2::aes(x = media,
-                                             y = 0,
-                                             yend = 0.017,
-                                             color = tipo_vot), 
-                      linewidth = 0.7,
-                      show.legend = FALSE,
-                      linetype = 2)+
-  ggplot2::scale_fill_discrete(type = c("steelblue4", "palevioletred4"),
-                               labels = c("Com biometria", "Sem biometria"),
-                               name = "Tipo de votação"
-  )+ 
-  ggplot2::annotate("text", 
-                      x = 325, 
-                      y = 0.017, 
-                      label = "Médias",
-                      vjust = -1)+
-  ggplot2::scale_color_discrete(type = c("steelblue4", "palevioletred4"))+
+  ggplot2::geom_density(alpha = .3, linewidth = 0.75, color = "gray49") +
+  ggplot2::geom_segment(
+    data = medias,
+    mapping = ggplot2::aes(
+      x = media,
+      y = 0,
+      yend = 0.017,
+      color = tipo_vot), 
+    linewidth = 0.7,
+    show.legend = FALSE,
+    linetype = 2
+  ) +
+  ggplot2::scale_fill_discrete(
+    type = c("steelblue4", "palevioletred4"),
+    labels = c("Com biometria", "Sem biometria"),
+    name = "Tipo de votação"
+  ) + 
+  ggplot2::annotate(
+    "text", 
+    x = 325, 
+    y = 0.017, 
+    label = "Médias", 
+    vjust = -1
+  )+
+  ggplot2::scale_color_discrete(
+    type = c("steelblue4", "palevioletred4")
+  ) +
   ggplot2::scale_y_continuous(
-    labels = scales::label_number(big.mark = ".", decimal.mark = ",")
+    labels = scales::label_number(
+      big.mark = ".", 
+      decimal.mark = ",")
   ) +
   ggplot2::labs(x = "Eleitores aptos", y = "Densidade")+ 
   ggplot2::theme_classic() + 
-  ggplot2::theme(
-    legend.position = "bottom"
-  )
+  ggplot2::theme(legend.position = "bottom") + 
+  ggplot2::facet_wrap(~ano_eleicao, scales = "free")
 
 ```
 
 ```{r}
 #| label: tbl-resumo_estat
 #| tbl-cap: "Estatísticas descritivas das seções com identificação biométrica na eleição de 2018"
+#| tbl-pos: H
 
 #
-resumo_estat <- dados |>
+resumo_estat <- dados_agregados |>
+  dplyr::filter(tipo == "bio", subs_urna == 0) |> 
+  dplyr::group_by(ano_eleicao) |> 
   dplyr::summarise(
     n_secoes = dplyr::n(),
     media_secao =  mean(qt_aptos, na.rm = TRUE),
@@ -122,22 +467,22 @@ resumo_estat <- dados |>
 resumo_estat |> 
   gt::gt() |>
   gt::cols_align(align = "center") |>
-  
   gt::cols_label(
+    ano_eleicao = "Ano", 
     n_secoes = "Nº seções",
-    media_secao = "Média/seção",
-    mediana_secao = "Mediana/seção",
+    media_secao = "Média",
+    mediana_secao = "Mediana",
     desvpad_secao = "Desvio padrão",
-    min_secao = "Eleitorado menor seção",
-    max_secao = "Eleitorado maior seção",
+    min_secao = "Mínimo",
+    max_secao = "Máximo",
   ) |> 
   gt::fmt_number(
-    columns = 2:4,
+    columns = 3:5,
     decimals = 2,
     dec_mark = ","
   ) |>
   gt::fmt_number(
-    columns = 1,
+    columns = 2,
     decimals = 0,
     dec_mark = ",",
     sep_mark = "."
@@ -151,63 +496,103 @@ resumo_estat |>
 ```
 
 ```{r}
+#| echo: false
+#| eval: false
 #| label: fig-bp_secoes
 #| fig-cap: "Box-plot do número de eleitores aptos nas seções com biometria em 2018"
 #| fig-align: center
+#| fig-width: 5
+#| fig-height: 4
 
-dados |>
-  ggplot2::ggplot(ggplot2::aes(y = qt_aptos, x = 0)) +
-  ggplot2::geom_boxplot( fill = "steelblue", width = 0.5) +
-  ggplot2::theme_classic() +
-  ggplot2::labs(y = "Aptos por seção") + 
-  ggplot2::theme(
-    axis.title.x = ggplot2::element_blank(),
-    axis.text.x = ggplot2::element_blank(),
-    axis.ticks.x = ggplot2::element_blank()
-    ) + 
-  ggplot2::xlim(-1,1)
+dados_agregados |>
+ dplyr::filter(tipo == "bio", subs_urna == 0) |> 
+ ggplot2::ggplot(ggplot2::aes(y = qt_aptos, x = 0, fill = tipo_vot)) +
+ ggplot2::geom_boxplot( fill = "steelblue", width = 0.5) +
+ ggplot2::theme_classic() +
+ ggplot2::labs(y = "Aptos por seção") + 
+ ggplot2::theme(
+   axis.title.x = ggplot2::element_blank(),
+   axis.text.x = ggplot2::element_blank(),
+   axis.ticks.x = ggplot2::element_blank()
+ ) + 
+ ggplot2::xlim(-1,1)
 ```
 
-## Estatística dos tempos de atraso de encerramento de votação {#tempo_atraso}
+Na @fig-mapa_aptos_2018_2022 são apresentados os mapas para ambos os pleitos em relação ao tamanho médio das seções para cada uma das zonas eleitorais. O mapa indica diversas regiões com altos valores de aptos por seção. Além disso, os mapas indicam uma diferença expressiva de cenário em que as eleições foram realizadas. De fato, o número de zonas em que houve biometria em 2022 são expressivamente maior quando comparado com o cenário do pleito de 2018.
 
-Com os logs das urnas eletrônicas é possível apurar o tempo de atraso para o encerramento das urnas após às 17 horas, que é a data estipulada para o fim do processo de votação. Assim, considerando o tempo em atraso de encerramento daquelas urnas eletrônicas do pleito de 2018 em que o eleitor foi identificado com biometria, obtive-se as estatísticas apresentadas na @tbl-resumo_estat_atraso.
+```{r}
+#| label: fig-mapa_aptos_2018_2022
+#| fig-cap: "Mapa da média de eleitores aptos/seção por zona eleitoral nas eleições de 2018 e 2022."
+#| fig-pos: H
+tmap::tm_shape(dados_mapa) +
+  tmap::tm_polygons(
+    fill = c("media_secao_2018", "media_secao_2022"),
+    fill.scale = tmap::tm_scale_continuous(values = "brewer.reds"),
+    fill.legend = tmap::tm_legend(
+      title = "Aptos (média/zona)",
+      orientation = "landscape",
+      width = 60
+    ),
+    fill.free = FALSE
+  ) + 
+  tmap::tm_layout(panel.labels = c("2018", "2022"), , scale = 0.8) +
+  tmap::tm_compass(type = "8star") +
+  tmap::tm_scalebar() + 
+  tmap::tm_components(
+    c("tm_compass", "tm_scalebar"), 
+    position = c("left", "bottom")
+  ) + 
+  tmap::tm_facets(ncol = 2)
+```
 
-Na @fig-histograma_tempos podem ser vistos a distribuição dos tempos de atraso, medidos em minutos daquelas seções que utilizaram identificação com biometria em 2018.
+Com os logs das urnas eletrônicas é possível apurar o tempo de atraso para o encerramento das urnas após às 17 horas, que é o horário estipulado para o fim do processo de votação. Assim, considerando o tempo de atraso no encerramento daquelas urnas eletrônicas dos pleitos de 2018 e 2022 em que o eleitor foi identificado com biometria, obtive-se as estatísticas apresentadas na @tbl-resumo_estat_atraso.
+
+Dos resultados, nota-se que o tempo médio de atraso nas seções eleitorais em 2018 foi de 4,33 minutos com um desvio padrão de 7,53 minutos. A estimativa do desvio padrão indica alta dispersão do tempo de atraso nas seções. O tempo médio foi de 2,25 minutos. Ainda, observa-se que o tempo médio na eleição de 2022 o o tempo médio de atraso foi quase o dobro, também marcada por uma alta variabilidade.
+
+Na @fig-histograma_tempos podem ser vistos as distribuições dos tempos de atraso, medidos em minutos referentes às seções que utilizaram identificação com biometria para ambos os anos.
 
 ```{r}
 #| label: fig-histograma_tempos
 #| fig-cap: "Distribuição do atraso do encerramento da eleição (em min) nas seções com identificação biométrica em 2018"
 #| fig-align: center
+#| fig-width: 10
+#| fig-height: 5
+#| fig-pos: H
 
-
-dados |>
+dados_agregados |>
+  dplyr::filter(tipo == "bio", subs_urna == 0) |> 
   dplyr::mutate(tempo_atraso = as.numeric(lubridate::hms(tempo_atraso))/60) |> 
   ggplot2::ggplot(ggplot2::aes(x = tempo_atraso)) +
-  ggplot2::geom_histogram( fill = "steelblue", color = "white", bins = 15) +
+  ggplot2::geom_histogram(fill = "steelblue", color = "white") +
   ggplot2::labs(x = "Atraso encerramento votação (min)", y = "Frequência") +
-  ggplot2::scale_x_continuous(breaks = seq(10, 90, by=10)) +
+  # ggplot2::scale_x_continuous(breaks = seq(10, 110, by = 10)) +
   ggplot2::scale_y_continuous(
     labels = scales::label_number(big.mark = ".", decimal.mark = ",")
   ) +
-  ggplot2::theme_classic()
+  ggplot2::theme_classic() + 
+  ggplot2::facet_wrap(~ano_eleicao, scales = "free") + 
+  ggplot2::xlim(c(0, 100))
 ```
 
 ```{r}
 #| label: tbl-resumo_estat_atraso
 #| tbl-cap: "Estatísticas descritivas do tempo de atraso (min) no encerramento das seções com identificação biométrica na eleição de 2018"
+#| tbl-pos: H
 
 #
-resumo_estat_atraso <- dados |>
+resumo_estat_atraso <- dados_agregados |>
+  dplyr::filter(tipo == "bio", subs_urna == 0) |> 
+  dplyr::group_by(ano_eleicao) |> 
   dplyr::mutate(
-    tempo_atraso_dec =as.numeric(lubridate::hms(tempo_atraso))/60) |> 
+    tempo_atraso_dec = as.numeric(lubridate::hms(tempo_atraso))/60) |> 
   dplyr::summarise(
     n_tempo = dplyr::n(),
     media_atraso = mean(tempo_atraso_dec, na.rm = TRUE),
     mediana_atraso = median(tempo_atraso_dec, na.rm = TRUE),
     desvpad_atraso = sd(tempo_atraso_dec, na.rm = TRUE),
     min_atraso = min(tempo_atraso_dec,na.rm = TRUE),
-    q1 = quantile(tempo_atraso_dec, probs = 0.25, na.rm = TRUE),
-    q3 = quantile(tempo_atraso_dec, probs = 0.75, na.rm = TRUE),
+    # q1 = quantile(tempo_atraso_dec, probs = 0.25, na.rm = TRUE),
+    # q3 = quantile(tempo_atraso_dec, probs = 0.75, na.rm = TRUE),
     max_atraso = max(tempo_atraso_dec,na.rm = TRUE)
   )
 
@@ -215,22 +600,23 @@ resumo_estat_atraso |>
   gt::gt() |>
   gt::cols_align(align = "center") |>
   gt::cols_label(
-    n_tempo = "Nº seções",
-    media_atraso = "Tempo médio atraso/seção",
-    mediana_atraso = "Tempo mediano atraso/seção",
+    ano_eleicao = "Ano",
+    n_tempo = "Seções",
+    media_atraso = "Média",
+    mediana_atraso = "Mediana",
     desvpad_atraso = "Desvio padrão",
-    min_atraso = "Menor tempo atraso médio",
-    q1 = "1º quartil tempo atraso",
-    q3 = "3º quartil tempo atraso",
-    max_atraso = "Maior tempo atraso médio",
+    min_atraso = "Mínimo",
+    # q1 = "1º quartil tempo atraso",
+    # q3 = "3º quartil tempo atraso",
+    max_atraso = "Máximo"
   ) |> 
   gt::fmt_number(
-    columns = 2:7,
+    columns = 3:7,
     decimals = 2,
     dec_mark = ","
   ) |>
   gt::fmt_number(
-    columns = 1,
+    columns = 2,
     decimals = 0,
     dec_mark = ",",
     sep_mark = "."
@@ -243,16 +629,47 @@ resumo_estat_atraso |>
   )
 ```
 
-## Estatística dos tempos de votação
+Para avaliar a distribuição espacial do tempo de atendimento total médio e do tamanho das seções eleitorais em ambos os pleitos, foram construídos gráficos que sumarizam essas informações para cada uma das zonas eleitorais. Destaca-se que as regiões em cinza representam zonas em que não foram realizadas biometria. Na Figura @fig-mapa_atraso_2018_2022 são representados os valores máximo para o tempo de atendimento total médio para cada uma das zonas eleitorais. Nota-se, para o pleito de 2022, diversas zonas eleitorais com tempo máximo de atendimento superior a 100 segundos.
 
-Ainda com dados extraídos dos logs das urnas eletrônicas, especificamente das seções em que o voto foi totalmente habilitado biomtericamente em 2018, é possível calcular o tempo total médio de atendimento do eleitor (TMAE) que é o tempo, medido em segundos, desde a habilitação até o encerramento da votação do eleitor. Esse tempo reflete a duração média do processo de votação do eleitor em cada seção para completar os 6 votos necessários nesse pleito. As principais estatísticas descritivas podem ser vistas na @tbl-resumo_estat_tempo.
+```{r}
+#| label: fig-mapa_atraso_2018_2022
+#| fig-cap: "Mapa do máximo do tempo de atraso/seção por zona eleitoral nas eleições de 2018 e 2022."
+#| fig-pos: H
+tmap::tm_shape(dados_mapa) +
+  tmap::tm_polygons(
+    fill = c("maximo_atraso_2018", "maximo_atraso_2022"),
+    fill.scale = tmap::tm_scale_continuous(values = "brewer.reds"),
+    fill.legend = tmap::tm_legend(
+      title = "Atraso (máximo/zona)",
+      orientation = "landscape",
+      position = tmap::tm_pos_out("center", "bottom"),
+      width = 60
+    ),
+    fill.free = FALSE
+  ) + 
+  tmap::tm_layout(panel.labels = c("2018", "2022"), scale = 0.8) +
+  tmap::tm_compass(type = "8star") +
+  tmap::tm_scalebar() + 
+  tmap::tm_components(
+    c("tm_compass", "tm_scalebar"), 
+    position = c("left", "bottom")
+  ) + 
+  tmap::tm_facets(ncol = 2)
+```
+
+Ainda com dados extraídos dos logs das urnas eletrônicas, especificamente das seções em que o voto foi totalmente habilitado biomtericamente em 2018 e 2022, é possível calcular o tempo total médio de atendimento do eleitor (TMAE) que é o tempo, medido em segundos, desde a habilitação até o encerramento da votação do eleitor. Esse tempo reflete a duração média do processo de votação do eleitor em cada seção para completar todos os votos necessários. As principais estatísticas descritivas podem ser vistas na @tbl-resumo_estat_tempo.
+
+Apesar da diferença de um candidato entre as duas eleições, nota-se que não há diferenças expressivas entre os tempos de atendimento médio total. O valor médio estimado para o ano de 2018 foi de 82,86 segundos e para 2022 a estimativa foi de 82,35 segundos.
 
 ```{r}
 #| label: tbl-resumo_estat_tempo
 #| tbl-cap: "Estatísticas descritivas do tempo total médio de atendimento do eleitor (TMAE em segundos) das seções com identificação biométrica na eleição de 2018"
+#| tbl-pos: H
 
 #
-resumo_estat_tempos <- dados |>
+resumo_estat_tempos <- dados_agregados |>
+  dplyr::filter(tipo == "bio", subs_urna == 0) |> 
+  dplyr::group_by(ano_eleicao) |> 
   dplyr::summarise(
     n_tempo = dplyr::n(),
     media_tempo = mean(atendimento_total_tmae_seg, na.rm = TRUE),
@@ -266,20 +683,21 @@ resumo_estat_tempos |>
   gt::gt() |>
   gt::cols_align(align = "center") |>
   gt::cols_label(
-    n_tempo = "Nº seções",
-    media_tempo = "Tempo médio/seção",
-    mediana_tempo = "Tempo mediano/seção",
+    ano_eleicao = "Ano",
+    n_tempo = "Seções",
+    media_tempo = "Média",
+    mediana_tempo = "Mediana",
     desvpad_tempo = "Desvio padrão",
-    min_tempo = "Menor tempo médio",
-    max_tempo = "Maior tempo médio",
+    min_tempo = "Mínimo",
+    max_tempo = "Máximo",
   ) |> 
   gt::fmt_number(
-    columns = 2:6,
-    decimals = 1,
+    columns = 3:7,
+    decimals = 2,
     dec_mark = ","
   ) |>
   gt::fmt_number(
-    columns = 1,
+    columns = 2,
     decimals = 0,
     dec_mark = ",",
     sep_mark = "."
@@ -292,33 +710,41 @@ resumo_estat_tempos |>
   )
 ```
 
-A @fig-bp_tempos representa o box-plot dos tempos totais de votação (TMAE), medidos em segundos. Nota-se a existência de tempos de votação muitos valores discrepantes com relação à massa de dados na cauda superior e poucos na cauda inferior.
+<!-- A @fig-bp_tempos representa o box-plot dos tempos totais de votação (TMAE), medidos em segundos. Nota-se a existência de tempos de votação muitos valores discrepantes com relação à massa de dados na cauda superior e poucos na cauda inferior. -->
 
 ```{r}
+#| echo: false
+#| eval: false
 #| label: fig-bp_tempos
 #| fig-cap: "Box-plot do tempo médio total de votação (TMAE) nas seções com identificação biométrica em 2018"
 #| fig-align: center
-
+#| fig-width: 5
+#| fig-height: 4
 
 dados |>
-  ggplot2::ggplot(ggplot2::aes(y = atendimento_total_tmae_seg, x = 0)) +
-  ggplot2::geom_boxplot( fill = "steelblue", width = 0.5) +
-  ggplot2::theme_classic() +
-  ggplot2::labs(y = "Tempo médio total de votação (TMAE)\n(s)") + 
-  ggplot2::theme(
-    axis.title.x = ggplot2::element_blank(),
-    axis.text.x = ggplot2::element_blank(),
-    axis.ticks.x = ggplot2::element_blank()
-    ) + 
-  ggplot2::xlim(-1,1)
+ ggplot2::ggplot(ggplot2::aes(y = atendimento_total_tmae_seg, x = 0)) +
+ ggplot2::geom_boxplot( fill = "steelblue", width = 0.5) +
+ ggplot2::theme_classic() +
+ ggplot2::labs(y = "Tempo médio total de votação (TMAE)\n(s)") +
+ ggplot2::theme(
+   axis.title.x = ggplot2::element_blank(),
+   axis.text.x = ggplot2::element_blank(),
+   axis.ticks.x = ggplot2::element_blank()
+ ) +
+ ggplot2::xlim(-1,1)
 ```
 
-# Modelo de calibração
+## Resultado para o Modelo de Calibração {#sec-resultado-calibracao}
+
+Nesta seção são apresentados os resultados da aplicação do modelo de calibração. Para isso, definiu-se como variável de interesse o tempo total médio de atendimento ($y$) e como variável explicativa o número de eleitores aptos ($x$). Nesse sentido, o objetivo é obter uma estimativa para o número de eleitores aptos para a seção eleitoral, fixado um valor plausível do tempo total médio de atendimento. Na Figura @fig-graf_disp é apresentado do diagrama de dispersão, que indica uma relação linear entre essas variáveis, o que configura o modelo de calibração como plausível para modelar os dados.
 
 ```{r}
 #| label: fig-graf_disp
 #| fig-cap: "Gráfico de dispersão entre os tempos total de votação médio e eleitores aptos na seção"
 #| fig-align: center
+#| fig-width: 5
+#| fig-height: 4
+#| fig-pos: H
 
 dados |>
   dplyr::group_by(tipo) |>
@@ -330,21 +756,11 @@ dados |>
   ggplot2::theme_classic()
 ```
 
-$$
-y_{i} = \alpha + \beta x_i + \epsilon_{i}, \quad i= 1, \dots, n 
-$$ {#eq-etapa_1}
+No primeiro estágio do modelo de calibração foram estimados os parâmetros associados ao modelo linear entre as variáveis consideradas. Com base nesses valores, realize-se o experimento de calibraçao, que consiste em estimar o valor do número de eleitores $x_0$ para um dado valor $y_0$ para o tempo de atendimento.Para estimar o número de eleitores aptos por seção, foi considerado como valor de referência para $y_0$ o valor mediano do tempo total médio de votação dos eleitores em seções com votação biométrica no pleito de 2018, cujo valor foi de `r scales::number(resumo_estat_tempos$mediana_tempo[[1]], decimal.mark = ",", accuracy = 0.1)` segundos.
 
-$$
-\hat{x} = \frac{y_{desejado} - \hat{\alpha}}{\hat{\beta}}
-$$ {#eq-etapa_2}
+<!-- Onde a @eq-etapa_1, $y_{i}$ é a variável resposta, no presente caso, o tempo total médio de votação, $x_{i}$ a variável independente, a quantidade de aptos, ambas na i-ésima seção, e $\alpha$ e $\beta$, parâmetros do modelo de regressão a serem estimados. -->
 
-Onde a @eq-etapa_1, $y_{i}$ é a variável resposta, no presente caso, o tempo total médio de votação, $x_{i}$ a variável independente, a quantidade de aptos, ambas na i-ésima seção, e $\alpha$ e $\beta$, parâmetros do modelo de regressão a serem estimados.
-
-O segundo estágio (@eq-etapa_2), tem por objetivo estimar variável independente da @eq-etapa_1, $\hat{x}$, dado um valor de $y_{desejado}$ e os parâmetros e $\alpha$ e $\beta$ estimados na regressão da primeira etapa. Transpondo para a siuação atual, estima-se na primeira etapa uma regressão linear simples do tempo médio de votação em função da quantidade de aptos da seção e na segunda etapa, o valor da quantidade de aptos estimado dado o tempo médio de votação específico e os parâmetros do modelo estimado, que é a resposta do problema
-
-## Resultado utilizando o valor mediano do TMAE (81 s) {#sec-resultado-calibracao}
-
-Considerando o valor mediano do tempo total médio de votação dos eleitores em seções com votação biométrica no pleito de 2018, `r scales::number(resumo_estat_tempos$mediana_tempo, decimal.mark = ",", accuracy = 0.1)` segundos.
+<!-- O segundo estágio (@eq-etapa_2), tem por objetivo estimar variável independente da @eq-etapa_1, $\hat{x}$, dado um valor de $y_{desejado}$ e os parâmetros e $\alpha$ e $\beta$ estimados na regressão da primeira etapa. Transpondo para a siuação atual, estima-se na primeira etapa uma regressão linear simples do tempo médio de votação em função da quantidade de aptos da seção e na segunda etapa, o valor da quantidade de aptos estimado dado o tempo médio de votação específico e os parâmetros do modelo estimado, que é a resposta do problema -->
 
 ```{r}
 # modelo de calibracao  ---------------------------------------------------
@@ -362,7 +778,7 @@ alpha <- coef(modelo_lm)[[1]]
 beta <- coef(modelo_lm)[[2]]
 
 # calcula o parametro de calibracao (81s)
-x0 <- (resumo_estat_tempos$mediana_tempo - alpha) / beta
+x0 <- (resumo_estat_tempos$mediana_tempo[[1]] - alpha) / beta
 
 # calcula a variancia estimada do parametro de calibracao
 xbar <- mean(dados$qt_aptos)
@@ -374,7 +790,7 @@ varx0 <- (sigma2 / beta ^ 2) * (1 + 1 / n + ((xbar - x0) ^ 2) / nsxx)
 # cria funcao para estimar o intervalo de confianca via bootstrap
 boot_func <- function(data, indices) {
   modelo_lm <- lm(atendimento_total_tmae_seg ~ qt_aptos, data = data[indices, ])
-  x0 <- (resumo_estat_tempos$mediana_tempo - coef(modelo_lm)[[1]]) / coef(modelo_lm)[[2]]
+  x0 <- (resumo_estat_tempos$mediana_tempo[[1]] - coef(modelo_lm)[[1]]) / coef(modelo_lm)[[2]]
   return(x0)
 }
 
@@ -386,18 +802,21 @@ icboot <- boot::boot.ci(boot_results)
 
 ```
 
-Os cálculos apresentados nas @eq-etapa_1 e @eq-etapa_2 realizados para o conjunto de dados utilizados neste estudo resultaram na estimativa do número de eleitores por seção, segundo o modelo de calibração de $\hat{x} =$ `r scales::number(x0, decimal.mark = ",")` .
+```{r}
+#Cria um tibble para o resultado do bootstrap
+ic_boot_tbl <- tibble::tibble(x_bar = icboot$t0, li =icboot$percent[4], ls = icboot$percent[5] )
 
-O cálculo do intervalo de confiança de 95% para a estimativa foi realizada por meio de um método de reamostragem bootstrap, considerando o modelo de calibração especificado com 1.000 replicações. A @fig-ic_calib apresenta o intervalo de confiança estimado.
+```
+
+Os cálculos apresentados nas @eq-etapa_1 e @eq-etapa_3 realizados para o conjunto de dados utilizados neste estudo resultaram na estimativa do número de eleitores por seção, segundo o modelo de calibração de $x_0 =$ `r scales::number(x0, decimal.mark = ",")`. O intervalo de confiança de 95% para a estimativa foi realizada por meio de um método de reamostragem bootstrap, considerando o modelo de calibração especificado com 1.000 replicações. A estimativa intervalar, com base no método bootstrap com nível de confiança de 95%, indica que as seções devam ter entre `r scales::number(ic_boot_tbl$li)` e `r scales::number(ic_boot_tbl$ls)` eleitores para que o tempo total médio de votação seja de `r scales::number(resumo_estat_tempos$mediana_tempo[[1]], decimal.mark = ",", accuracy = 0.1)` segundos. A @fig-ic_calib apresenta o intervalo de confiança estimado.
 
 ```{r}
 #| label: fig-ic_calib
 #| fig-cap: "Intervalo de confiança de 95% bootstrap para a número de eleitores por seção estimado pelo modelo de calibração"
 #| fig-align: center
-
-#Cria um tibble para o resultado do bootstrap
-ic_boot_tbl <- tibble::tibble(x_bar = icboot$t0, li =icboot$percent[4], ls = icboot$percent[5] )
-
+#| fig-width: 5
+#| fig-height: 4
+#| fig-pos: H
 #gráfico
 ic_boot_tbl |>
   ggplot2::ggplot() +
@@ -406,7 +825,7 @@ ic_boot_tbl |>
                            color="steelblue", fill="gold",shape = 22) +
   ggplot2::scale_y_continuous(n.breaks = 8,
                               labels = scales::label_number(big.mark = ".", decimal.mark = ",")
-                              ) + 
+  ) + 
   ggplot2::labs(y = "Eleitores") +
   ggplot2::theme_classic() +
   ggplot2::theme(
@@ -417,27 +836,20 @@ ic_boot_tbl |>
 
 ```
 
-A estimativa intervalar, com base no método bootstrap com nível de confiança de 95%, resulta que as seções devam ter entre `r scales::number(ic_boot_tbl$li)` e `r scales::number(ic_boot_tbl$ls)` eleitores para que o tempo total médio de votação seja de `r scales::number(resumo_estat_tempos$mediana_tempo, decimal.mark = ",", accuracy = 0.1)` segundos.
+Para avaliar a quantidade de seções eleitorais necessárias considerando o número de eleitores aptos estimado por seção, foram realizadas algumas simulações considerando, para tanto, o eleitorado atual nos locais de votação atualizados em 16/09/2025. O saldo de seções será determinado pelo número atual de seções eleitorais nos locais de votação subtraído da quantidade necessária de seções, resultado da divisão do eleitorado do local de votação pelo número 325 (eleitorado arredondamento para o próximo inteiro subsequente). Vale destacar que os resultados do saldo serão agregados por Zona Eleitoral.
 
-### Seções necessárias se o número de eleitores for adotado
+O resultado final indica a necessidade de criação de 8.584 seções no Estado para redistribuir os eleitores dentro de seus locais de votação com o número de 325 eleitrores/seção, como estimado pelo modelo de calibração. Isso corresponde a criação de cerca de 8,31% mais de seções no Estado (atualmente há 103.265 seções).
 
-Para avaliar a quantidade de seções eleitorais necessárias se adotado o novo número de eleitores por seção, consideram-se:
-
--   eleitorado atual nos locais de votação atualizados em 16/09/2025;
-
--   o saldo de seções será determinado pelo número atual de seções eleitorais nos locais de votação subtraído da quantidade necessária de seções, resultado da divisão do eleitorado do local de votação pelo número 325 (eleitorado arredondamento para o próximo inteiro subsequente);
-
--   os resultados do saldo serão agregados por Zona Eleitoral.
-
-**O resultado final indica a necessidade de criação de 8.584 seções no Estado para redistribuir os eleitores dentro de seus locais de votação com o número de 325 eleitrores/seção**, como estimado pelo modelo de calibração. Isso corresponde a criação de cerca de 8,31% mais de seções no Estado (atualmente há 103.265 seções). A @tbl-secoes_calibacao_10mais indica as 10 primeiras Zonas eleitorais com **maiores saldos de seções a criar**.
+Nas tabelas @tbl-secoes_calibacao_10mais e @tbl-secoes_calibacao_10menos são apresentados as 10 primeiras Zonas eleitorais com maiores saldos de seções a criar e as 10 primeiras zonas eleitorais que teriam diminuição de seções se o critério fosse adotado, respectivamente.
 
 ```{r}
 #| label: tbl-secoes_calibacao_10mais
 #| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 325 por seção (modelo de calibração)"
+#| tbl-pos: H
 
 secoes <- readr::read_rds(
   file = here::here("data", "secoes16092025.rds")) |>
-    janitor::clean_names()
+  janitor::clean_names()
 
 
 
@@ -483,11 +895,11 @@ resumo_ze |>
     locations = gt::cells_column_labels()
   ) |> 
   gt::cols_label(
-    num_zona = "Nº ZE",
-    locais = "Qtd. locais",
-    secoes = "Qtd. seções",
+    num_zona = "Zona",
+    locais = "Locais",
+    secoes = "Seções",
     aptos = "Aptos",
-    sec_necessarias = "Qtd. seções necessárias",
+    sec_necessarias = "Seções necessárias",
     saldo = "Saldo",
     perc_saldo = "% sobre seções atuais"
   ) |> 
@@ -497,16 +909,16 @@ resumo_ze |>
   gt::fmt_percent(columns = 7,
                   decimals = 1,
                   locale = "pt" )
-  
+
 
 
 ```
 
-A @tbl-secoes_calibacao_10menos aponta as 10 primeiras zonas eleitorais que teriam **diminuição** de seções se o critério fosse adotado.
-
 ```{r}
 #| label: tbl-secoes_calibacao_10menos
 #| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 325 por seção (modelo de calibração)"
+#| tbl-pos: H
+
 
 resumo_ze |>
   dplyr::arrange(saldo) |> 
@@ -518,11 +930,11 @@ resumo_ze |>
     locations = gt::cells_column_labels()
   ) |> 
   gt::cols_label(
-    num_zona = "Nº ZE",
-    locais = "Qtd. locais",
-    secoes = "Qtd. seções",
+    num_zona = "Zona",
+    locais = "Locais",
+    secoes = "Seções",
     aptos = "Aptos",
-    sec_necessarias = "Qtd. seções necessárias",
+    sec_necessarias = "Seções necessárias",
     saldo = "Saldo",
     perc_saldo = "% sobre seções atuais"
   ) |> 
@@ -535,27 +947,11 @@ resumo_ze |>
 
 ```
 
-# Método da Curva característica do receptor (curva ROC)
+## Resultados para a Curva ROC
 
-A curva ROC (“Receiver Operating Characteristic”), em português, Curva característica do receptor, é um mapeamento das taxas de verdadeiros positivos (TPF = sensibilidade) e as taxas de falsos positivos (FPF = 1 − especificidade) para todos os valores possíveis do ponto de corte que tenta prever um desfecho binário. Cada ponto da curva corresponde a um ponto de corte de tal modo que, ao mover o corte, ganha-se em sensibilidade e perde-se em especificidade, ou vice-versa (UNAL, 2017).
+Para a estimativa do número de eleitores por seção utilizou-se como variável de interesse um indicador de atraso, que foi definida como 1, se o atraso do encerramento da urna foi igual ou superior a 1 hora ou 0, caso contrário. Com essa variável classificando o atraso em cada uma das seções eleitorais nessas duas categorias e conhecendo-se o número de aptos em cada uma delas, buscou-se definir o valor de corte ótimo dessa variável que maximizasse a sensibilidade e a especificidade, ou seja, que permite a obtenção de altas probabilidades de acerto em relação ao atraso das seções eleitorais.
 
-De acordo com Gonçalves et al. (2014), a análise da curva ROC foi pioneiramente utilizada na segunda guerra mundial quando a capacidade dos operadores de radar (receptores) foi testada para determinar se um sinal na tela do radar representava um objeto ou ruído. Contudo, devido a sua utilidade, passou rapidamente a ser usada em outras áreas, dentre as quais a área de sáude, para avaliação e obtenção de testes diagnósticos em situações em que o uso de testes padrão ouro são custosos ou inexistentes. Outra grande área em que a curva ROC é utilizada é na avaliação da perfomance de métodos de aprendizado de máquina para classificação, como por exemplo, modelos de regressão logística, árvore de decisão e máquinas de vetores de suporte (BRADLEY, 1997).
-
-Para medir a capacidade diagnóstica de um teste, é comum usar medidas resumidas. Conforme Zhou et al. (2011), a área sob a curva ROC (AUC) e/ou a área parcial sob a curva ROC (pAUC) são consideradas índices da capacidade discriminatória global de um teste. Um teste com AUC = 1 discrimina indivíduos perfeitamente como doentes ou saudáveis, por exemplo. Enquanto isso, um teste com uma AUC de 0,5 é equivalente a lançar uma moeda - um teste não informativo (ZWEIG; CAMPBELL, 1993). 
-
-A escolha de um valor de corte apropriado é de suma importância para usar um teste de forma eficaz. Embora os valores de AUC, sensibilidade e especificidade sejam úteis na avaliação de um teste eles não especificam pontos de corte "ótimos" diretamente. Na literatura, há diversas abordagens que usam sensibilidade e especificidade para seleção de pontos de corte (UNAL, 2017).
-
-Um dos métodos amplamente usados na literatura é é baseado no índice $J$, proposto por Youden (1950) e que considera tanto sensibilidade quanto especificidade para definir o valor "ótimo". Este método define o ponto de corte ótimo como o ponto que maximiza a função de Youden, isto é, que maximiza
-
-$$
-J(c) = Se(c) + (1 - Sp(c))
-$$
-
-sobre todos os pontos de corte $c$; $\hat{c}_j$ denota o ponto de corte correspondente a $J$. Quando o valor de $J$ é máximo, $\hat{c}_j$ é o valor de corte “ótimo” e corresponde a um ponto na curva ROC com a maior distância vertical da linha diagonal de 45° (o ROC de um teste não informativo).
-
-## Tempo de atraso no encerramento maior ou igual a 1 hora
-
-Para a estimativa do número de eleitores por seção utilizou-se a variável **atraso**, que foi definida como 1, se o atraso do encerramento da urna foi igual ou superior a 1 hora ou 0, caso contrário. Com essa variável classificando o atraso em cada uma das seções eleitorais nessas duas categorias e conhecendo-se o número de aptos em cada uma delas, buscou-se maximizar a sensibilidade e a especificidade , ou seja, dado um número de eleitores aleatório, qual a fração seções do total de seções com atraso que apresentam, de fato, atraso no encerramento da votação. Por consequência, qual a fração de seções classificadas como não atrasadas daquelas que encerraram, de fato, sem atrasos, segundo a definição da variável atraso (encerramentos com atraso maior ou igual a 1 hora).
+Para isso, são definidos uma série de pontos de cortes e para cada um deles são obtidos os valores de sensibilidade e especificidade. O ponto de corte ótimo, então, é escolhido com base no critério de Youden, discutido anteriormente. Aqui, assumimos que o número de eleitores aptos por seção aleitoral é um bom preditor ou "teste diagnóstico", fazendo uma analogia com testes clínicos, para identificar quanto uma seção irá atrasar, com alta probabilidade de acerto. Dessa forma, esse valor pode ser tomado com referência para definição do número de aptos por seção.
 
 ```{r}
 curva_roc <- dados |>
@@ -573,12 +969,16 @@ ponto_corte_best <- pROC::coords(curva_roc, "best",
 auc <- pROC::auc(curva_roc)
 ```
 
-A análise da Curva ROC indica que o número de corte que maximiza a capacidade de identificar atraso quando se trata de atraso, como definido no escopo desse estudo, e a capacidade de minimizar os falsos positivos foi **341 eleitores por seção**. A curva ROC e o ponto que a maximiza é apresentado na @fig-roc_1hora.
+A análise da Curva ROC indica que o número de corte que maximiza a capacidade de identificar atraso quando se trata de atraso, como definido no escopo desse estudo, e a capacidade de minimizar os falsos positivos foi 341 eleitores por seção. A curva ROC e o ponto de corte ótimo são apresentados na @fig-roc_1hora.
 
 ```{r}
 #| label: fig-roc_1hora
 #| fig-cap: "Curva Roc considerando atraso no encerramento de votação superior a 1 hora"
 #| fig-align: center
+#| fig-width: 5
+#| fig-height: 4
+#| fig-pos: H
+
 #Curva Roc considerando atraso o tempo maior que 5 minutos
 pROC::ggroc(curva_roc,
             linewidth = 1,
@@ -598,46 +998,38 @@ pROC::ggroc(curva_roc,
                       size = 5
   ) +
   ggplot2::geom_label( data = ponto_corte_best,
-                      ggplot2::aes(
-                        x = specificity,
-                        y = sensitivity,
-                        label = paste0("Ponto de corte:\n", ceiling(threshold))
-                      ),
-                      nudge_x = 0.11,
-                      nudge_y = -0.11,
-                      color = "royalblue"
+                       ggplot2::aes(
+                         x = specificity,
+                         y = sensitivity,
+                         label = paste0("Ponto de corte:\n", ceiling(threshold))
+                       ),
+                       nudge_x = 0.11,
+                       nudge_y = -0.11,
+                       color = "royalblue"
   ) +
   ggplot2::theme_classic()
 
 ```
 
-A sensibilidade foi de cerca de 80,8% e a especificidade, 72,1%. A área sob a curva calculada foi $AUC = 76,8\%$, o que afasta a ideia de uma relação aleatória, representada pela linha tracejada na @fig-roc_1hora.
+Para esse ponto de corte, obtem-se um valor de sensibilidade de cerca de 80,8% e especificidade, 72,1%. Com base nesse ponto de corte, espera-se classificar seções eleitorais em atraso com um pouco mais de 80% de acerto. A área sob a curva calculada foi $AUC = 76,8\%$, o que afasta a ideia de uma relação aleatória, representada pela linha tracejada na @fig-roc_1hora e que corrobora com o poder de discrimir o atraso nas seções eleitorais com base no eletorado apto por seção.
 
-**O intervalo de confiança bootstrap de 95% de confiança, com 2.000 replicações para a o ponto de corte da curva ROC fica entre 304,5 a 383,5 eleitores por seção.** O intervalo de confiança utilizado foi o não-paramétrico e por isso não é simétrico.
+O intervalo de confiança bootstrap de 95% de confiança, com 2.000 replicações para o ponto de corte da curva ROC fica entre 304,5 a 383,5 eleitores por seção. O intervalo de confiança utilizado foi o não-paramétrico e por isso não é simétrico.
 
 ```{r}
-
 #IC para o ponto de corte
-
 ic_ponto_corte_roc <- pROC::ci.coords(curva_roc,"best")
-
-
-
 ```
 
-### Seções necessárias caso o número de eleitores considerando o modelo da curva ROC for adotado.
+A avaliação do impacto dos valores estimados de eleitores aptos por seção eleitoral com base na curva ROC no número de seções nececssárias para acomodar esses eleitores, foram conduzidas algumas simulações, considerando, novamente, o eleitorado atual nos locais de votação atualizados em 16/09/2025.
 
-Para avaliar a quantidade de seções eleitorais necessárias se adotado o novo número de eleitores por seção for adotado como o calculado pela curva ROC, consideram-se:
+Como feito para o modelo de calibração, o saldo de seções será determinado pelo número atual de seções eleitorais nos locais de votação subtraído da quantidade necessária de seções, resultado da divisão do eleitorado do local de votação pelo número 341 (eleitorado arredondado para o próximo inteiro subsequente). Ss resultados do saldo serão agregados por Zona Eleitoral.
 
--   eleitorado atual nos locais de votação atualizados em 16/09/2025;
-
--   o saldo de seções será determinado pelo número atual de seções eleitorais nos locais de votação subtraído da quantidade necessária de seções, resultado da divisão do eleitorado do local de votação pelo número 341 (eleitorado arredondamento para o próximo inteiro subsequente);
-
--   os resultados do saldo serão agregados por Zona Eleitoral.
+O modelo considerando o tamanho de seção com 341 eleitores por seção resulta na necessidade de criação de 3.646 seções no Estado para redistribuir os eleitores dentro de seus locais de votação. Isso corresponde a criação de cerca de 3,53% mais de seções no Estado (atualmente há 103.265 seções). A @tbl-secoes_roc_10mais indica as 10 primeiras zonas eleitorais com maiores saldos de seções a criar. Já na Tabela @tbl-secoes_calibacao_10menos são apontas as 10 primeiras zonas eleitorais que teriam diminuição de seções se o critério fosse adotado.
 
 ```{r}
 #| label: tbl-secoes_roc_10mais
 #| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 341 por seção (ponto de corte da Curva ROC)"
+#| tbl-pos: H
 
 #Estudo por local
 # MODELO CURVA ROC -------------------------------------------------------
@@ -682,11 +1074,11 @@ resumo_ze_roc |>
     locations = gt::cells_column_labels()
   ) |> 
   gt::cols_label(
-    num_zona = "Nº ZE",
-    locais = "Qtd. locais",
-    secoes = "Qtd. seções",
+    num_zona = "Zona",
+    locais = "Locais",
+    secoes = "Seções",
     aptos = "Aptos",
-    sec_necessarias = "Qtd. seções necessárias",
+    sec_necessarias = "Seções necessárias",
     saldo = "Saldo",
     perc_saldo = "% sobre seções atuais"
   ) |> 
@@ -696,17 +1088,14 @@ resumo_ze_roc |>
   gt::fmt_percent(columns = 7,
                   decimals = 1,
                   locale = "pt" )
-  
+
 
 ```
-
-**O modelo considerando o tamanho de seção com 341 eleitores por seção resulta na necessidade de criação de 3.646 seções no Estado para redistribuir os eleitores dentro de seus locais de votação**. Isso corresponde a criação de cerca de 3,53% mais de seções no Estado (atualmente há 103.265 seções). A @tbl-secoes_roc_10mais indica as 10 primeiras zonas eleitorais com maiores saldos de seções a criar.
-
-A @tbl-secoes_calibacao_10menos aponta as 10 primeiras zonas eleitorais que teriam diminuição de seções se o critério fosse adotado.
 
 ```{r}
 #| label: tbl-secoes_roc_10menos
 #| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 341 por seção (curva ROC)"
+#| tbl-pos: H
 
 resumo_ze_roc |>
   dplyr::arrange(saldo) |> 
@@ -718,11 +1107,11 @@ resumo_ze_roc |>
     locations = gt::cells_column_labels()
   ) |> 
   gt::cols_label(
-    num_zona = "Nº ZE",
-    locais = "Qtd. locais",
-    secoes = "Qtd. seções",
+    num_zona = "Zona",
+    locais = "Locais",
+    secoes = "Seções",
     aptos = "Aptos",
-    sec_necessarias = "Qtd. seções necessárias",
+    sec_necessarias = "Seções necessárias",
     saldo = "Saldo",
     perc_saldo = "% sobre seções atuais"
   ) |> 
@@ -734,11 +1123,12 @@ resumo_ze_roc |>
                   locale = "pt" )
 ```
 
-**Se se considerar o tamanho de seção próximo ao intervalo de confiança bootstrap estimado (**$n = 380$**), o saldo geral de seções a serem criadas seria de - 6.651 seções (cerca de -6,6% do total de seções do Estado)**, ou seja, haveria a redução da quantidade de seções comparando-se à situação atual. As @tbl-secoes_roc_10mais_380 e @tbl-secoes_roc_10menos_380 apresentam as 10 primeiras zonas eleitorais que teriam que criar e diminuir seções, respectivamente.
+De maneira análoga, foi conduzida uma simulação considerando como número de eleitores aptos por seção um valor dentro do intervalo de confiança. Assumindo o valor, então, como estimativa $n = 380$ eleitores aptos por seção, o saldo geral de seções a serem criadas seria de - 6.651 seções (cerca de -6,6% do total de seções do Estado), ou seja, haveria a redução da quantidade de seções comparando-se à situação atual. As @tbl-secoes_roc_10mais_380 e @tbl-secoes_roc_10menos_380 apresentam as 10 primeiras zonas eleitorais que teriam que criar e diminuir seções, respectivamente.
 
 ```{r}
 #| label: tbl-secoes_roc_10mais_380
 #| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 380 por seção"
+#| tbl-pos: H
 
 #Estudo por local
 # MODELO CURVA ROC -------------------------------------------------------
@@ -783,11 +1173,11 @@ resumo_ze_roc_380 |>
     locations = gt::cells_column_labels()
   ) |> 
   gt::cols_label(
-    num_zona = "Nº ZE",
-    locais = "Qtd. locais",
-    secoes = "Qtd. seções",
+    num_zona = "Zona",
+    locais = "Locais",
+    secoes = "Seções",
     aptos = "Aptos",
-    sec_necessarias = "Qtd. seções necessárias",
+    sec_necessarias = "Seções necessárias",
     saldo = "Saldo",
     perc_saldo = "% sobre seções atuais"
   ) |> 
@@ -797,13 +1187,14 @@ resumo_ze_roc_380 |>
   gt::fmt_percent(columns = 7,
                   decimals = 1,
                   locale = "pt" )
-  
+
 
 ```
 
 ```{r}
 #| label: tbl-secoes_roc_10menos_380
 #| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 380 por seção"
+#| tbl-pos: H
 
 resumo_ze_roc_380 |>
   dplyr::arrange(saldo) |> 
@@ -815,11 +1206,11 @@ resumo_ze_roc_380 |>
     locations = gt::cells_column_labels()
   ) |> 
   gt::cols_label(
-    num_zona = "Nº ZE",
-    locais = "Qtd. locais",
-    secoes = "Qtd. seções",
+    num_zona = "Zona",
+    locais = "Locais",
+    secoes = "Seções",
     aptos = "Aptos",
-    sec_necessarias = "Qtd. seções necessárias",
+    sec_necessarias = "Seções necessárias",
     saldo = "Saldo",
     perc_saldo = "% sobre seções atuais"
   ) |> 
@@ -831,17 +1222,9 @@ resumo_ze_roc_380 |>
                   locale = "pt" )
 ```
 
-# Árvore de decisão
+## Resultados para a árvore de decisão
 
-Nesta seção, introduzimos brevemente o conceito e as principais características da árvore de decisão. Esse método, proposto por Breiman em xxxx, consiste de uma método não paramétrico, com o objetivo de realizar predições para uma variável de interesse (resposta), a partir de um conjunto de variáveis subjacentes (explicativas), a partir do particionamento do espaço de valores das variáveis explicativas através de um critério pré estabelecido.
-
-No contexto de classificação, especificamente, a ideia do método é determinar partições recursivas das variáveis explicativas que maximizam a “pureza”, isto é, a obtenção de regiões em que a classificação da variável resposta seja apenas em uma única classe. Cada particionamento recebe o nome de nó e cada resultado final recebe o nome de folha (ver Figura ...)
-
-A árvore de decisão possui grande aplicabilidade prática em diversas áreas do conhecimento, tanto por sua facilidade de implementação e baixo custo computacional, quanto pela simplicidade de interpretação dos resultados através de gráficos intuitivos. Embora a maioria das aplicações práticas da árvore de decisão seja na estimação de funções de predição, é possível usar esses métodos também para realizar análise exploratória de dados, permitindo extrair insights sobre a relação e importância das variáveis.
-
-Uma vez que a construção da árvore é baseada na identificação de variáveis com potencial para explicar a variável de interesse, isso indica que ela fornece evidências de quais dessas variáveis são importantes, realizando uma seleção automática, além de indicar qual a ordem de importância, já que variáveis no topo da árvore possuem maior relevância.
-
-Para definir, com base na árvore de decisão definir um ponto de corte para o tamanho da seção eleitoral, foi considerada como variável resposta o tempo de atraso das seções eleitorais. Além disso, foi fixado como profundidada máxima da árvore como 1, de modo a obter apenas uma partição da variável tamanho da seção. Na Figura @fig-arvore é apresentado o desenho da árvore obtida, em que foi definida como partição ótima um tamanho de seção de 341 eleitores, isto é, uma partição que minimiza a soma dos quadrados dos erros.
+Para definir, com base na árvore de decisão definir um ponto de corte para o tamanho da seção eleitoral, foi considerada como variável resposta o tempo de atraso das seções eleitorais. Além disso, foi fixado como profundidada máxima da árvore como 1, de modo a obter apenas uma partição da variável tamanho da seção. Na Figura @fig-arvore é apresentado o desenho da árvore obtida, em que foi definida como partição ótima um tamanho de seção de 341 eleitores, isto é, uma partição que minimiza a soma dos quadrados dos erros. Vale destacar que não foram apresentadas as tabelas dos cenários simulados para a árvore de decisão, uma vez que o valor estimado para o número de eleitores aptos por seção foi idêntico aquele obtido pela análise da curva ROC.
 
 ```{r}
 # estima a arvore de decisao baseado no tempo de atraso considerando
@@ -857,18 +1240,25 @@ modelo_arvore <- rpart::rpart(
 #| label: fig-arvore
 #| fig-cap: "Árvore de decisão"
 #| fig-align: center
+#| fig-width: 5
+#| fig-height: 4
+#| fig-pos: H
 
 # constroi o grafico da arvore de forma mais amigavel
 rpart.plot::rpart.plot(modelo_arvore)
 ```
 
+# Referências
+
+:::{#refs}
+
+:::
+
 # Apêndice A - Resultados 2022 {.appendix}
 
-Neste apêndice são apresentados os resultados da aplicação das metodologias apresentadas anteriormente, considerando os dados dos tempos de votação para o pleito de 2022. O objetivo dessas análises é fornecer informações adicionais sobre o dimensionamento do tamanho das seções, considerando uma eleição mais recente. Embora o pleito de 2022 tenha contemplado 5 cargos, os dados sugerem que não há diferentes expressivas do tempo de votação. Contudo, para o número de aptos por seção e para o número de seções que tiveram atraso de pelo menos uma hora é possível observar valores maiores para o ano de 2022 comparativamente a eleição de 2018.
+Neste apêndice são apresentados os resultados da aplicação das metodologias apresentadas anteriormente, considerando os dados do pleito de 2022. O objetivo dessas análises é fornecer informações adicionais sobre o dimensionamento do tamanho das seções, considerando uma eleição mais recente. Embora o pleito de 2022 tenha contemplado 5 cargos, os dados sugerem que não há diferenças expressivas no tempo de votação. Contudo, para o número de aptos por seção e para o número de seções que tiveram atraso de pelo menos uma hora é possível observar valores maiores para o ano de 2022 comparativamente a eleição de 2018.
 
-## Curva ROC {#sec-curva-roc-ap}
-
-A curva ROC para os dados da eleição de 2022, considerando-se as mesmas configurações do estudo anterior, apresenta ponto de corte de 365 eleitores por seção, com $AUC =84,3\%$ . A curva pode ser vista na @fig-roc_1hora_2022.
+## Resultados para o modelo de calibração
 
 ```{r}
 # leitura da base de dados
@@ -884,11 +1274,194 @@ dados_2022 <- readr::read_csv2(
 ```
 
 ```{r}
-curva_roc_2022 <- dados_2022 |>
+# modelo de calibracao  ---------------------------------------------------
+
+# ajuste o modelo de regressao linear
+modelo_lm_2022 <- lm(atendimento_total_tmae_seg ~ qt_aptos, data = dados_2022)
+
+# estimativas dos parametros do modelo
+resultados_2022 <- summary(modelo_lm_2022)
+
+# extrai o valor do alpha
+alpha_2022 <- coef(modelo_lm_2022)[[1]]
+
+# extrai o valor do beta
+beta_2022 <- coef(modelo_lm_2022)[[2]]
+
+# calcula o parametro de calibracao (81s)
+x0_2022 <- (resumo_estat_tempos$mediana_tempo[[2]] - alpha_2022) / beta_2022
+
+# calcula a variancia estimada do parametro de calibracao
+xbar_2022 <- mean(dados_2022$qt_aptos)
+n_2022 <- nrow(dados_2022)
+nsxx_2022 <- (n_2022 - 1) * var(dados_2022$qt_aptos)
+sigma2_2022 <- resultados_2022$sigma ^ 2
+varx0_2022 <- (sigma2_2022 / beta_2022 ^ 2) * (1 + 1 / n_2022 + ((xbar_2022 - x0_2022) ^ 2) / nsxx_2022)
+
+# # cria funcao para estimar o intervalo de confianca via bootstrap
+# boot_func_2022 <- function(data, indices) {
+#   modelo_lm_2022 <- lm(atendimento_total_tmae_seg ~ qt_aptos, data = data[indices, ])
+#   x0_2022 <- (resumo_estat_tempos$mediana_tempo[[2]] - coef(modelo_lm_2022)[[1]]) / coef(modelo_lm_2022)[[2]]
+#   return(x0_2022)
+# }
+# 
+# # cria amostras bootstrap
+# boot_results_2022 <- boot::boot(data = dados_2022, statistic = boot_func_2022, R = 1000)
+# 
+# # estima os intervalos de confianca bootstrap
+# icboot_2022 <- boot::boot.ci(boot_results_2022)
+
+```
+
+```{r}
+#| echo: false
+#| eval: false
+#Cria um tibble para o resultado do bootstrap
+ic_boot_tbl_2022 <- tibble::tibble(x_bar = icboot_2022$t0, li =icboot_2022$percent[4], ls = icboot_2022$percent[5] )
+
+```
+
+Para a eleiçãço de 2022, a estimativa do eleitorado apto por seção segundo o modelo de calibração foi de $x_0 =$ `r scales::number(x0_2022, decimal.mark = ",")`. O respectivo intervalo de confiança de 95% foi de \[354, 357\] eleitores para que o tempo total médio de votação seja de `r scales::number(resumo_estat_tempos$mediana_tempo[[2]], decimal.mark = ",", accuracy = 0.1)` segundos.
+
+```{r}
+#| echo: false
+#| eval: false
+#| label: fig-ic_calib_2022
+#| fig-cap: "Intervalo de confiança de 95% bootstrap para a número de eleitores por seção estimado pelo modelo de calibração"
+#| fig-align: center
+#| fig-width: 5
+#| fig-height: 4
+#gráfico
+ic_boot_tbl_2022 |>
+  ggplot2::ggplot() +
+  ggplot2::geom_pointrange(ggplot2::aes( x =1, y = x_bar, ymin = li, ymax = ls),
+                           linewidth = 2, size=2, 
+                           color="steelblue", fill="gold",shape = 22) +
+  ggplot2::scale_y_continuous(n.breaks = 8,
+                              labels = scales::label_number(big.mark = ".", decimal.mark = ",")
+  ) + 
+  ggplot2::labs(y = "Eleitores") +
+  ggplot2::theme_classic() +
+  ggplot2::theme(
+    axis.title.x  = ggplot2::element_blank(),
+    axis.text.x = ggplot2::element_blank(),
+    axis.ticks.x = ggplot2::element_blank()
+  )
+
+```
+
+Nas @tbl-secoes_calib_10mais_2022 e @tbl-secoes_calib_10menos_2022 são apresentados 10 zonas eleitorais com os maiores e menores impactos, respectivamente, ao considerar o valor estimado de 355 eleitores aptos por seção. Destaca-se que nesse cenário, seriam necessárias 102.822 seções eleitorais, o que representa uma redução de aproximadamente -0,43% em relação o número de seções atuais.
+
+```{r}
+#| label: tbl-secoes_calib_10mais_2022
+#| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 355 por seção (modelo de calibração)"
+#| tbl-pos: H
+
+
+#Estudo por local
+# MODELO CURVA ROC -------------------------------------------------------
+#VALOR POR SEÇÃOL: 365
+
+#Estudo por local
+locais_calib_2022 <- secoes |>
+  dplyr::mutate(id = paste(nom_localidade, num_zona, num_local, sep = "_")) |>
+  dplyr::group_by(num_zona, num_local, id) |>
+  dplyr::summarise(
+    nom_local= dplyr::first(nom_local),
+    secoes = dplyr::n(),
+    aptos = sum(qtd_aptos, na.rm = TRUE),
+    aptos_secao = mean(qtd_aptos, na.rm = TRUE),
+    qtd_secoes_abaixo_355 = sum(qtd_aptos <= 355, na.rm = TRUE),
+    .groups = "drop") |>
   dplyr::mutate(
-    atraso = dplyr::if_else(tempo_atraso >= lubridate::hms("01:00:00"), 1, 0),
-    atraso = as.factor(atraso)
+    sec_necessarias = ceiling(aptos/355),
+    saldo = sec_necessarias - secoes)
+
+#Saldo Necessário por ZE
+resumo_ze_calib_2022 <- locais_calib_2022 |>
+  dplyr::group_by(num_zona) |>
+  dplyr::summarise(
+    locais = dplyr::n(),
+    secoes = sum(secoes, na.rm = TRUE),
+    aptos = sum(aptos, na.rm = TRUE),
+    sec_necessarias = sum(sec_necessarias, na.rm = TRUE),
+    saldo = sum(saldo, na.rm = TRUE),
+    .groups = "drop") |>
+  dplyr::arrange(dplyr::desc(saldo)) |>
+  dplyr::mutate(
+    perc_saldo = saldo/secoes
+  )
+
+resumo_ze_calib_2022 |> 
+  dplyr::slice(1:10) |> 
+  gt::gt() |>
+  gt::cols_align(align = "center") |>
+  gt::tab_style(
+    style = "vertical-align:middle",
+    locations = gt::cells_column_labels()
   ) |> 
+  gt::cols_label(
+    num_zona = "Zona",
+    locais = "Locais",
+    secoes = "Seções",
+    aptos = "Aptos",
+    sec_necessarias = "Seções necessárias",
+    saldo = "Saldo",
+    perc_saldo = "% sobre seções atuais"
+  ) |> 
+  gt::fmt_number(columns = 4,
+                 locale = "pt",
+                 decimals = 0) |> 
+  gt::fmt_percent(columns = 7,
+                  decimals = 1,
+                  locale = "pt" ) |> 
+  gt::tab_options(latex.tbl.pos = "h")
+
+
+```
+
+```{r}
+#| label: tbl-secoes_calib_10menos_2022
+#| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 355 por seção (modelo de calibração)"
+#| tbl-pos: H
+
+resumo_ze_calib_2022 |>
+  dplyr::arrange(saldo) |> 
+  dplyr::slice(1:10) |> 
+  gt::gt() |>
+  gt::cols_align(align = "center") |>
+  gt::tab_style(
+    style = "vertical-align:middle",
+    locations = gt::cells_column_labels()
+  ) |> 
+  gt::cols_label(
+    num_zona = "Zona",
+    locais = "Locais",
+    secoes = "Seções",
+    aptos = "Aptos",
+    sec_necessarias = "Seções necessárias",
+    saldo = "Saldo",
+    perc_saldo = "% sobre seções atuais"
+  ) |> 
+  gt::fmt_number(columns = 4,
+                 locale = "pt",
+                 decimals = 0) |> 
+  gt::fmt_percent(columns = 7,
+                  decimals = 1,
+                  locale = "pt" ) |> 
+  gt::tab_options(latex.tbl.pos = "h")
+```
+
+## Resultados para a curva ROC {#sec-curva-roc-ap}
+
+A curva ROC para os dados da eleição de 2022, considerando-se as mesmas configurações do estudo anterior, apresenta ponto de corte de 365 eleitores por seção, com $AUC =84,3\%$ . A curva pode ser vista na @fig-roc_1hora_2022.
+
+```{r}
+curva_roc_2022 <- dados_2022 |>
+  # dplyr::mutate(
+  #   atraso = dplyr::if_else(tempo_atraso >= lubridate::hms("01:00:00"), 1, 0),
+  #   atraso = as.factor(atraso)
+  # ) |> 
   pROC::roc(atraso, qt_aptos)
 
 ponto_corte_best_2022 <- pROC::coords(
@@ -904,6 +1477,10 @@ auc_2022 <- pROC::auc(curva_roc_2022)
 #| label: fig-roc_1hora_2022
 #| fig-cap: "Curva Roc considerando atraso no emcerramento de votação o tempo maior que 1 hora, 2022."
 #| fig-align: center
+#| fig-width: 5
+#| fig-height: 4
+#| fig-pos: H
+
 # Curva Roc considerando atraso o tempo maior que 5 minutos
 pROC::ggroc(curva_roc_2022, linewidth = 1, colour = "steelblue") +
   ggplot2::labs(title = "", x = "Especificidade", y = "Sensibilidade") +
@@ -933,13 +1510,15 @@ pROC::ggroc(curva_roc_2022, linewidth = 1, colour = "steelblue") +
 ic_ponto_corte_roc_2022 <- pROC::ci.coords(curva_roc_2022,"best")
 ```
 
-**O intervalo de confiança bootstrap de 95% de confiança, com 2.000 replicações para a o ponto de corte da curva ROC fica entre `r paste("[", ic_ponto_corte_roc_2022$threshold[[1]], ", ", ic_ponto_corte_roc_2022$threshold[[2]], "]")` eleitores por seção.**
+O intervalo de confiança bootstrap de 95% de confiança, com 2.000 replicações para a o ponto de corte da curva ROC fica entre `r paste("[", ic_ponto_corte_roc_2022$threshold[[1]], ", ", ic_ponto_corte_roc_2022$threshold[[3]], "]")` eleitores por seção.
 
-Com os dados da eleição de 2022 e o ponto de corte estimado pela curva ROC em $n = 365$ eleitores por seção**,** a quantidade de seções a **serem extintas seria de -3.014 unidades ( redução de 2,9% com relação à quantidade de seções de 2022 103.265)** . Isso corresponde a criação de cerca de 3,53% mais de seções no Estado (atualmente há 103.265 seções). As @tbl-secoes_roc_10mais_2022 e @tbl-secoes_roc_10menos_2022 representam as 10 primeiras zonas eleitorais que teriam que criar e diminuir seções, respectivamente.
+Com os dados da eleição de 2022 e o ponto de corte estimado pela curva ROC em $n = 365$ eleitores por seção, a quantidade de seções a serem extintas seria de -3.014 unidades (redução de 2,9% com relação à quantidade de seções de 2025 103.265). Isso corresponde a criação de cerca de 3,53% mais de seções no Estado (atualmente há 103.265 seções). As @tbl-secoes_roc_10mais_2022 e @tbl-secoes_roc_10menos_2022 representam as 10 primeiras zonas eleitorais que teriam que criar e diminuir seções, respectivamente.
 
 ```{r}
 #| label: tbl-secoes_roc_10mais_2022
-#| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 365 por seção (ponto de corte da Curva ROC)"
+#| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 365 por seção (Curva ROC)"
+#| tbl-pos: H
+
 
 #Estudo por local
 # MODELO CURVA ROC -------------------------------------------------------
@@ -984,11 +1563,11 @@ resumo_ze_roc_2022 |>
     locations = gt::cells_column_labels()
   ) |> 
   gt::cols_label(
-    num_zona = "Nº ZE",
-    locais = "Qtd. locais",
-    secoes = "Qtd. seções",
+    num_zona = "Zona",
+    locais = "Locais",
+    secoes = "Seções",
     aptos = "Aptos",
-    sec_necessarias = "Qtd. seções necessárias",
+    sec_necessarias = "Seções necessárias",
     saldo = "Saldo",
     perc_saldo = "% sobre seções atuais"
   ) |> 
@@ -997,14 +1576,16 @@ resumo_ze_roc_2022 |>
                  decimals = 0) |> 
   gt::fmt_percent(columns = 7,
                   decimals = 1,
-                  locale = "pt" )
-  
+                  locale = "pt" ) |> 
+  gt::tab_options(latex.tbl.pos = "h")
+
 
 ```
 
 ```{r}
 #| label: tbl-secoes_roc_10menos_2022
 #| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 365 por seção (curva ROC)"
+#| tbl-pos: H
 
 resumo_ze_roc_2022 |>
   dplyr::arrange(saldo) |> 
@@ -1016,11 +1597,11 @@ resumo_ze_roc_2022 |>
     locations = gt::cells_column_labels()
   ) |> 
   gt::cols_label(
-    num_zona = "Nº ZE",
-    locais = "Qtd. locais",
-    secoes = "Qtd. seções",
+    num_zona = "Zona",
+    locais = "Locais",
+    secoes = "Seções",
     aptos = "Aptos",
-    sec_necessarias = "Qtd. seções necessárias",
+    sec_necessarias = "Seções necessárias",
     saldo = "Saldo",
     perc_saldo = "% sobre seções atuais"
   ) |> 
@@ -1029,10 +1610,11 @@ resumo_ze_roc_2022 |>
                  decimals = 0) |> 
   gt::fmt_percent(columns = 7,
                   decimals = 1,
-                  locale = "pt" )
+                  locale = "pt" ) |> 
+  gt::tab_options(latex.tbl.pos = "h")
 ```
 
-## Árvore de decisão
+## Resultados para a árvore de decisão
 
 ```{r}
 # estima a arvore de decisao baseado no tempo de atraso considerando
@@ -1044,22 +1626,26 @@ modelo_arvore_2022 <- rpart::rpart(
 
 ```
 
+Os resultados da árvore de decisão com os dados de 2022 são apresentados na @fig-arvore_2022. O ponto de corte foi seções com $n=369$ eleitores, resultado muito próximo do encontrado no estudo da curva ROC. Os resultados da simulação da quantidade de seções com a redistribuição hipotética dos eleitores são muito parecidos, também. Seriam extintas 4.023 seções (-3,89%) com relação ao total de seções de 2022.
+
 ```{r}
 #| label: fig-arvore_2022
 #| fig-cap: "Árvore de decisão"
 #| fig-align: center
+#| fig-width: 5
+#| fig-height: 4
+#| fig-pos: H
 
 # constroi o grafico da arvore de forma mais amigavel
 rpart.plot::rpart.plot(modelo_arvore_2022)
 ```
 
-Os resultados da árvore de decisão com os dados de 2022 são apresentados na @fig-arvore_2022. O ponto de corte foi seções com $n=369$ eleitores, resultado muito próximo do encontrado no estudo da curva ROC. Os resultados da simulação da quantidade de seções com a redistribuição hipotética dos eleitores são muito parecidos, também. **Seriam extintas 4.023 seções (-3,89%) com relação ao total de seções de 2022**.
-
 As @tbl-secoes_arvore_10mais_2022 e @tbl-secoes_arvore_10menos_2022 representam as 10 primeiras zonas eleitorais que teriam que criar e diminuir seções, respectivamente se utilizado esse modelo.
 
 ```{r}
 #| label: tbl-secoes_arvore_10mais_2022
-#| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 369 por seção (ponto de corte da árvore de decisão)"
+#| tbl-cap: "10 primeiras Zonas Eleitorais que possuem maior necessidade de criação de seções eleitorais se o número máximo de eleitores for 369 por seção (árvore de decisão)"
+#| tbl-pos: H
 
 #Estudo por local
 # MODELO CURVA ROC -------------------------------------------------------
@@ -1104,11 +1690,11 @@ resumo_ze_arvore_2022 |>
     locations = gt::cells_column_labels()
   ) |> 
   gt::cols_label(
-    num_zona = "Nº ZE",
-    locais = "Qtd. locais",
-    secoes = "Qtd. seções",
+    num_zona = "Zona",
+    locais = "Locais",
+    secoes = "Seções",
     aptos = "Aptos",
-    sec_necessarias = "Qtd. seções necessárias",
+    sec_necessarias = "Seções necessárias",
     saldo = "Saldo",
     perc_saldo = "% sobre seções atuais"
   ) |> 
@@ -1117,14 +1703,16 @@ resumo_ze_arvore_2022 |>
                  decimals = 0) |> 
   gt::fmt_percent(columns = 7,
                   decimals = 1,
-                  locale = "pt" )
-  
+                  locale = "pt" ) |> 
+  gt::tab_options(latex.tbl.pos = "h")
+
 
 ```
 
 ```{r}
 #| label: tbl-secoes_arvore_10menos_2022
-#| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 369 por seção (ponto de corte da árvore de decisão)"
+#| tbl-cap: "10 primeiras zonas eleitorais que teriam diminuição de seções se número máximo de eleitores for 369 por seção (árvore de decisão)"
+#| tbl-pos: H
 
 resumo_ze_arvore_2022 |>
   dplyr::arrange(saldo) |> 
@@ -1136,11 +1724,11 @@ resumo_ze_arvore_2022 |>
     locations = gt::cells_column_labels()
   ) |> 
   gt::cols_label(
-    num_zona = "Nº ZE",
-    locais = "Qtd. locais",
-    secoes = "Qtd. seções",
+    num_zona = "Zona",
+    locais = "Locais",
+    secoes = "Seções",
     aptos = "Aptos",
-    sec_necessarias = "Qtd. seções necessárias",
+    sec_necessarias = "Seções necessárias",
     saldo = "Saldo",
     perc_saldo = "% sobre seções atuais"
   ) |> 
@@ -1149,7 +1737,6 @@ resumo_ze_arvore_2022 |>
                  decimals = 0) |> 
   gt::fmt_percent(columns = 7,
                   decimals = 1,
-                  locale = "pt" )
+                  locale = "pt" ) |> 
+  gt::tab_options(latex.tbl.pos = "h")
 ```
-
-# Apêndice B - Comparação 2018 e 2022 {.appendix}

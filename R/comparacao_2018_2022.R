@@ -1,4 +1,3 @@
-
 # -------------------------------------------------------------------------
 # comparacao_2018_2022.R
 # descricao: compara algumas medidas descritivas dos tempos de votacao
@@ -7,7 +6,7 @@
 # data da ultima modificacao: 14.10.2025
 # -------------------------------------------------------------------------
 
-# cria vetor com os caminhos dos arquivos
+# cria vetor com os caminhos dos arquivos de dados
 files <- c("base_2018_01.csv", "base_2022_01.csv") |>
   purrr::map(
     \(x) paste0("data/", x) |>
@@ -27,12 +26,12 @@ dados <- vroom::vroom(
   ) |>
   dplyr::filter(tipo == "bio", subs_urna == 0)
 
-# le o shape de zonas eleitorias
+# le o shape de zonas eleitorais
 zonas <- readr::read_rds(file = here::here("data", "shape_zona.rds")) |>
   janitor::clean_names() |>
   sf::st_as_sf()
 
-# calcula medidas descritivas considerando os anos 2018 e 2022
+# calcula medidas descritivas do tempo de atendimento para 2018 e 2022
 dados |>
   dplyr::group_by(ano_eleicao, tipo) |>
   dplyr::summarise(
@@ -43,7 +42,7 @@ dados |>
     maximo = max(atendimento_total_tmae_seg, na.rm = TRUE)
   )
 
-# calcula
+# calcula medidas descritivas dos aptos para 2018 e 2022
 dados |>
   dplyr::group_by(ano_eleicao, tipo) |>
   dplyr::summarise(
@@ -54,7 +53,7 @@ dados |>
     maximo = max(qt_aptos, na.rm = TRUE)
   )
 
-# constrio grafico de dispersao entre tempo e tamanho da secao
+# constroi grafico de dispersao entre tempo e tamanho da secao para 2018 e 2022
 dados |>
   ggplot2::ggplot(mapping = ggplot2::aes(
     x = qt_aptos,
@@ -63,9 +62,10 @@ dados |>
   ggplot2::geom_point() +
   ggplot2::geom_smooth(method = "lm") +
   ggplot2::facet_wrap(~ano_eleicao) +
-  ggplot2::theme_classic()
+  ggplot2::theme_classic() +
+  ggplot2::labs(x = "Aptos", y = "Tempo de atendimento total")
 
-# manipula os dados para construcao do mapa
+# manipula os dados para construcao dos mapas
 dados_mapa <- dados |>
   dplyr::group_by(nr_zona, ano_eleicao) |>
   dplyr::summarise(
@@ -84,18 +84,43 @@ dados_mapa <- dados |>
   dplyr::right_join(zonas, by = "nr_zona") |>
   sf::st_as_sf()
 
-# controi o mapa para o tempo maximo de atraso
+# controi o mapa para o tempo medio de atraso/secao para 2018 e 2022
 tmap::tm_shape(dados_mapa) +
   tmap::tm_polygons(
-    fill = c("maximo_atraso_2018", "maximo_atraso_2022"),
-    fill.scale = tmap::tm_scale_continuous(values = "viridis"),
-    fill.legend = tmap::tm_legend(title = "")
+    fill = c("media_atraso_2018", "media_atraso_2022"),
+    fill.scale = tmap::tm_scale_continuous(values = "brewer.reds"),
+    fill.legend = tmap::tm_legend(
+      title = "Atraso (máximo/zona)",
+      orientation = "landscape",
+      width = 120
+    ),
+    fill.free = FALSE
+  ) +
+  tmap::tm_layout(panel.labels = c("2018", "2022")) +
+  tmap::tm_compass(type = "8star") +
+  tmap::tm_scalebar() +
+  tmap::tm_components(
+    c("tm_compass", "tm_scalebar"),
+    position = c("left", "bottom")
   )
 
-# controi o mapa para o tamanho medio da secao
+# controi o mapa para o tamanho medio da secao para 2018 e 2022
 tmap::tm_shape(dados_mapa) +
   tmap::tm_polygons(
     fill = c("media_secao_2018", "media_secao_2022"),
-    fill.scale = tmap::tm_scale_continuous(values = "viridis"),
-    fill.legend = tmap::tm_legend(title = "")
+    fill.scale = tmap::tm_scale_continuous(values = "brewer.reds"),
+    fill.legend = tmap::tm_legend(
+      title = "Aptos (média/zona)",
+      orientation = "landscape",
+      width = 120
+    ),
+    fill.free = FALSE
+  ) +
+  tmap::tm_layout(panel.labels = c("2018", "2022")) +
+  tmap::tm_compass(type = "8star") +
+  tmap::tm_scalebar() +
+  tmap::tm_components(
+    c("tm_compass", "tm_scalebar"),
+    position = c("left", "bottom")
   )
+
