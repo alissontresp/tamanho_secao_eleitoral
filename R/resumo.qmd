@@ -1512,7 +1512,7 @@ ic_ponto_corte_roc_2022 <- pROC::ci.coords(curva_roc_2022,"best")
 
 O intervalo de confiança bootstrap de 95% de confiança, com 2.000 replicações para a o ponto de corte da curva ROC fica entre `r paste("[", ic_ponto_corte_roc_2022$threshold[[1]], ", ", ic_ponto_corte_roc_2022$threshold[[3]], "]")` eleitores por seção.
 
-Com os dados da eleição de 2022 e o ponto de corte estimado pela curva ROC em $n = 365$ eleitores por seção, a quantidade de seções a serem extintas seria de -3.014 unidades (redução de 2,9% com relação à quantidade de seções de 2025 103.265). Isso corresponde a criação de cerca de 3,53% mais de seções no Estado (atualmente há 103.265 seções). As @tbl-secoes_roc_10mais_2022 e @tbl-secoes_roc_10menos_2022 representam as 10 primeiras zonas eleitorais que teriam que criar e diminuir seções, respectivamente.
+Com os dados da eleição de 2022 e o ponto de corte estimado pela curva ROC em $n = 365$ eleitores por seção, a quantidade de seções a serem extintas seria de -3.014 unidades (redução de 2,9% com relação à quantidade de seções de 2025 103.265). As @tbl-secoes_roc_10mais_2022 e @tbl-secoes_roc_10menos_2022 representam as 10 primeiras zonas eleitorais que teriam que criar e diminuir seções, respectivamente.
 
 ```{r}
 #| label: tbl-secoes_roc_10mais_2022
