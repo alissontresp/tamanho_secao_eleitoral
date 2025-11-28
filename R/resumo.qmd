@@ -67,7 +67,7 @@ Nesta seção são apresentados alguns aspectos metodológicos das abordagens ut
 
 ## Modelo de calibração
 
-O modelo de calibração possui aplicações práticas em diversas área do conhecimento. Na engenharia e na física, por exemplo, os modelos de calibração são usados para aferição de instrumentos de medição de grandezas físicas. Já na medicina, esses métodos são utilizados para calibrar instrumentos que são indicadores de sáude pública. Outras áreas de destaque de aplicação dessa classe de modelos é a biologia e a química no estudo de composição de materiais e concentração de substâncias, respectivamente [@Ramos1987; @cavalcante2013].
+O modelo de calibração possui aplicações práticas em diversas área do conhecimento. Na engenharia e na física, por exemplo, os modelos de calibração são usados para aferição de instrumentos de medição de grandezas físicas. Já na medicina, esses métodos são utilizados para calibrar instrumentos que são indicadores de saúde pública. Outras áreas de destaque de aplicação dessa classe de modelos é a biologia e a química no estudo de composição de materiais e concentração de substâncias, respectivamente [@Ramos1987; @cavalcante2013].
 
 Para o modelo de calibração clássico, o processo de modelagem é baseado tipicamente em dois estágios. No primeiro, denominado de processo de calibração, são amostradas $n$ pares de observações $(y_1, x_1), \ldots, (y_n, x_n)$. No segundo estágio, isto é, no experimento de calibração, observa-se $k$ observações da variável de interesse $y$, $(y_{01}, \ldots, y_{0k})$, associadas a uma quantidade desconhecida $x_0$. Dessa forma, o interesse principal de aplicação do modelo de calibração reside em estimar $x_0$.
 
@@ -93,7 +93,7 @@ em que $\hat{\alpha}$ e $\hat{\beta}$ são os valores estimados dos parâmetros 
 
 A curva ROC (“Receiver Operating Characteristic”), em português, Curva característica do receptor, é um mapeamento das taxas de verdadeiros positivos (TPF = sensibilidade) e as taxas de falsos positivos (FPF = 1 − especificidade) para todos os valores possíveis do ponto de corte que tenta prever um desfecho binário. Cada ponto da curva corresponde a um ponto de corte de tal modo que, ao mover o corte, ganha-se em sensibilidade e perde-se em especificidade, ou vice-versa [@unal2017cutpoint].
 
-De acordo com Gonçalves et al. [-@goncalves2014roc], a análise da curva ROC foi pioneiramente utilizada na segunda guerra mundial quando a capacidade dos operadores de radar (receptores) foi testada para determinar se um sinal na tela do radar representava um objeto ou ruído. Contudo, devido a sua utilidade, passou rapidamente a ser usada em outras áreas, dentre as quais a área de sáude, para avaliação e obtenção de testes diagnósticos em situações em que o uso de testes padrão ouro são custosos ou inexistentes. Outra grande área em que a curva ROC é utilizada é na avaliação da perfomance de métodos de aprendizado de máquina para classificação, como por exemplo, modelos de regressão logística, árvore de decisão e máquinas de vetores de suporte [@bradley1997auc].
+De acordo com Gonçalves et al. [-@goncalves2014roc], a análise da curva ROC foi pioneiramente utilizada na segunda guerra mundial quando a capacidade dos operadores de radar (receptores) foi testada para determinar se um sinal na tela do radar representava um objeto ou ruído. Contudo, devido a sua utilidade, passou rapidamente a ser usada em outras áreas, dentre as quais a área de saúde, para avaliação e obtenção de testes diagnósticos em situações em que o uso de testes padrão ouro são custosos ou inexistentes. Outra grande área em que a curva ROC é utilizada é na avaliação da perfomance de métodos de aprendizado de máquina para classificação, como por exemplo, modelos de regressão logística, árvore de decisão e máquinas de vetores de suporte [@bradley1997auc].
 
 Para medir a capacidade diagnóstica de um teste, é comum usar medidas resumidas. Conforme Zhou et al. [-@zhou2011diagnostic], a área sob a curva ROC (AUC) e/ou a área parcial sob a curva ROC (pAUC) são consideradas índices da capacidade discriminatória global de um teste. Um teste com AUC = 1 discrimina indivíduos perfeitamente como doentes ou saudáveis, por exemplo. Enquanto isso, um teste com uma AUC de 0,5 é equivalente a lançar uma moeda - um teste não informativo [@zweig1993rocplots].
 
@@ -117,7 +117,7 @@ A árvore de decisão possui grande aplicabilidade prática em diversas áreas d
 
 A maioria das aplicações práticas da árvore de decisão consiste na estimação de funções de predição. Contudo, é possível usar esses métodos também para realizar análise exploratória de dados, permitindo extrair insights sobre a relação e importância das variáveis.
 
-Vários estudos têm usado a árvore de decisão como uma estratégia para identificar pontos de cortes ótimos para variáveis de interesse. Por exemplo, Costa et al. [-@costa2022alzheimer] propoem o uso desse método para identificação de Alzheimer com base em biomacadores do liquido cerebroespinal. Já Fiorenzato et al. [-@fiorenzato2024parkinson] usam estratégias para identificação da doença de Parkinson usando pontos de corte em relação ao Mini-Mental State Examination e Montreal Cognitive Assessment, que são instrumentos usados para triagem cognitiva.
+Vários estudos têm usado a árvore de decisão como uma estratégia para identificar pontos de cortes ótimos para variáveis de interesse. Por exemplo, Costa et al. [-@costa2022alzheimer] propoem o uso desse método para identificação de Alzheimer com base em biomarcadores do liquido cerebroespinal. Já Fiorenzato et al. [-@fiorenzato2024parkinson] usam estratégias para identificação da doença de Parkinson usando pontos de corte em relação ao Mini-Mental State Examination e Montreal Cognitive Assessment, que são instrumentos usados para triagem cognitiva.
 
 De maneira formal, a árvore de regressão cria partições das variáveis explicativas em regiões distintas e disjuntas $R_{1}, \ldots, R_{j}$. Para prever o valor da variável resposta $Y$ para uma observação com variáveis explicativas $x \in R_k$, considera-se a média das variáveis respostas correspondentes a essa mesma região, isto é,
 
@@ -127,7 +127,7 @@ $$ Para avaliar quão razoável uma árvore $T$ é, avaliamos o seu erro quadrá
 
 $$
 \mathcal{P}(T) = \sum_{R}\sum_{i:x_i \in R}\frac{(y_i - \hat{y}_R)^2}{n},
-$$ em que $\hat{Y}_R$ é valor predito para a resposta de uma observaçao pertencente a região $R$. Um critério para obteção de uma árvore de regressão seria encontrar $T$ que minimizasse $\mathcal{P}(T)$, o que é computacionalmente inviável. Nesse sentido, utiliza-se uma heurística que consiste em divisões binárias recursivas, de modo a encontrar árvores de regressão com baixo erro de predição. Para mais detalhes ver [@james2021isl].
+$$ em que $\hat{Y}_R$ é valor predito para a resposta de uma observação pertencente a região $R$. Um critério para obteção de uma árvore de regressão seria encontrar $T$ que minimizasse $\mathcal{P}(T)$, o que é computacionalmente inviável. Nesse sentido, utiliza-se uma heurística que consiste em divisões binárias recursivas, de modo a encontrar árvores de regressão com baixo erro de predição. Para mais detalhes ver [@james2021isl].
 
 # Resultados
 
@@ -135,7 +135,7 @@ Nesta seção são apresentados os principais resultados dos métodos descritos 
 
 ## Resultados da análise exploratória de dados
 
-Nesta seção são apresentados resultados da análise exploratoria de dados realizada para avaliar características gerais das eleições de 2018 e 2022 em relação ao tamanho das seções eleitorais, ao tempo de votação dos eleitores. Os resultados foram sumarizados através de medidas descritivas de posição e dispersão e também por meio de recursos de visualização de dados.
+Nesta seção são apresentados resultados da análise exploratória de dados realizada para avaliar características gerais das eleições de 2018 e 2022 em relação ao tamanho das seções eleitorais, ao tempo de votação dos eleitores. Os resultados foram sumarizados através de medidas descritivas de posição e dispersão e também por meio de recursos de visualização de dados.
 
 ```{r}
 # cria vetor com os caminhos dos arquivos de dados
@@ -237,6 +237,7 @@ dados_biometria |>
   gt::fmt_percent(
     columns = 4, 
     decimals = 2, 
+    dec_mark = ",",
     scale_values = TRUE
   ) |> 
   gt::tab_style(
@@ -710,8 +711,6 @@ resumo_estat_tempos |>
   )
 ```
 
-<!-- A @fig-bp_tempos representa o box-plot dos tempos totais de votação (TMAE), medidos em segundos. Nota-se a existência de tempos de votação muitos valores discrepantes com relação à massa de dados na cauda superior e poucos na cauda inferior. -->
-
 ```{r}
 #| echo: false
 #| eval: false
@@ -736,7 +735,7 @@ dados |>
 
 ## Resultado para o Modelo de Calibração {#sec-resultado-calibracao}
 
-Nesta seção são apresentados os resultados da aplicação do modelo de calibração. Para isso, definiu-se como variável de interesse o tempo total médio de atendimento ($y$) e como variável explicativa o número de eleitores aptos ($x$). Nesse sentido, o objetivo é obter uma estimativa para o número de eleitores aptos para a seção eleitoral, fixado um valor plausível do tempo total médio de atendimento. Na Figura @fig-graf_disp é apresentado do diagrama de dispersão, que indica uma relação linear entre essas variáveis, o que configura o modelo de calibração como plausível para modelar os dados.
+Nesta seção são apresentados os resultados da aplicação do modelo de calibração. Para isso, definiu-se como variável de interesse o tempo total médio de atendimento ($y$) e como variável explicativa o número de eleitores aptos ($x$). Nesse sentido, o objetivo é obter uma estimativa para o número de eleitores aptos para a seção eleitoral, fixado um valor plausível do tempo total médio de atendimento. Na @fig-graf_disp é apresentado do diagrama de dispersão, que indica uma relação linear entre essas variáveis, o que configura o modelo de calibração como plausível para modelar os dados.
 
 ```{r}
 #| label: fig-graf_disp
@@ -756,11 +755,7 @@ dados |>
   ggplot2::theme_classic()
 ```
 
-No primeiro estágio do modelo de calibração foram estimados os parâmetros associados ao modelo linear entre as variáveis consideradas. Com base nesses valores, realize-se o experimento de calibraçao, que consiste em estimar o valor do número de eleitores $x_0$ para um dado valor $y_0$ para o tempo de atendimento.Para estimar o número de eleitores aptos por seção, foi considerado como valor de referência para $y_0$ o valor mediano do tempo total médio de votação dos eleitores em seções com votação biométrica no pleito de 2018, cujo valor foi de `r scales::number(resumo_estat_tempos$mediana_tempo[[1]], decimal.mark = ",", accuracy = 0.1)` segundos.
-
-<!-- Onde a @eq-etapa_1, $y_{i}$ é a variável resposta, no presente caso, o tempo total médio de votação, $x_{i}$ a variável independente, a quantidade de aptos, ambas na i-ésima seção, e $\alpha$ e $\beta$, parâmetros do modelo de regressão a serem estimados. -->
-
-<!-- O segundo estágio (@eq-etapa_2), tem por objetivo estimar variável independente da @eq-etapa_1, $\hat{x}$, dado um valor de $y_{desejado}$ e os parâmetros e $\alpha$ e $\beta$ estimados na regressão da primeira etapa. Transpondo para a siuação atual, estima-se na primeira etapa uma regressão linear simples do tempo médio de votação em função da quantidade de aptos da seção e na segunda etapa, o valor da quantidade de aptos estimado dado o tempo médio de votação específico e os parâmetros do modelo estimado, que é a resposta do problema -->
+No primeiro estágio do modelo de calibração foram estimados os parâmetros associados ao modelo linear entre as variáveis consideradas. Com base nesses valores, realize-se o experimento de calibração, que consiste em estimar o valor do número de eleitores $x_0$ para um dado valor $y_0$ para o tempo de atendimento. Para estimar o número de eleitores aptos por seção, foi considerado como valor de referência para $y_0$ o valor mediano do tempo total médio de votação dos eleitores em seções com votação biométrica no pleito de 2018, cujo valor foi de `r scales::number(resumo_estat_tempos$mediana_tempo[[1]], decimal.mark = ",", accuracy = 0.1)` segundos.
 
 ```{r}
 # modelo de calibracao  ---------------------------------------------------
@@ -836,7 +831,7 @@ ic_boot_tbl |>
 
 ```
 
-Para avaliar a quantidade de seções eleitorais necessárias considerando o número de eleitores aptos estimado por seção, foram realizadas algumas simulações considerando, para tanto, o eleitorado atual nos locais de votação atualizados em 16/09/2025. O saldo de seções será determinado pelo número atual de seções eleitorais nos locais de votação subtraído da quantidade necessária de seções, resultado da divisão do eleitorado do local de votação pelo número 325 (eleitorado arredondamento para o próximo inteiro subsequente). Vale destacar que os resultados do saldo serão agregados por Zona Eleitoral.
+Para avaliar a quantidade de seções eleitorais necessárias considerando o número de eleitores aptos estimado por seção, foram realizadas algumas simulações considerando, para tanto, o eleitorado atual nos locais de votação atualizados em 16/09/2025. O saldo de seções será determinado pelo número atual de seções eleitorais nos locais de votação subtraído da quantidade necessária de seções, resultado da divisão do eleitorado do local de votação pelo número 325 (eleitorado arredondamento para o próximo inteiro subsequente). Vale destacar que os resultados do saldo serão agregados por Zona Eleitoral **e que não leva em consideração a capacidade dos locais de votação comportarem novas seções eleitorais**.
 
 O resultado final indica a necessidade de criação de 8.584 seções no Estado para redistribuir os eleitores dentro de seus locais de votação com o número de 325 eleitrores/seção, como estimado pelo modelo de calibração. Isso corresponde a criação de cerca de 8,31% mais de seções no Estado (atualmente há 103.265 seções).
 
@@ -1011,18 +1006,18 @@ pROC::ggroc(curva_roc,
 
 ```
 
-Para esse ponto de corte, obtem-se um valor de sensibilidade de cerca de 80,8% e especificidade, 72,1%. Com base nesse ponto de corte, espera-se classificar seções eleitorais em atraso com um pouco mais de 80% de acerto. A área sob a curva calculada foi $AUC = 76,8\%$, o que afasta a ideia de uma relação aleatória, representada pela linha tracejada na @fig-roc_1hora e que corrobora com o poder de discrimir o atraso nas seções eleitorais com base no eletorado apto por seção.
+Para esse ponto de corte, obtem-se um valor de sensibilidade de cerca de 80,8% e especificidade, 72,1%. Com base nesse ponto de corte, espera-se classificar seções eleitorais em atraso com um pouco mais de 80% de acerto. A área sob a curva calculada foi $AUC = 76,8\%$, o que afasta a ideia de uma relação aleatória, representada pela linha tracejada na @fig-roc_1hora e que corrobora com o poder de discernir o atraso nas seções eleitorais com base no eleitorado apto por seção.
 
-O intervalo de confiança bootstrap de 95% de confiança, com 2.000 replicações para o ponto de corte da curva ROC fica entre 304,5 a 383,5 eleitores por seção. O intervalo de confiança utilizado foi o não-paramétrico e por isso não é simétrico.
+O intervalo de confiança bootstrap de 95% de confiança, com 2.000 replicações para o ponto de corte da curva ROC fica entre 304,5 a 383,5 eleitores por seção. O intervalo de confiança utilizado foi o não paramétrico e por isso não é simétrico em torno do ponto estimado.
 
 ```{r}
 #IC para o ponto de corte
 ic_ponto_corte_roc <- pROC::ci.coords(curva_roc,"best")
 ```
 
-A avaliação do impacto dos valores estimados de eleitores aptos por seção eleitoral com base na curva ROC no número de seções nececssárias para acomodar esses eleitores, foram conduzidas algumas simulações, considerando, novamente, o eleitorado atual nos locais de votação atualizados em 16/09/2025.
+A avaliação do impacto dos valores estimados de eleitores aptos por seção eleitoral com base na curva ROC no número de seções nececssárias para acomodar esses eleitores, foram conduzidas algumas simulações, considerando, novamente, o eleitorado atual nos locais de votação atualizados em 16/09/2025 e **não levando em consideração a capacidade dos locais de votação comportarem novas seções eleitorais**.
 
-Como feito para o modelo de calibração, o saldo de seções será determinado pelo número atual de seções eleitorais nos locais de votação subtraído da quantidade necessária de seções, resultado da divisão do eleitorado do local de votação pelo número 341 (eleitorado arredondado para o próximo inteiro subsequente). Ss resultados do saldo serão agregados por Zona Eleitoral.
+Como feito para o modelo de calibração, o saldo de seções será determinado pelo número atual de seções eleitorais nos locais de votação subtraído da quantidade necessária de seções, resultado da divisão do eleitorado do local de votação pelo número 341 (eleitorado arredondado para o próximo inteiro subsequente). Os resultados do saldo serão agregados por Zona Eleitoral.
 
 O modelo considerando o tamanho de seção com 341 eleitores por seção resulta na necessidade de criação de 3.646 seções no Estado para redistribuir os eleitores dentro de seus locais de votação. Isso corresponde a criação de cerca de 3,53% mais de seções no Estado (atualmente há 103.265 seções). A @tbl-secoes_roc_10mais indica as 10 primeiras zonas eleitorais com maiores saldos de seções a criar. Já na Tabela @tbl-secoes_calibacao_10menos são apontas as 10 primeiras zonas eleitorais que teriam diminuição de seções se o critério fosse adotado.
 
@@ -1224,7 +1219,7 @@ resumo_ze_roc_380 |>
 
 ## Resultados para a árvore de decisão
 
-Para definir, com base na árvore de decisão definir um ponto de corte para o tamanho da seção eleitoral, foi considerada como variável resposta o tempo de atraso das seções eleitorais. Além disso, foi fixado como profundidada máxima da árvore como 1, de modo a obter apenas uma partição da variável tamanho da seção. Na Figura @fig-arvore é apresentado o desenho da árvore obtida, em que foi definida como partição ótima um tamanho de seção de 341 eleitores, isto é, uma partição que minimiza a soma dos quadrados dos erros. Vale destacar que não foram apresentadas as tabelas dos cenários simulados para a árvore de decisão, uma vez que o valor estimado para o número de eleitores aptos por seção foi idêntico aquele obtido pela análise da curva ROC.
+Para definir, com base na árvore de decisão, um ponto de corte para o tamanho da seção eleitoral, foi considerada como variável resposta o tempo de atraso das seções eleitorais. Além disso, foi fixado como profundidada máxima da árvore como 1, de modo a obter apenas uma partição da variável tamanho da seção. Na Figura @fig-arvore é apresentado o desenho da árvore obtida, em que foi definida como partição ótima um tamanho de seção de 341 eleitores, isto é, uma partição que minimiza a soma dos quadrados dos erros. Vale destacar que não foram apresentadas as tabelas dos cenários simulados para a árvore de decisão, uma vez que o valor estimado para o número de eleitores aptos por seção foi idêntico aquele obtido pela análise da curva ROC.
 
 ```{r}
 # estima a arvore de decisao baseado no tempo de atraso considerando
@@ -1248,11 +1243,14 @@ modelo_arvore <- rpart::rpart(
 rpart.plot::rpart.plot(modelo_arvore)
 ```
 
+\newpage
+
 # Referências
 
-:::{#refs}
-
+::: {#refs}
 :::
+
+\newpage
 
 # Apêndice A - Resultados 2022 {.appendix}
 
