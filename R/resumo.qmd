@@ -51,15 +51,15 @@ execute:
 
 No dia 4 de outubro de 2026, cerca de 155 milhões de eleitoras e eleitores aptos a votar no Brasil e no exterior, de acordo com dados de setembro de 2025, deverão comparecer às urnas para escolher os representantes a presidente e vice-presidente da República, a governadores e vice-governadores dos estados e do Distrito Federal, além de deputados federais e estaduais ou distritais e dois senadores por unidade da Federação [@tse2025].
 
-Em São Paulo, maior colégio eleitoral do país, 33.422.502 eleitores estarão aptos para votar em candidatos que concorrerão aos 6 cargos supracitados. Esses eleitores estão distribuídos nos 11.047 locais de votação e 103.303 seções eleitorais em todo o estado, perfazendo as 393 zonas eleitorais.
+Em São Paulo, maior colégio eleitoral do país, 33.422.502 eleitores estarão aptos para votar em candidatos que concorrerão aos 6 cargos supracitados. Esses eleitores estão distribuídos nos 11.047 locais de votação e 103.303 seções eleitorais em todo o estado, perfazendo as 393 zonas eleitorais [@tresp2025].
 
-Diante da dimensão de uma eleição, as preparações para cada pleito continuam mesmo em anos não-eleitorais, com o objetivo de avaliar eleições anteriores e com base nessas análises propor melhorias para a logística das próximas eleições. A relevância desse trabalho consiste, principalmente, em garantir ao eleitor o cumprimento do seu papel como cidadão e o exercício da democracia, e por outro lado que a escolha dos representantes por parte dos eleitores ocorra de forma pacífica e sem intercorrências [@tresp2025].
+Diante da dimensão de uma eleição, os preparativos para cada pleito continuam mesmo em anos não-eleitorais, com o objetivo de avaliar eleições anteriores e com base nessas análises propor melhorias para a logística das próximas eleições. A relevância desse trabalho consiste, principalmente, em garantir ao eleitor o cumprimento do seu papel como cidadão e o exercício da democracia, e por outro lado que a escolha dos representantes por parte dos eleitores ocorra de forma pacífica e sem intercorrências [@tresp2025].
 
 Um dos desafios na elaboração da logística das eleições e que gera impactos negativos aos eleitores é a formação de longas filas de espera nas seções eleitorais. A formação de filas nos locais de votação é um fenômeno que está associado a uma série de fatores, compreendendo desde a dinâmica das chegadas dos eleitores aos respectivos locais de votação, o tempo de votação dos eleitores, bem como o tamanho das seções eleitorais e o perfil do seu eleitorado.
 
 Após o fechamento do cadastro eleitoral são realizados cálculos do eleitorado por urna ou seção, isto é, a Justiça Eleitoral define a quantidade de urnas a serem utilizadas nas eleições gerais [@tresp2025]. Embora o Código Eleitoral (Lei nº 4.737/1965) em seu art. 117 preveja um limite de 400 eleitores nas seções eleitorais, determinar o tamanho da seção baseado em estudos que levem em conta informações do contexto local de cada estado e a dinâmica da votação, são imprescindíveis para uma logística mais assertiva.
 
-A investigação dos dados de tempo de votação dos pleitos anteriores pode evidenciar padrões relacionados a dinâmica de votação nas seções eleitorais. Isso pode sugerir insights para elaboração da logística das próximas eleições, de forma a otimizar o tempo de votação e consequentemente reduzir o tempo de espera nas filas. Nessa perspectiva, o presente estudo tem como objetivo realizar uma análise dos dados do tempo de votação do pleito de 2018 e 2022 com vistas a estimação do número de eleitores a serem alocados nas seções eleitorais do estado de São Paulo.
+A investigação dos dados de tempo de votação dos pleitos anteriores pode evidenciar padrões relacionados a dinâmica de votação nas seções eleitorais. Isso pode sugerir insights para elaboração da logística das próximas eleições, de forma a otimizar o tempo de votação e consequentemente reduzir o tempo de espera nas filas. Nessa perspectiva, o presente estudo tem como objetivo realizar uma análise dos dados do tempo de votação do pleito de 2018 e 2022 com vistas a estimação do número de eleitores a serem alocados nas seções eleitorais do estado de São Paulo para o pleito de 2026.
 
 # Metodologia
 
@@ -97,7 +97,7 @@ De acordo com Gonçalves et al. [-@goncalves2014roc], a análise da curva ROC fo
 
 Para medir a capacidade diagnóstica de um teste, é comum usar medidas resumidas. Conforme Zhou et al. [-@zhou2011diagnostic], a área sob a curva ROC (AUC) e/ou a área parcial sob a curva ROC (pAUC) são consideradas índices da capacidade discriminatória global de um teste. Um teste com AUC = 1 discrimina indivíduos perfeitamente como doentes ou saudáveis, por exemplo. Enquanto isso, um teste com uma AUC de 0,5 é equivalente a lançar uma moeda - um teste não informativo [@zweig1993rocplots].
 
-A escolha de um valor de corte apropriado é de suma importância para usar um teste de forma eficaz. Embora os valores de AUC, sensibilidade e especificidade sejam úteis na avaliação de um teste eles não especificam pontos de corte "ótimos" diretamente. Na literatura, há diversas abordagens que usam sensibilidade e especificidade para seleção de pontos de corte [@unal2017cutpoint].
+A escolha de um valor de corte apropriado é de suma importância para usar um teste de forma eficaz. Embora os valores de AUC, sensibilidade e especificidade sejam úteis na avaliação de um teste, eles não especificam pontos de corte "ótimos" diretamente. Na literatura, há diversas abordagens que usam sensibilidade e especificidade para seleção de pontos de corte [@unal2017cutpoint].
 
 Um dos métodos amplamente usados na literatura é baseado no índice $J$, proposto por Youden [-@youden1950index] e que considera tanto sensibilidade quanto especificidade para definir o valor "ótimo". Este método define o ponto de corte ótimo como o ponto que maximiza a função de Youden, isto é, que maximiza
 
@@ -131,11 +131,11 @@ $$ em que $\hat{Y}_R$ é valor predito para a resposta de uma observação perte
 
 # Resultados
 
-Nesta seção são apresentados os principais resultados dos métodos descritos anteriormente para estimação do número de eleitores aptos por seão para o pleito de 2026, com base 2018. Como a interpretação dos resultados e as discussões da aplicação do modelo de calibração, análise da curva ROC e árvore de decisão são análogas, os resultados para o pleito de 2022 são apresentados no apêndice. Inicialmente é apresentada uma análise exploratória de dados. Em seguida, são discutidos os resultados da aplicação dos métodos supracitados.
+Nesta seção são apresentados os principais resultados dos métodos descritos anteriormente para estimação do número de eleitores aptos por seão para o pleito de 2026, com base nos dados das eleições de 2018. Como a interpretação dos resultados e as discussões da aplicação do modelo de calibração, análise da curva ROC e árvore de decisão são análogas, os resultados para o pleito de 2022 são apresentados no apêndice. Inicialmente é apresentada uma análise exploratória de dados. Em seguida, são discutidos os resultados da aplicação dos métodos supracitados.
 
 ## Resultados da análise exploratória de dados
 
-Nesta seção são apresentados resultados da análise exploratória de dados realizada para avaliar características gerais das eleições de 2018 e 2022 em relação ao tamanho das seções eleitorais, ao tempo de votação dos eleitores. Os resultados foram sumarizados através de medidas descritivas de posição e dispersão e também por meio de recursos de visualização de dados.
+Nesta seção são apresentados resultados da análise exploratória de dados realizada para avaliar características gerais das eleições de 2018 e 2022 em relação ao tamanho das seções eleitorais e ao tempo de votação dos eleitores. Os resultados foram sumarizados através de medidas descritivas de posição e dispersão e também por meio de recursos de visualização de dados.
 
 ```{r}
 # cria vetor com os caminhos dos arquivos de dados
@@ -519,7 +519,7 @@ dados_agregados |>
  ggplot2::xlim(-1,1)
 ```
 
-Na @fig-mapa_aptos_2018_2022 são apresentados os mapas para ambos os pleitos em relação ao tamanho médio das seções para cada uma das zonas eleitorais. O mapa indica diversas regiões com altos valores de aptos por seção. Além disso, os mapas indicam uma diferença expressiva de cenário em que as eleições foram realizadas. De fato, o número de zonas em que houve biometria em 2022 é expressivamente maior quando comparado com o cenário do pleito de 2018.
+Na @fig-mapa_aptos_2018_2022 são apresentados os mapas para ambos os pleitos em relação ao tamanho médio das seções para cada uma das zonas eleitorais. O mapa indica diversas regiões com altos valores de aptos por seção. Além disso, os mapas indicam uma diferença expressiva de cenário em que as eleições foram realizadas. De fato, o número de zonas com revisão biométrica em 2022 é expressivamente maior quando comparado com o cenário do pleito de 2018.
 
 ```{r}
 #| label: fig-mapa_aptos_2018_2022
