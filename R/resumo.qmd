@@ -12,11 +12,18 @@ format:
     header-includes:
       - \usepackage{indentfirst} 
       - \setlength{\parindent}{1.5em}  
-      - \usepackage{tikz}
+      # - \usepackage{tikz}
       - \usepackage{graphicx}
       - \usepackage{hyperref}
       - \usepackage{url}
       - \usepackage{abntex2cite}
+      - \usepackage[a4paper]{geometry}
+      - \geometry{
+          top = 3cm,
+          bottom = 2.2cm,
+          left = 3cm,
+          right = 2cm
+        }
       
     bibliography: referencias.bib
       
@@ -25,7 +32,7 @@ editor: visual
 execute:
   echo: false
   warning: false
-  cache: false
+  cache: true
 ---
 
 \thispagestyle{empty}
@@ -67,7 +74,7 @@ Nesta seção são apresentados alguns aspectos metodológicos das abordagens ut
 
 ## Modelo de calibração
 
-O modelo de calibração possui aplicações práticas em diversas área do conhecimento. Na engenharia e na física, por exemplo, os modelos de calibração são usados para aferição de instrumentos de medição de grandezas físicas. Já na medicina, esses métodos são utilizados para calibrar instrumentos que são indicadores de saúde pública. Outras áreas de destaque de aplicação dessa classe de modelos é a biologia e a química no estudo de composição de materiais e concentração de substâncias, respectivamente [@Ramos1987; @cavalcante2013].
+O modelo de calibração possui aplicações práticas em diversas área do conhecimento. Na engenharia e na física, por exemplo, os modelos de calibração são usados para aferição de instrumentos de medição de grandezas físicas. Já na medicina, esses métodos são utilizados para calibrar instrumentos que são indicadores de saúde pública. Outras áreas de destaque de aplicação dessa classe de modelos são a biologia e a química no estudo de composição de materiais e concentração de substâncias, respectivamente [@Ramos1987; @cavalcante2013].
 
 Para o modelo de calibração clássico, o processo de modelagem é baseado tipicamente em dois estágios. No primeiro, denominado de processo de calibração, são amostradas $n$ pares de observações $(y_1, x_1), \ldots, (y_n, x_n)$. No segundo estágio, isto é, no experimento de calibração, observa-se $k$ observações da variável de interesse $y$, $(y_{01}, \ldots, y_{0k})$, associadas a uma quantidade desconhecida $x_0$. Dessa forma, o interesse principal de aplicação do modelo de calibração reside em estimar $x_0$.
 
@@ -84,10 +91,10 @@ $$ {#eq-etapa_2}
 Os parâmetros do modelo de calibração são estimados, sob certas suposições, pelo método dos mínimos quadrados. Em particular, pode-se provar, que o estimador para o valor de $x_0$, no caso em que $k = 1$ é dado por
 
 $$
-x_0 = \frac{y_{0} - \hat{\alpha}}{\hat{\beta}}
+x_0 = \frac{y_{0} - \hat{\alpha}}{\hat{\beta}},
 $$ {#eq-etapa_3}
 
-em que $\hat{\alpha}$ e $\hat{\beta}$ são os valores estimados dos parâmetros da regressão entre $y$ e $x$.
+\noindent em que $\hat{\alpha}$ e $\hat{\beta}$ são os valores estimados dos parâmetros da regressão entre $y$ e $x$.
 
 ## Método da Curva característica do receptor (curva ROC)
 
@@ -102,10 +109,10 @@ A escolha de um valor de corte apropriado é de suma importância para usar um t
 Um dos métodos amplamente usados na literatura é baseado no índice $J$, proposto por Youden [-@youden1950index] e que considera tanto sensibilidade quanto especificidade para definir o valor "ótimo". Este método define o ponto de corte ótimo como o ponto que maximiza a função de Youden, isto é, que maximiza
 
 $$
-J(c) = Se(c) + (1 - Sp(c))
+J(c) = Se(c) + (1 - Sp(c)),
 $$
 
-sobre todos os pontos de corte $c$; $\hat{c}_j$ denota o ponto de corte correspondente a $J$. Quando o valor de $J$ é máximo, $\hat{c}_j$ é o valor de corte “ótimo” e corresponde a um ponto na curva ROC com a maior distância vertical da linha diagonal de 45° (o ROC de um teste não informativo).
+\noindent sobre todos os pontos de corte $c$; $\hat{c}_j$ denota o ponto de corte correspondente a $J$. Quando o valor de $J$ é máximo, $\hat{c}_j$ é o valor de corte “ótimo” e corresponde a um ponto na curva ROC com a maior distância vertical da linha diagonal de 45° (o ROC de um teste não informativo).
 
 ## Árvore de decisão
 
@@ -131,11 +138,11 @@ $$ em que $\hat{Y}_R$ é valor predito para a resposta de uma observação perte
 
 # Resultados
 
-Nesta seção são apresentados os principais resultados dos métodos descritos anteriormente para estimação do número de eleitores aptos por seão para o pleito de 2026, com base nos dados das eleições de 2018. Como a interpretação dos resultados e as discussões da aplicação do modelo de calibração, análise da curva ROC e árvore de decisão são análogas, os resultados para o pleito de 2022 são apresentados no apêndice. Inicialmente é apresentada uma análise exploratória de dados. Em seguida, são discutidos os resultados da aplicação dos métodos supracitados.
+Nesta seção são apresentados os principais resultados dos métodos descritos anteriormente para estimação do número de eleitores aptos por seção para o pleito de 2026, com base nos dados das eleições de 2018. Como a interpretação dos resultados e as discussões da aplicação do modelo de calibração, análise da curva ROC e árvore de decisão são análogas, os resultados para o pleito de 2022 são apresentados no apêndice. Inicialmente é apresentada uma análise exploratória de dados. Em seguida, são discutidos os resultados da aplicação dos métodos supracitados.
 
 ## Resultados da análise exploratória de dados
 
-Nesta seção são apresentados resultados da análise exploratória de dados realizada para avaliar características gerais das eleições de 2018 e 2022 em relação ao tamanho das seções eleitorais e ao tempo de votação dos eleitores. Os resultados foram sumarizados através de medidas descritivas de posição e dispersão e também por meio de recursos de visualização de dados.
+Nesta seção são apresentados resultados da análise exploratória de dados realizada para avaliar características gerais das eleições de 2018 e 2022 em relação ao tamanho das seções eleitorais e ao tempo de votação dos eleitores. Os resultados foram sumarizados por meio de medidas descritivas de posição e dispersão e também, recursos de visualização de dados.
 
 ```{r}
 # cria vetor com os caminhos dos arquivos de dados
@@ -203,7 +210,7 @@ biometria_2022<- dados_biometria |>
 
 ```
 
-Na @tbl-percentual_biometrizados são sumarizados dados gerais das eleições de 2018 e 2022. O número de eleitores aptos nos pleitos foram de `r aptos_2018` e `r aptos_2022`, respectivamente. Já o percentual de eleitores com biometria foram de `r biometria_2018` em 2018 e `r biometria_2022` em 2022. Dessa forma, nota-se um percentual expressivamente maior de eleitores com biometria em 2022.
+Na @tbl-percentual_biometrizados são sumarizados dados gerais das eleições de 2018 e 2022. O número de eleitores aptos nos pleitos foram de `r aptos_2018` e `r aptos_2022`, respectivamente. Já o percentual de eleitores com biometria foi de `r biometria_2018` em 2018 e `r biometria_2022` em 2022. Dessa forma, nota-se um percentual expressivamente maior de eleitores com biometria em 2022.
 
 ```{r}
 #| label: tbl-percentual_biometrizados 
@@ -546,11 +553,11 @@ tmap::tm_shape(dados_mapa) +
   tmap::tm_facets(ncol = 2)
 ```
 
-Com os logs das urnas eletrônicas é possível apurar o tempo de atraso para o encerramento das urnas após às 17 horas, que é o horário estipulado para o fim do processo de votação. Assim, considerando o tempo de atraso no encerramento daquelas urnas eletrônicas dos pleitos de 2018 e 2022 em que o eleitor foi identificado com biometria, obtive-se as estatísticas apresentadas na @tbl-resumo_estat_atraso.
+Com os logs das urnas eletrônicas é possível apurar o tempo de atraso para o encerramento das urnas após às 17 horas, que é o horário estipulado para o fim do processo de votação. Assim, considerando o tempo de atraso no encerramento daquelas urnas eletrônicas dos pleitos de 2018 e 2022 em que o eleitor foi identificado com biometria, obtiveram-se as estatísticas apresentadas na @tbl-resumo_estat_atraso.
 
 Dos resultados, nota-se que o tempo médio de atraso nas seções eleitorais em 2018 foi de 4,33 minutos com um desvio padrão de 7,53 minutos. A estimativa do desvio padrão indica alta dispersão do tempo de atraso nas seções. O tempo médio foi de 2,25 minutos. Ainda, observa-se que o tempo médio na eleição de 2022 o tempo médio de atraso foi quase o dobro, também marcada por uma alta variabilidade.
 
-Na @fig-histograma_tempos podem ser vistos as distribuições dos tempos de atraso, medidos em minutos referentes às seções que utilizaram identificação com biometria para ambos os anos.
+Na @fig-histograma_tempos podem ser vistas as distribuições dos tempos de atraso, medidas em minutos referentes às seções que utilizaram identificação com biometria para ambos os anos.
 
 ```{r}
 #| label: fig-histograma_tempos
@@ -782,6 +789,8 @@ nsxx <- (n - 1) * var(dados$qt_aptos)
 sigma2 <- resultados$sigma ^ 2
 varx0 <- (sigma2 / beta ^ 2) * (1 + 1 / n + ((xbar - x0) ^ 2) / nsxx)
 
+#Criado o rds com os resultados do bootstrap
+
 # cria funcao para estimar o intervalo de confianca via bootstrap
 boot_func <- function(data, indices) {
   modelo_lm <- lm(atendimento_total_tmae_seg ~ qt_aptos, data = data[indices, ])
@@ -801,9 +810,15 @@ icboot <- boot::boot.ci(boot_results)
 #Cria um tibble para o resultado do bootstrap
 ic_boot_tbl <- tibble::tibble(x_bar = icboot$t0, li =icboot$percent[4], ls = icboot$percent[5] )
 
+#Lê os dados do bootstrap
+
+# ic_boot_tbl <- readr::read_rds(
+#   file = here::here("data", "ic_tbl.rds")
+#   )
+
 ```
 
-Os cálculos apresentados nas equações [-@eq-etapa_1] e [-@eq-etapa_3] realizados para o conjunto de dados utilizados neste estudo resultaram na estimativa do número de eleitores por seção, segundo o modelo de calibração de $x_0 =$ `r scales::number(x0, decimal.mark = ",")`. O intervalo de confiança de 95% para a estimativa foi realizada por meio de um método de reamostragem bootstrap, considerando o modelo de calibração especificado com 1.000 replicações. A estimativa intervalar, com base no método bootstrap com nível de confiança de 95%, indica que as seções devam ter entre `r scales::number(ic_boot_tbl$li)` e `r scales::number(ic_boot_tbl$ls)` eleitores para que o tempo total médio de votação seja de `r scales::number(resumo_estat_tempos$mediana_tempo[[1]], decimal.mark = ",", accuracy = 0.1)` segundos. A @fig-ic_calib apresenta o intervalo de confiança estimado.
+Os cálculos apresentados nas equações [-@eq-etapa_1] e [-@eq-etapa_3] realizados para o conjunto de dados utilizados neste estudo resultaram na estimativa do número de eleitores por seção, segundo o modelo de calibração de $x_0 =$ `r scales::number(x0, decimal.mark = ",")`. O intervalo de confiança de 95% para a estimativa foi realizada por meio de um método de reamostragem bootstrap, considerando o modelo de calibração especificado com 1.000 replicações. A estimativa intervalar, com base no método bootstrap com nível de confiança de 95%, indica que as seções deveriam ter entre `r scales::number(ic_boot_tbl$li)` e `r scales::number(ic_boot_tbl$ls)` eleitores para que o tempo total médio de votação seja de `r scales::number(resumo_estat_tempos$mediana_tempo[[1]], decimal.mark = ",", accuracy = 0.1)` segundos. A @fig-ic_calib apresenta o intervalo de confiança estimado.
 
 ```{r}
 #| label: fig-ic_calib
@@ -831,7 +846,7 @@ ic_boot_tbl |>
 
 ```
 
-Para avaliar a quantidade de seções eleitorais necessárias considerando o número de eleitores aptos estimado por seção, foram realizadas algumas simulações considerando, para tanto, o eleitorado atual nos locais de votação atualizados em 16/09/2025. O saldo de seções será determinado pelo número atual de seções eleitorais nos locais de votação subtraído da quantidade necessária de seções, resultado da divisão do eleitorado do local de votação pelo número 325 (eleitorado arredondamento para o próximo inteiro subsequente). Vale destacar que os resultados do saldo serão agregados por Zona Eleitoral **e que não leva em consideração a capacidade dos locais de votação comportarem novas seções eleitorais**.
+Para avaliar a quantidade de seções eleitorais necessárias, considerando o número de eleitores aptos estimado por seção, foram realizadas algumas simulações considerando, para tanto, o eleitorado atual nos locais de votação atualizados em 16/09/2025. O saldo de seções será determinado pelo número atual de seções eleitorais nos locais de votação subtraído pela quantidade necessária de seções, resultado da divisão do eleitorado do local de votação pelo número 325 (eleitorado arredondamento para o próximo inteiro subsequente). Vale destacar que os resultados do saldo serão agregados por Zona Eleitoral **e que não leva em consideração a capacidade dos locais de votação comportarem novas seções eleitorais**.
 
 O resultado final indica a necessidade de criação de 8.584 seções no Estado para redistribuir os eleitores dentro de seus locais de votação com o número de 325 eleitrores/seção, como estimado pelo modelo de calibração. Isso corresponde a criação de cerca de 8,31% mais de seções no Estado (atualmente há 103.265 seções).
 
@@ -1006,7 +1021,7 @@ pROC::ggroc(curva_roc,
 
 ```
 
-Para esse ponto de corte, obtem-se um valor de sensibilidade de cerca de 80,8% e especificidade, 72,1%. Com base nesse ponto de corte, espera-se classificar seções eleitorais em atraso com um pouco mais de 80% de acerto. A área sob a curva calculada foi $AUC = 76,8\%$, o que afasta a ideia de uma relação aleatória, representada pela linha tracejada na @fig-roc_1hora e que corrobora com o poder de discernir o atraso nas seções eleitorais com base no eleitorado apto por seção.
+Para esse ponto de corte, obtem-se um valor de sensibilidade de cerca de 80,8% e especificidade, 72,1%. Com base nesse ponto de corte, espera-se classificar seções eleitorais em atraso com um pouco mais de 80% de acerto. A área sob a curva calculada foi $AUC = 76,8\%$, o que afasta a ideia de uma relação aleatória, representada pela linha tracejada na @fig-roc_1hora e que corrobora com o poder de discernir o atraso nas seções com base no eleitorado apto por seção.
 
 O intervalo de confiança bootstrap de 95% de confiança, com 2.000 replicações para o ponto de corte da curva ROC fica entre 304,5 a 383,5 eleitores por seção. O intervalo de confiança utilizado foi o não paramétrico e por isso não é simétrico em torno do ponto estimado.
 
@@ -1339,7 +1354,6 @@ dados_2022 |>
   ggplot2::theme_classic()
 ```
 
-
 ```{r}
 #| echo: false
 #| eval: false
@@ -1529,7 +1543,7 @@ ic_ponto_corte_roc_2022 <- pROC::ci.coords(curva_roc_2022,"best")
 
 O intervalo de confiança bootstrap de 95% de confiança, com 2.000 replicações para a o ponto de corte da curva ROC fica entre `r paste("[", ic_ponto_corte_roc_2022$threshold[[1]], ", ", ic_ponto_corte_roc_2022$threshold[[3]], "]")` eleitores por seção.
 
-Com os dados da eleição de 2022 e o ponto de corte estimado pela curva ROC em $n = 365$ eleitores por seção, a quantidade de seções a serem extintas seria de -3.014 unidades (redução de 2,9% com relação à quantidade de seções de 2025 103.265). As [-@tbl-secoes_roc_10mais_2022] e [-@tbl-secoes_roc_10menos_2022] representam as 10 primeiras zonas eleitorais que teriam que criar e diminuir seções, respectivamente.
+Com os dados da eleição de 2022 e o ponto de corte estimado pela curva ROC em $n = 365$ eleitores por seção, a quantidade de seções a serem extintas seria de -3.014 unidades (redução de 2,9% com relação à quantidade de seções de 2025 103.265). As tabelas [-@tbl-secoes_roc_10mais_2022] e [-@tbl-secoes_roc_10menos_2022] representam as 10 primeiras zonas eleitorais que teriam que criar e diminuir seções, respectivamente.
 
 ```{r}
 #| label: tbl-secoes_roc_10mais_2022
